@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatchIQ | Candidate Assessment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#a4c9f8",
+                    "on-primary-fixed-variant": "#34495c",
+                    "primary": "#000f1d",
+                    "primary-container": "#0f2537",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#002113",
+                    "primary-fixed": "#cfe5fd",
+                    "on-primary-container": "#788da3",
+                    "tertiary-container": "#002a1a",
+                    "on-surface-variant": "#43474c",
+                    "outline-variant": "#c3c7cd",
+                    "background": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "on-background": "#191c1e",
+                    "primary-fixed-dim": "#b3c9e0",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-fixed": "#061d2f",
+                    "on-secondary-fixed": "#001d36",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "secondary": "#3b618a",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#d1e4ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#009e6d",
+                    "tertiary-fixed": "#6ffbbe",
+                    "secondary-container": "#aacffe",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#b3c9e0",
+                    "on-secondary-fixed-variant": "#204971",
+                    "surface": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "inverse-surface": "#2d3133",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#4c6075",
+                    "outline": "#74777d",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-container": "#eceef0",
+                    "tertiary": "#001209",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#325881"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "16px",
+                    "base": "4px",
+                    "xl": "64px",
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(195, 199, 205, 0.3);
+            box-shadow: 0px 4px 20px rgba(15, 37, 55, 0.08);
+        }
+        .ai-gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .selection-active {
+            border-color: #3b618a;
+            background-color: #d1e4ff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-x-hidden">
+<!-- Sidebar Navigation Shell -->
+<aside class="h-screen w-64 flex flex-col fixed left-0 top-0 z-40 bg-primary dark:bg-on-background shadow-xl">
+<div class="flex flex-col h-full py-lg">
+<!-- Header Identity -->
+<div class="px-md mb-xl">
+<div class="flex items-center gap-xs mb-base">
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<h1 class="font-headline-md text-on-primary">MatchIQ</h1>
+</div>
+<p class="font-label-sm text-label-sm text-on-primary/60">Admin Console</p>
+</div>
+<!-- Primary Nav Items -->
+<nav class="flex-1 space-y-base">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-label-bold">Overview</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-bold text-label-bold">Talent Pool</span>
+</a>
+<!-- Active State: Tests / Pipeline -->
+<a class="flex items-center gap-sm bg-primary-container text-on-tertiary-container border-l-4 border-tertiary-fixed-dim px-md py-sm translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">alt_route</span>
+<span class="font-label-bold text-label-bold">Tests</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold text-label-bold">Reports</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+</nav>
+<!-- CTA Section -->
+<div class="px-md mt-auto mb-lg">
+<button class="w-full py-sm rounded-lg bg-on-primary-fixed-variant text-white font-label-bold text-label-bold hover:bg-on-primary-fixed-variant/80 transition-colors">
+                    Invite Team
+                </button>
+</div>
+<!-- Footer Nav Items -->
+<div class="border-t border-on-primary-container/10 pt-sm">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-bold text-label-bold">Help Center</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-bold text-label-bold">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas Content -->
+<main class="ml-64 min-h-screen relative p-lg md:p-xl flex flex-col">
+<!-- Header / Status Bar -->
+<header class="max-w-4xl mx-auto w-full mb-lg flex justify-between items-end">
+<div>
+<p class="font-label-bold text-label-bold text-secondary uppercase tracking-widest mb-base">UX Design Fundamental</p>
+<h2 class="font-headline-lg text-headline-lg text-primary">Assessment: Module 02</h2>
+</div>
+<div class="flex items-center gap-sm bg-white border border-outline-variant/30 px-md py-xs rounded-full shadow-sm">
+<span class="material-symbols-outlined text-secondary">schedule</span>
+<span class="font-label-bold text-headline-md text-primary-container tabular-nums" id="timer">08:45</span>
+</div>
+</header>
+<!-- Progress Indicator -->
+<div class="max-w-4xl mx-auto w-full mb-xl">
+<div class="flex justify-between items-center mb-base">
+<span class="font-label-bold text-label-bold text-on-surface-variant">Question 3 of 10</span>
+<span class="font-label-bold text-label-bold text-on-tertiary-container">30% Complete</span>
+</div>
+<div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-container transition-all duration-700 ease-out" style="width: 30%"></div>
+</div>
+</div>
+<!-- Question Card -->
+<section class="max-w-4xl mx-auto w-full flex-1">
+<div class="glass-card rounded-[24px] p-lg md:p-xl relative overflow-hidden">
+<!-- Background Accent -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="relative z-10">
+<div class="mb-lg">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-label-bold mb-sm">
+                            Usability Heuristics
+                        </span>
+<h3 class="font-headline-md text-headline-md text-on-background leading-relaxed">
+                            What is the primary goal of heuristic evaluation?
+                        </h3>
+</div>
+<!-- Multiple Choice Options -->
+<div class="space-y-sm mb-xl">
+<!-- Option A -->
+<button class="w-full text-left group flex items-start gap-md p-md rounded-xl border border-outline-variant/50 bg-white/50 hover:bg-secondary-fixed/20 hover:border-secondary transition-all" onclick="selectOption(this)">
+<span class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center font-label-bold group-hover:border-secondary transition-colors">A</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant pt-1">To identify usability problems in a user interface design.</span>
+</button>
+<!-- Option B -->
+<button class="w-full text-left group flex items-start gap-md p-md rounded-xl border border-outline-variant/50 bg-white/50 hover:bg-secondary-fixed/20 hover:border-secondary transition-all" onclick="selectOption(this)">
+<span class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center font-label-bold group-hover:border-secondary transition-colors">B</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant pt-1">To measure user satisfaction using standardized surveys.</span>
+</button>
+<!-- Option C -->
+<button class="w-full text-left group flex items-start gap-md p-md rounded-xl border border-outline-variant/50 bg-white/50 hover:bg-secondary-fixed/20 hover:border-secondary transition-all" onclick="selectOption(this)">
+<span class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center font-label-bold group-hover:border-secondary transition-colors">C</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant pt-1">To compare the conversion rates of two different designs.</span>
+</button>
+<!-- Option D -->
+<button class="w-full text-left group flex items-start gap-md p-md rounded-xl border border-outline-variant/50 bg-white/50 hover:bg-secondary-fixed/20 hover:border-secondary transition-all" onclick="selectOption(this)">
+<span class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center font-label-bold group-hover:border-secondary transition-colors">D</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant pt-1">To record and analyze user biometric data during testing.</span>
+</button>
+</div>
+<!-- Actions -->
+<div class="flex justify-between items-center pt-md border-t border-outline-variant/20">
+<button class="flex items-center gap-xs font-label-bold text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+                            Previous
+                        </button>
+<button class="ai-gradient-bg px-xl py-sm rounded-full text-white font-label-bold flex items-center gap-sm shadow-lg shadow-on-tertiary-container/20 hover:scale-[1.02] active:scale-95 transition-all">
+                            Next Question
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Context Footer -->
+<footer class="mt-lg text-center">
+<p class="font-label-sm text-on-surface-variant/60">
+                    Proctored Assessment. Camera is currently <span class="text-on-tertiary-container font-bold">Active</span>.
+                </p>
+</footer>
+</section>
+<!-- Decorative Floating Shapes (Atmospheric) -->
+<div class="fixed top-20 right-[-10%] w-[30vw] h-[30vw] rounded-full ai-gradient-bg opacity-[0.03] blur-[120px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-0 left-[20%] w-[40vw] h-[40vw] rounded-full bg-secondary opacity-[0.05] blur-[150px] pointer-events-none -z-10"></div>
+</main>
+<script>
+        // Simple micro-interaction for option selection
+        function selectOption(btn) {
+            // Remove selection-active class from all buttons
+            const buttons = btn.parentElement.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('selection-active', 'bg-secondary-fixed/40', 'border-secondary');
+                b.querySelector('span').classList.remove('bg-secondary', 'text-white', 'border-secondary');
+            });
+
+            // Add active class to clicked button
+            btn.classList.add('selection-active', 'bg-secondary-fixed/40', 'border-secondary');
+            const icon = btn.querySelector('span');
+            icon.classList.add('bg-secondary', 'text-white', 'border-secondary');
+        }
+
+        // Timer Logic
+        let timeInSeconds = 8 * 60 + 45;
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = timeInSeconds % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeInSeconds <= 60) {
+                timerElement.classList.add('text-error');
+            }
+            
+            if (timeInSeconds > 0) {
+                timeInSeconds--;
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+    </script>
+</body></html>

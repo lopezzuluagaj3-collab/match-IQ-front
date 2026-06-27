@@ -9,6 +9,7 @@ import '../../../core/utils/snackbar_helper.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_text_field.dart';
 
 class CompanyRegistrationPage extends StatefulWidget {
@@ -64,32 +65,36 @@ class _CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  _buildHeader(),
-                  const SizedBox(height: 32),
-                  _buildForm(),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () => context.go(AppRoutes.login),
-                    child: Text(
-                      'Already have an account? Sign in',
-                      style: AppTextStyles.labelBold
-                          .copyWith(color: AppColors.secondary),
-                    ),
+        body: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 40),
+                      _buildHeader(),
+                      const SizedBox(height: 32),
+                      _buildForm(),
+                      const SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () => context.go(AppRoutes.login),
+                        child: Text(
+                          'Already have an account? Sign in',
+                          style: AppTextStyles.labelBold
+                              .copyWith(color: AppColors.secondary),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
-                  const SizedBox(height: 40),
-                ],
+                ),
               ),
             ),
-          ),
+            const Positioned(top: 16, right: 16, child: ThemeToggleButton()),
+          ],
         ),
       ),
     );
@@ -102,7 +107,7 @@ class _CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: AppColors.onTertiaryContainer.withOpacity(0.1),
+            color: AppColors.onTertiaryContainer.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(18),
           ),
           child: const Icon(Symbols.corporate_fare,
@@ -113,8 +118,8 @@ class _CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         const SizedBox(height: 6),
         Text(
           'Find top talent with AI-powered matching',
-          style:
-              AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+          style: AppTextStyles.bodyMd.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
       ],
@@ -124,9 +129,13 @@ class _CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   Widget _buildForm() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.5)),
+        border: Border.all(
+            color: Theme.of(context)
+                .colorScheme
+                .outlineVariant
+                .withValues(alpha: 0.5)),
         boxShadow: const [
           BoxShadow(
               color: Color(0x0A0F2537), blurRadius: 24, offset: Offset(0, 8))

@@ -10,6 +10,7 @@ import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_text_field.dart';
 
 class AuthUtilityPage extends StatelessWidget {
@@ -41,47 +42,51 @@ class _PasswordResetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.emeraldGradient,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: const Icon(Symbols.mark_email_read,
-                      color: Colors.white, size: 40),
+      body: Stack(
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 440),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.emeraldGradient,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: const Icon(Symbols.mark_email_read,
+                          color: Colors.white, size: 40),
+                    ),
+                    const SizedBox(height: 24),
+                    Text('Check your inbox', style: AppTextStyles.headlineLg),
+                    const SizedBox(height: 10),
+                    Text(
+                      "We've sent a password reset link to your email. Click the link to create a new password.",
+                      style: AppTextStyles.bodyMd.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      child: AppButton(
+                        label: 'Back to Login',
+                        onPressed: () => context.go(AppRoutes.login),
+                        icon: Symbols.arrow_forward,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                Text('Check your inbox', style: AppTextStyles.headlineLg),
-                const SizedBox(height: 10),
-                Text(
-                  "We've sent a password reset link to your email. Click the link to create a new password.",
-                  style: AppTextStyles.bodyMd
-                      .copyWith(color: AppColors.onSurfaceVariant),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  child: AppButton(
-                    label: 'Back to Login',
-                    onPressed: () => context.go(AppRoutes.login),
-                    icon: Symbols.arrow_forward,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          const Positioned(top: 16, right: 16, child: ThemeToggleButton()),
+        ],
       ),
     );
   }
@@ -132,90 +137,91 @@ class _EmailVerifyViewState extends State<_EmailVerifyView> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.emeraldGradient,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Icon(Symbols.verified_user,
-                        color: Colors.white, size: 40),
-                  ),
-                  const SizedBox(height: 24),
-                  Text('Verify your email', style: AppTextStyles.headlineLg),
-                  const SizedBox(height: 10),
-                  Text(
-                    "We sent a 6-digit code to ${widget.email}. Enter it below to activate your account.",
-                    style: AppTextStyles.bodyMd
-                        .copyWith(color: AppColors.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        AppTextField(
-                          label: 'Verification Code',
-                          hint: '482910',
-                          prefixIcon: Symbols.pin,
-                          controller: _codeCtrl,
-                          keyboardType: TextInputType.number,
-                          validator: (v) => v != null && v.length == 6
-                              ? null
-                              : 'Enter the 6-digit code',
+        body: Stack(
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.emeraldGradient,
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        const SizedBox(height: 24),
-                        BlocBuilder<AuthBloc, AuthState>(
-                          builder: (context, state) => SizedBox(
-                            width: double.infinity,
-                            child: AppButton(
-                              label: 'Verify Email',
-                              isLoading: state is AuthLoading,
-                              onPressed: () {
-                                if (_formKey.currentState?.validate() ??
-                                    false) {
-                                  context.read<AuthBloc>().add(
-                                        VerifyEmailRequested(
-                                          email: widget.email,
-                                          code: _codeCtrl.text.trim(),
-                                        ),
-                                      );
-                                }
-                              },
-                              icon: Symbols.check_circle,
+                        child: const Icon(Symbols.verified_user,
+                            color: Colors.white, size: 40),
+                      ),
+                      const SizedBox(height: 24),
+                      Text('Verify your email', style: AppTextStyles.headlineLg),
+                      const SizedBox(height: 10),
+                      Text(
+                        "We sent a 6-digit code to ${widget.email}. Enter it below to activate your account.",
+                        style: AppTextStyles.bodyMd.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 40),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            AppTextField(
+                              label: 'Verification Code',
+                              hint: '482910',
+                              prefixIcon: Symbols.pin,
+                              controller: _codeCtrl,
+                              keyboardType: TextInputType.number,
+                              validator: (v) => v != null && v.length == 6
+                                  ? null
+                                  : 'Enter the 6-digit code',
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: () => context.read<AuthBloc>().add(
-                                ResendVerificationRequested(
-                                    email: widget.email),
+                            const SizedBox(height: 24),
+                            BlocBuilder<AuthBloc, AuthState>(
+                              builder: (context, state) => AppButton(
+                                label: 'Verify Email',
+                                isLoading: state is AuthLoading,
+                                onPressed: () {
+                                  if (_formKey.currentState?.validate() ??
+                                      false) {
+                                    context.read<AuthBloc>().add(
+                                          VerifyEmailRequested(
+                                            email: widget.email,
+                                            code: _codeCtrl.text.trim(),
+                                          ),
+                                        );
+                                  }
+                                },
+                                icon: Symbols.check_circle,
                               ),
-                          child: Text(
-                            "Didn't receive the code? Resend",
-                            style: AppTextStyles.labelBold
-                                .copyWith(color: AppColors.secondary),
-                          ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextButton(
+                              onPressed: () => context.read<AuthBloc>().add(
+                                    ResendVerificationRequested(
+                                        email: widget.email),
+                                  ),
+                              child: Text(
+                                "Didn't receive the code? Resend",
+                                style: AppTextStyles.labelBold
+                                    .copyWith(color: AppColors.secondary),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            const Positioned(top: 16, right: 16, child: ThemeToggleButton()),
+          ],
         ),
       ),
     );

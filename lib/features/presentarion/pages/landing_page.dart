@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_text_field.dart';
 
 class LandingPage extends StatelessWidget {
@@ -12,7 +13,6 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           // ── Navbar ────────────────────────────────────────────────────
@@ -23,15 +23,19 @@ class LandingPage extends StatelessWidget {
             toolbarHeight: 64,
             title: Row(
               children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: AppColors.onTertiaryContainer.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(9),
+                Image.asset(
+                  'lib/assets/logo_dark.jpeg',
+                  height: 32,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: AppColors.onTertiaryContainer.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: const Icon(Symbols.auto_awesome,
+                        color: AppColors.onTertiaryContainer, size: 18),
                   ),
-                  child: const Icon(Symbols.auto_awesome,
-                      color: AppColors.onTertiaryContainer, size: 18),
                 ),
                 const SizedBox(width: 10),
                 Text('MatchIQ',
@@ -40,6 +44,8 @@ class LandingPage extends StatelessWidget {
               ],
             ),
             actions: [
+              const ThemeToggleButton(onDark: true),
+              const SizedBox(width: 8),
               TextButton(
                 onPressed: () => context.go(AppRoutes.login),
                 child: Text('Sign In',
@@ -206,16 +212,19 @@ class _HeroSection extends StatelessWidget {
           ),
 
           // Subtle bottom wave / fade
-          Container(
-            height: 40,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF163347), AppColors.background],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          Builder(builder: (context) {
+            final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+            return Container(
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [const Color(0xFF163347), scaffoldBg],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -367,12 +376,11 @@ class _StatCard extends StatelessWidget {
           child: Icon(icon, color: AppColors.onTertiaryContainer, size: 24),
         ),
         Text(value,
-            style: AppTextStyles.headlineLg
-                .copyWith(color: AppColors.primary, fontSize: 30)),
+            style: AppTextStyles.headlineLg.copyWith(fontSize: 30)),
         const SizedBox(height: 2),
         Text(label,
-            style: AppTextStyles.labelSm
-                .copyWith(color: AppColors.onSurfaceVariant)),
+            style: AppTextStyles.labelSm.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
       ],
     );
   }
@@ -405,7 +413,7 @@ class _FeaturesSection extends StatelessWidget {
     ];
 
     return Container(
-      color: AppColors.surfaceContainerLow,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 40),
       child: Column(
         children: [
@@ -459,9 +467,9 @@ class _FeatureCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         boxShadow: const [
           BoxShadow(
               color: Color(0x08000000), blurRadius: 12, offset: Offset(0, 4))
@@ -485,8 +493,9 @@ class _FeatureCard extends StatelessWidget {
                   AppTextStyles.headlineMd.copyWith(fontSize: 18)),
           const SizedBox(height: 10),
           Text(description,
-              style: AppTextStyles.bodyMd
-                  .copyWith(color: AppColors.onSurfaceVariant, height: 1.6)),
+              style: AppTextStyles.bodyMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.6)),
         ],
       ),
     );
@@ -622,8 +631,9 @@ class _StepCard extends StatelessWidget {
             textAlign: TextAlign.center),
         const SizedBox(height: 8),
         Text(description,
-            style: AppTextStyles.labelSm
-                .copyWith(color: AppColors.onSurfaceVariant, height: 1.5),
+            style: AppTextStyles.labelSm.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                height: 1.5),
             textAlign: TextAlign.center),
       ],
     );
@@ -636,7 +646,7 @@ class _RolesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.surfaceContainerLow,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 40),
       child: Column(
         children: [
@@ -712,7 +722,7 @@ class _RoleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.3)),
         boxShadow: [
@@ -860,8 +870,10 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 28),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.outlineVariant)),
+      decoration: BoxDecoration(
+        border: Border(
+            top: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant)),
       ),
       child: Row(
         children: [
@@ -882,7 +894,8 @@ class _Footer extends StatelessWidget {
           ),
           const Spacer(),
           Text('© 2025 MatchIQ AI Recruitment. All rights reserved.',
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.outline)),
+              style: AppTextStyles.labelSm.copyWith(
+                  color: Theme.of(context).colorScheme.outline)),
         ],
       ),
     );
@@ -925,8 +938,8 @@ class _SectionHeader extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
           child: Text(subtitle,
-              style: AppTextStyles.bodyMd
-                  .copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center),
         ),
       ],

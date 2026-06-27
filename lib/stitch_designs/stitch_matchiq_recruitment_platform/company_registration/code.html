@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Company Registration | MatchIQ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#a4c9f8",
+                    "on-primary-fixed-variant": "#34495c",
+                    "primary": "#000f1d",
+                    "primary-container": "#0f2537",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#002113",
+                    "primary-fixed": "#cfe5fd",
+                    "on-primary-container": "#788da3",
+                    "tertiary-container": "#002a1a",
+                    "on-surface-variant": "#43474c",
+                    "outline-variant": "#c3c7cd",
+                    "background": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "on-background": "#191c1e",
+                    "primary-fixed-dim": "#b3c9e0",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-fixed": "#061d2f",
+                    "on-secondary-fixed": "#001d36",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "secondary": "#3b618a",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#d1e4ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#009e6d",
+                    "tertiary-fixed": "#6ffbbe",
+                    "secondary-container": "#aacffe",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#b3c9e0",
+                    "on-secondary-fixed-variant": "#204971",
+                    "surface": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "inverse-surface": "#2d3133",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#4c6075",
+                    "outline": "#74777d",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-container": "#eceef0",
+                    "tertiary": "#001209",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#325881"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "16px",
+                    "base": "4px",
+                    "xl": "64px",
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-layer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(15, 37, 55, 0.08);
+        }
+        .ai-cta-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-sm md:p-lg relative overflow-hidden">
+<!-- Atmospheric Background Decoration -->
+<div class="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] bg-secondary-fixed-dim/20 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute -bottom-[10%] -right-[5%] w-[40%] h-[40%] bg-tertiary-fixed/10 rounded-full blur-[120px] pointer-events-none"></div>
+<!-- Main Registration Container -->
+<main class="w-full max-w-[540px] relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+<!-- Logo/Brand Anchor -->
+<div class="flex flex-col items-center mb-lg text-center">
+<div class="mb-xs flex items-center justify-center bg-primary-container text-on-primary w-12 h-12 rounded-xl shadow-lg">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">
+                    partner_exchange
+                </span>
+</div>
+<h1 class="font-display text-primary text-headline-md tracking-tight">MatchIQ</h1>
+</div>
+<!-- Registration Card -->
+<div class="bg-white rounded-[20px] p-lg md:p-xl card-shadow border border-outline-variant/30">
+<header class="mb-lg">
+<h2 class="font-headline-lg text-primary mb-base">Join MatchIQ as a Company</h2>
+<p class="font-body-md text-on-surface-variant">Empower your recruitment pipeline with AI-driven talent intelligence.</p>
+</header>
+<form class="space-y-sm" onsubmit="return false;">
+<!-- Company Name -->
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface" for="company_name">Company Name</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+</div>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg font-body-md text-on-surface transition-all" id="company_name" placeholder="Acme Corp" type="text"/>
+</div>
+</div>
+<!-- Business Email -->
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface" for="business_email">Business Email</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg font-body-md text-on-surface transition-all" id="business_email" placeholder="hr@company.com" type="email"/>
+</div>
+</div>
+<!-- Password Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface" for="password">Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg font-body-md text-on-surface transition-all" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface" for="confirm_password">Confirm password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant/50 rounded-lg font-body-md text-on-surface transition-all" id="confirm_password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-xs pt-base">
+<input class="mt-1 rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" id="terms" type="checkbox"/>
+<label class="font-label-sm text-on-surface-variant" for="terms">
+                        I agree to the <a class="text-secondary font-semibold hover:underline" href="#">Terms of Service</a> and <a class="text-secondary font-semibold hover:underline" href="#">Privacy Policy</a>.
+                    </label>
+</div>
+<!-- Submit Button -->
+<div class="pt-sm">
+<button class="w-full bg-primary-container text-on-primary font-label-bold text-body-md py-sm rounded-lg hover:bg-primary transition-all duration-300 shadow-md flex items-center justify-center gap-xs group" type="submit">
+                        Create Company Account
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</form>
+<footer class="mt-lg pt-lg border-t border-outline-variant/20 flex flex-col items-center gap-sm">
+<p class="font-label-sm text-on-surface-variant">Already registered? <a class="text-secondary font-semibold hover:underline" href="#">Sign in here</a></p>
+<div class="flex items-center gap-sm w-full">
+<hr class="flex-grow border-outline-variant/30"/>
+<span class="font-label-sm text-outline">OR REGISTER WITH</span>
+<hr class="flex-grow border-outline-variant/30"/>
+</div>
+<div class="grid grid-cols-2 gap-sm w-full">
+<button class="flex items-center justify-center gap-xs py-sm border border-outline-variant/50 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container transition-colors">
+<img class="w-5 h-5" data-alt="A clean, minimalist 3D render of the Google 'G' logo icon in vibrant original colors, centered in a crisp, high-key studio lighting environment that evokes a professional and trustworthy SaaS brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrITyWJBRt8wus4NavDRUYHyyczEt4Jr4CQVcMzjXjyeh4S5jdQ8iS6N-Ac8_Ti__i4BsBXjFNfnSMNGeCdgfHxGPrgMWcroOS__h4bCt_iSzEmFX_noHsLiGWdxe_YMvXAvOW1ChSf8WcrLaLDNI0zwyG4yYrLAsyXaEvyRTboPkQ7AAys77PVMywZgmJMxkDZkZZKPxRD9v-4bfn58RSAmO-BRwHaLxgsxH8T4LlnuU4Up2f_LYzQl0IEWReZcw7k3qGuSnyCTLp"/>
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-xs py-sm border border-outline-variant/50 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container transition-colors">
+<img class="w-5 h-5" data-alt="The Microsoft company logo icon depicted as a crisp, 3D architectural symbol on a clean white background. The lighting is soft and professional, utilizing a corporate light-mode design language that fits seamlessly into an enterprise software dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClZ0qWFbXpfwp_ZlYHCbuXMNxG_xTioLmh1_ql8ojoAgO9D41ggmzclcx67H4WsU2VlnKjYqBom9EWSRKZj9_4vW4U45aWV6fceygnTzpE8BzudzMoVlHlyDjW5ZSwy1R9Eg4xCft3nkZitNQnCCukKl6sXqSvevJlLxcMU9J4algpRgkZfB9XuMgTgDN8M9WzYzjsUYRwa5g6n3xfqA73E_xUfzdXT5DKwxyBiQge4ms7S5l9ZFXrVR5wHOK9wbDayDoCE9AUlAR3"/>
+                        Microsoft
+                    </button>
+</div>
+</footer>
+</div>
+<!-- Visual Proof Points (Optional sidebar-like feel on large screens if desired, but centered card as per prompt) -->
+<div class="mt-lg flex justify-between px-sm overflow-x-auto gap-md no-scrollbar">
+<div class="flex items-center gap-xs whitespace-nowrap">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-on-surface-variant">GDPR Compliant</span>
+</div>
+<div class="flex items-center gap-xs whitespace-nowrap">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-on-surface-variant">SSO Integrated</span>
+</div>
+<div class="flex items-center gap-xs whitespace-nowrap">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-on-surface-variant">24/7 Support</span>
+</div>
+</div>
+</main>
+<!-- Interactive script for button feel -->
+<script>
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

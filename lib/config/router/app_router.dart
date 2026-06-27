@@ -29,7 +29,6 @@ class AppRouter {
         debugLogDiagnostics: true,
         redirect: (ctx, state) {
           final authState = ctx.read<AuthBloc>().state;
-          final isAuth = authState is AuthAuthenticated;
           final path = state.uri.path;
 
           const publicRoutes = [
@@ -43,92 +42,133 @@ class AppRouter {
 
           final isPublic = publicRoutes.contains(path);
 
-          // Redirect authenticated users away from login/register
-          if (isAuth && isPublic) {
-            final user = (authState as AuthAuthenticated).user; // isAuth guarantees this cast
-            return switch (user.role) {
+          if (authState is AuthAuthenticated && isPublic) {
+            return switch (authState.user.role) {
               UserRole.candidate => AppRoutes.candidateAssessments,
               UserRole.company => AppRoutes.companyDashboard,
               UserRole.admin => AppRoutes.adminDashboard,
             };
           }
 
-          // Redirect unauthenticated users to login
-          if (!isAuth && !isPublic) return AppRoutes.login;
+          if (authState is! AuthAuthenticated && !isPublic) return AppRoutes.login;
 
           return null;
         },
         routes: [
-          GoRoute(path: AppRoutes.landing, builder: (_, __) => const LandingPage()),
-          GoRoute(path: AppRoutes.login, builder: (_, __) => const LoginPage()),
+          GoRoute(
+            path: AppRoutes.landing,
+            pageBuilder: (_, __) => _fade(const LandingPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.login,
+            pageBuilder: (_, __) => _fade(const LoginPage()),
+          ),
           GoRoute(
             path: AppRoutes.forgotPassword,
-            builder: (_, __) => const ForgotPasswordPage(),
+            pageBuilder: (_, __) => _fade(const ForgotPasswordPage()),
           ),
           GoRoute(
             path: AppRoutes.authUtility,
-            builder: (_, state) {
+            pageBuilder: (_, state) {
               final extra = state.extra as Map<String, dynamic>?;
-              return AuthUtilityPage(
+              return _fade(AuthUtilityPage(
                 mode: extra?['mode'] as String? ?? 'password_reset',
                 email: extra?['email'] as String?,
-              );
+              ));
             },
           ),
           GoRoute(
             path: AppRoutes.registerCandidate,
-            builder: (_, __) => const CandidateRegistrationPage(),
+            pageBuilder: (_, __) => _fade(const CandidateRegistrationPage()),
           ),
           GoRoute(
             path: AppRoutes.registerCompany,
-            builder: (_, __) => const CompanyRegistrationPage(),
+            pageBuilder: (_, __) => _fade(const CompanyRegistrationPage()),
           ),
 
           // Candidate
           GoRoute(
             path: AppRoutes.candidateDashboard,
-            builder: (_, __) => const CandidateDashboardPage(),
+            pageBuilder: (_, __) => _slide(const CandidateDashboardPage()),
           ),
           GoRoute(
             path: AppRoutes.candidateProfile,
-            builder: (_, __) => const CandidateProfilePage(),
+            pageBuilder: (_, __) => _slide(const CandidateProfilePage()),
           ),
           GoRoute(
             path: AppRoutes.candidateAssessments,
-            builder: (_, __) => const JobOffersListPage(mode: JobOffersMode.assessments),
+            pageBuilder: (_, __) => _slide(
+              const JobOffersListPage(mode: JobOffersMode.assessments),
+            ),
           ),
           GoRoute(
             path: AppRoutes.technicalTest,
-            builder: (_, state) => BlocProvider(
-              create: (_) => sl<TestCubit>(),
-              child: ActiveTechnicalTestPage(
-                  offerId: state.pathParameters['id'] ?? ''),
+            pageBuilder: (_, state) => _slide(
+              BlocProvider(
+                create: (_) => sl<TestCubit>(),
+                child: ActiveTechnicalTestPage(
+                  offerId: state.pathParameters['id'] ?? '',
+                ),
+              ),
             ),
           ),
 
           // Company
           GoRoute(
             path: AppRoutes.companyDashboard,
-            builder: (_, __) => const CompanyDashboardPage(),
+            pageBuilder: (_, __) => _slide(const CompanyDashboardPage()),
           ),
           GoRoute(
             path: AppRoutes.companySettings,
-            builder: (_, __) => const CompanyProfileSettingsPage(),
+            pageBuilder: (_, __) => _slide(const CompanyProfileSettingsPage()),
           ),
           GoRoute(
             path: AppRoutes.companyMatches,
-            builder: (_, __) => const CompanyMatchesRankingPage(),
+            pageBuilder: (_, __) => _slide(const CompanyMatchesRankingPage()),
           ),
           GoRoute(
             path: AppRoutes.createOffer,
-            builder: (_, __) => const CreateNewOfferPage(),
+            pageBuilder: (_, __) => _slide(const CreateNewOfferPage()),
           ),
 
           // Admin
           GoRoute(
             path: AppRoutes.adminDashboard,
-            builder: (_, __) => const AdminDashboardPage(),
+            pageBuilder: (_, __) => _slide(const AdminDashboardPage()),
           ),
         ],
+      );
+
+  // Fade — for public/auth pages
+  static CustomTransitionPage<void> _fade(Widget child) =>
+      CustomTransitionPage<void>(
+        child: child,
+        transitionDuration: const Duration(milliseconds: 320),
+        reverseTransitionDuration: const Duration(milliseconds: 200),
+        transitionsBuilder: (_, animation, __, child) => FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeIn),
+          child: child,
+        ),
+      );
+
+  // Fade + slight upward slide — for authenticated dashboard pages
+  static CustomTransitionPage<void> _slide(Widget child) =>
+      CustomTransitionPage<void>(
+        child: child,
+        transitionDuration: const Duration(milliseconds: 280),
+        reverseTransitionDuration: const Duration(milliseconds: 180),
+        transitionsBuilder: (_, animation, __, child) {
+          final fade = CurvedAnimation(parent: animation, curve: Curves.easeIn);
+          final slide = Tween<Offset>(
+            begin: const Offset(0.0, 0.025),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          );
+          return FadeTransition(
+            opacity: fade,
+            child: SlideTransition(position: slide, child: child),
+          );
+        },
       );
 }

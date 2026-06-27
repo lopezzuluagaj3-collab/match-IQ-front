@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatchIQ | Candidate Registration</title>
+<!-- Google Fonts: Inter for the defined typography -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols for Iconography -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "secondary-fixed-dim": "#a4c9f8",
+                "on-primary-fixed-variant": "#34495c",
+                "primary": "#000f1d",
+                "primary-container": "#0f2537",
+                "error": "#ba1a1a",
+                "on-tertiary-fixed": "#002113",
+                "primary-fixed": "#cfe5fd",
+                "on-primary-container": "#788da3",
+                "tertiary-container": "#002a1a",
+                "on-surface-variant": "#43474c",
+                "outline-variant": "#c3c7cd",
+                "background": "#f7f9fb",
+                "surface-variant": "#e0e3e5",
+                "on-background": "#191c1e",
+                "primary-fixed-dim": "#b3c9e0",
+                "on-tertiary-fixed-variant": "#005236",
+                "on-primary-fixed": "#061d2f",
+                "on-secondary-fixed": "#001d36",
+                "surface-container-lowest": "#ffffff",
+                "surface-bright": "#f7f9fb",
+                "secondary": "#3b618a",
+                "tertiary-fixed-dim": "#4edea3",
+                "on-surface": "#191c1e",
+                "secondary-fixed": "#d1e4ff",
+                "error-container": "#ffdad6",
+                "on-tertiary-container": "#009e6d",
+                "tertiary-fixed": "#6ffbbe",
+                "secondary-container": "#aacffe",
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#eff1f3",
+                "surface-dim": "#d8dadc",
+                "inverse-primary": "#b3c9e0",
+                "on-secondary-fixed-variant": "#204971",
+                "surface": "#f7f9fb",
+                "surface-container-highest": "#e0e3e5",
+                "on-secondary": "#ffffff",
+                "surface-container-high": "#e6e8ea",
+                "inverse-surface": "#2d3133",
+                "on-error-container": "#93000a",
+                "surface-tint": "#4c6075",
+                "outline": "#74777d",
+                "surface-container-low": "#f2f4f6",
+                "surface-container": "#eceef0",
+                "tertiary": "#001209",
+                "on-tertiary": "#ffffff",
+                "on-error": "#ffffff",
+                "on-secondary-container": "#325881"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px",
+                "card": "20px"
+            },
+            "spacing": {
+                "sm": "16px",
+                "base": "4px",
+                "xl": "64px",
+                "lg": "40px",
+                "container-max": "1280px",
+                "md": "24px",
+                "gutter": "24px",
+                "xs": "8px"
+            },
+            "fontFamily": {
+                "headline-md": ["Inter"],
+                "body-md": ["Inter"],
+                "headline-lg": ["Inter"],
+                "label-sm": ["Inter"],
+                "display": ["Inter"],
+                "headline-lg-mobile": ["Inter"],
+                "body-lg": ["Inter"],
+                "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9fb; /* background color from theme */
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-background {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .registration-card {
+            box-shadow: 0px 4px 20px rgba(15, 37, 55, 0.08); /* style guidance level 1 shadow */
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-sm md:p-lg">
+<!-- Atmospheric Animated Background (Shader) -->
+
+<!-- Main Content Container (Focused Task/Transactional so Nav is Suppressed) -->
+<main class="w-full max-w-[480px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+<!-- Branding Anchor -->
+<div class="flex justify-center mb-lg">
+<div class="flex items-center gap-xs">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-tertiary-fixed text-[24px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<h1 class="font-display text-headline-md text-primary tracking-tight">MatchIQ</h1>
+</div>
+</div>
+<!-- Registration Card -->
+<div class="bg-surface-container-lowest registration-card border border-outline-variant/30 overflow-hidden relative">
+<!-- Top Accent Gradient -->
+<div class="h-1.5 w-full bg-gradient-to-r from-secondary to-tertiary-fixed-dim"></div>
+<div class="p-lg md:p-xl">
+<!-- Header Section -->
+<div class="mb-lg text-center">
+<h2 class="font-headline-md text-headline-md text-primary mb-base">Join MatchIQ as a Candidate</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Create your profile to start matching with your ideal career opportunities.</p>
+</div>
+<!-- Registration Form -->
+<form class="space-y-md" id="registrationForm" onsubmit="event.preventDefault(); alert('Registration successful!');">
+<!-- Full Name -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-on-surface" for="fullName">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">person</span>
+<input class="w-full pl-[48px] pr-sm py-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md text-body-md" id="fullName" name="fullName" placeholder="Jane Doe" required="" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-on-surface" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">mail</span>
+<input class="w-full pl-[48px] pr-sm py-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md text-body-md" id="email" name="email" placeholder="jane@example.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Fields Grid -->
+<div class="grid grid-cols-1 gap-md">
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-on-surface" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">lock</span>
+<input class="w-full pl-[48px] pr-sm py-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md text-body-md" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-on-surface" for="confirmPassword">Confirm Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">shield</span>
+<input class="w-full pl-[48px] pr-sm py-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md text-body-md" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms Checkbox -->
+<div class="flex items-start gap-xs py-base">
+<input class="mt-1 rounded border-outline-variant text-secondary focus:ring-secondary" id="terms" required="" type="checkbox"/>
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="terms">
+                            I agree to the <a class="text-secondary hover:underline font-label-bold" href="#">Terms of Service</a> and <a class="text-secondary hover:underline font-label-bold" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-sm px-lg bg-primary-container text-on-primary rounded-lg font-label-bold text-label-bold shadow-md hover:bg-primary transition-all duration-200 active:scale-95 flex items-center justify-center gap-xs" type="submit">
+                        Create Account
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Footer Text -->
+<div class="mt-lg pt-lg border-t border-outline-variant/30 text-center">
+<p class="font-label-bold text-label-bold text-on-surface-variant">
+                        Already have an account? 
+                        <a class="text-secondary hover:text-on-secondary-fixed-variant transition-colors" href="#">Sign In</a>
+</p>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="mt-lg flex justify-center gap-md">
+<div class="flex flex-col items-center gap-base">
+<div class="p-xs rounded-full bg-secondary-container/30 text-on-secondary-container">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">AI Verified</span>
+</div>
+<div class="flex flex-col items-center gap-base">
+<div class="p-xs rounded-full bg-tertiary-fixed/20 text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-[18px]">security</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Encrypted</span>
+</div>
+<div class="flex flex-col items-center gap-base">
+<div class="p-xs rounded-full bg-primary-fixed/30 text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Fast Match</span>
+</div>
+</div>
+</main>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.querySelector('.material-symbols-outlined').style.color = '#3b618a'; // secondary color
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.querySelector('.material-symbols-outlined').style.color = '';
+                });
+            });
+        });
+    </script>
+</body></html>

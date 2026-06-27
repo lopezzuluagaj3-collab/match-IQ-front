@@ -9,6 +9,7 @@ import '../../../core/utils/snackbar_helper.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_text_field.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -40,85 +41,105 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 440),
-              child: Column(
-                children: [
-                  Container(
-                    width: 60, height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondaryContainer.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(Symbols.lock_reset, color: AppColors.secondary, size: 28),
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Reset Password', style: AppTextStyles.headlineLg),
-                  const SizedBox(height: 6),
-                  Text(
-                    "Enter your email and we'll send you a link to reset your password.",
-                    style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.outlineVariant.withOpacity(0.5)),
-                      boxShadow: const [BoxShadow(color: Color(0x0A0F2537), blurRadius: 24, offset: Offset(0, 8))],
-                    ),
-                    padding: const EdgeInsets.all(28),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          AppTextField(
-                            label: 'Email Address',
-                            hint: 'name@company.com',
-                            prefixIcon: Symbols.mail,
-                            controller: _emailCtrl,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) => v != null && v.contains('@') ? null : 'Enter a valid email',
-                          ),
-                          const SizedBox(height: 24),
-                          BlocBuilder<AuthBloc, AuthState>(
-                            builder: (context, state) => SizedBox(
-                              width: double.infinity,
-                              child: AppButton(
-                                label: 'Send Reset Link',
-                                isLoading: state is AuthLoading,
-                                icon: Symbols.send,
-                                onPressed: () {
-                                  if (_formKey.currentState?.validate() ?? false) {
-                                    context.read<AuthBloc>().add(
-                                      ForgotPasswordRequested(email: _emailCtrl.text.trim()),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextButton.icon(
-                            onPressed: () => context.go(AppRoutes.login),
-                            icon: const Icon(Symbols.arrow_back, size: 18, color: AppColors.secondary),
-                            label: Text('Back to Login',
-                                style: AppTextStyles.labelBold.copyWith(color: AppColors.secondary)),
-                          ),
-                        ],
+        body: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 56, 16, 16),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: const Icon(Symbols.lock_reset,
+                            color: AppColors.secondary, size: 28),
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      Text('Reset Password', style: AppTextStyles.headlineLg),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Enter your email and we'll send you a link to reset your password.",
+                        style: AppTextStyles.bodyMd.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outlineVariant
+                                .withValues(alpha: 0.5),
+                          ),
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Color(0x0A0F2537),
+                                blurRadius: 24,
+                                offset: Offset(0, 8))
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(28),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              AppTextField(
+                                label: 'Email Address',
+                                hint: 'name@company.com',
+                                prefixIcon: Symbols.mail,
+                                controller: _emailCtrl,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (v) => v != null && v.contains('@')
+                                    ? null
+                                    : 'Enter a valid email',
+                              ),
+                              const SizedBox(height: 24),
+                              BlocBuilder<AuthBloc, AuthState>(
+                                builder: (context, state) => AppButton(
+                                  label: 'Send Reset Link',
+                                  isLoading: state is AuthLoading,
+                                  icon: Symbols.send,
+                                  onPressed: () {
+                                    if (_formKey.currentState?.validate() ??
+                                        false) {
+                                      context.read<AuthBloc>().add(
+                                            ForgotPasswordRequested(
+                                                email: _emailCtrl.text.trim()),
+                                          );
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextButton.icon(
+                                onPressed: () => context.go(AppRoutes.login),
+                                icon: const Icon(Symbols.arrow_back,
+                                    size: 18, color: AppColors.secondary),
+                                label: Text('Back to Login',
+                                    style: AppTextStyles.labelBold
+                                        .copyWith(color: AppColors.secondary)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            const Positioned(top: 16, right: 16, child: ThemeToggleButton()),
+          ],
         ),
       ),
     );

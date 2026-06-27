@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Candidate Profile | MatchIQ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#a4c9f8",
+                        "on-primary-fixed-variant": "#34495c",
+                        "primary": "#000f1d",
+                        "primary-container": "#0f2537",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#002113",
+                        "primary-fixed": "#cfe5fd",
+                        "on-primary-container": "#788da3",
+                        "tertiary-container": "#002a1a",
+                        "on-surface-variant": "#43474c",
+                        "outline-variant": "#c3c7cd",
+                        "background": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#b3c9e0",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-primary-fixed": "#061d2f",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "secondary": "#3b618a",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed": "#d1e4ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#009e6d",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-container": "#aacffe",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-dim": "#d8dadc",
+                        "inverse-primary": "#b3c9e0",
+                        "on-secondary-fixed-variant": "#204971",
+                        "surface": "#f7f9fb",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#4c6075",
+                        "outline": "#74777d",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container": "#eceef0",
+                        "tertiary": "#001209",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#325881"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "16px",
+                        "base": "4px",
+                        "xl": "64px",
+                        "lg": "40px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "gutter": "24px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(195, 199, 205, 0.3);
+        }
+        .emerald-gradient-avatar {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="text-on-background overflow-x-hidden">
+<!-- Navigation Shell (Desktop) -->
+<aside class="h-screen w-64 flex flex-col fixed left-0 top-0 z-40 bg-primary dark:bg-on-background shadow-xl py-lg">
+<div class="px-md mb-xl">
+<h1 class="font-headline-md text-on-primary">MatchIQ</h1>
+<p class="font-label-sm text-on-primary/60 mt-base">Candidate Portal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-base">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold">Overview</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">work</span>
+<span class="font-label-bold">Jobs</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-label-bold">Messages</span>
+</a>
+<!-- Active State: My Profile (Mapped from 'Settings/Profile' intent) -->
+<a class="flex items-center gap-sm bg-primary-container text-on-tertiary-container border-l-4 border-tertiary-fixed-dim px-md py-sm translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label-bold">My Profile</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold">Insights</span>
+</a>
+</nav>
+<div class="mt-auto px-md pt-lg border-t border-on-primary-fixed-variant/20">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm mb-base transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-bold">Help Center</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-bold">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-lg max-w-container-max mx-auto">
+<!-- Profile Header Section -->
+<header class="flex flex-col md:flex-row items-center gap-lg mb-xl bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="emerald-gradient-avatar w-32 h-32 rounded-full flex items-center justify-center text-white font-display text-[40px] shadow-xl">
+                AR
+            </div>
+<div class="text-center md:text-left flex-1">
+<div class="flex items-center justify-center md:justify-start gap-xs mb-base">
+<h2 class="font-headline-lg text-primary">Alex Rivera</h2>
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="font-body-lg text-on-surface-variant mb-xs">Senior Product Designer</p>
+<div class="flex items-center justify-center md:justify-start gap-xs text-outline font-label-bold">
+<span class="material-symbols-outlined text-body-md">location_on</span>
+                    San Francisco, CA
+                </div>
+</div>
+<div class="flex gap-sm">
+<button class="px-lg py-sm rounded-full font-label-bold border border-outline-variant text-primary hover:bg-surface-variant/50 transition-all">
+                    Public Preview
+                </button>
+<button class="px-lg py-sm rounded-full font-label-bold bg-primary text-white hover:opacity-90 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                    Save Changes
+                </button>
+</div>
+</header>
+<!-- Profile Edit Form Bento Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Personal Info (Left Column) -->
+<section class="col-span-12 lg:col-span-8 space-y-gutter">
+<div class="bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">person</span>
+</div>
+<h3 class="font-headline-md text-primary">Personal Information</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface-variant px-base">Full Name</label>
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-on-secondary-container focus:ring-1 focus:ring-on-secondary-container outline-none transition-all" type="text" value="Alex Rivera"/>
+</div>
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface-variant px-base">Email Address</label>
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-on-secondary-container focus:ring-1 focus:ring-on-secondary-container outline-none transition-all" type="email" value="alex.rivera@design.co"/>
+</div>
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface-variant px-base">Phone Number</label>
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-on-secondary-container focus:ring-1 focus:ring-on-secondary-container outline-none transition-all" type="tel" value="+1 (555) 000-1234"/>
+</div>
+<div class="space-y-base">
+<label class="font-label-bold text-on-surface-variant px-base">Portfolio URL</label>
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-on-secondary-container focus:ring-1 focus:ring-on-secondary-container outline-none transition-all" type="url" value="https://rivera.design"/>
+</div>
+</div>
+</div>
+<!-- Professional Summary -->
+<div class="bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined">description</span>
+</div>
+<h3 class="font-headline-md text-primary">Professional Summary</h3>
+</div>
+<textarea class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-on-secondary-container focus:ring-1 focus:ring-on-secondary-container outline-none transition-all resize-none font-body-md text-on-surface" rows="5">Experienced Product Designer with 8+ years specializing in SaaS and fintech. Proven track record of leading design systems and cross-functional teams to deliver user-centric solutions that drive growth. Passionate about AI-driven workflows and minimal aesthetic interfaces.</textarea>
+<div class="mt-sm flex items-center gap-xs text-on-tertiary-container">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span class="font-label-sm">AI optimization suggested: Increase focus on leadership metrics.</span>
+</div>
+</div>
+<!-- Experience -->
+<div class="bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined">work_history</span>
+</div>
+<h3 class="font-headline-md text-primary">Experience</h3>
+</div>
+<button class="text-on-secondary-fixed-variant font-label-bold flex items-center gap-xs hover:underline">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                            Add Role
+                        </button>
+</div>
+<div class="space-y-lg">
+<div class="p-md rounded-xl border border-outline-variant/30 bg-surface-container-lowest flex gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline">business</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between">
+<h4 class="font-label-bold text-primary">Senior Product Designer</h4>
+<span class="font-label-sm text-outline">2020 — Present</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-sm">Linear Systems • Full-time</p>
+<p class="font-body-md text-on-surface italic">Spearheaded the redesign of the core dashboard, resulting in a 40% increase in user engagement...</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Sidebar Column -->
+<section class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Skills -->
+<div class="bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="font-headline-md text-primary">Skills</h3>
+</div>
+<div class="flex flex-wrap gap-xs mb-lg">
+<div class="flex items-center gap-xs px-sm py-base bg-surface-container rounded-full font-label-bold text-on-surface-variant border border-outline-variant/20">
+                            Figma
+                            <button class="material-symbols-outlined text-[16px] hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-center gap-xs px-sm py-base bg-surface-container rounded-full font-label-bold text-on-surface-variant border border-outline-variant/20">
+                            React
+                            <button class="material-symbols-outlined text-[16px] hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-center gap-xs px-sm py-base bg-surface-container rounded-full font-label-bold text-on-surface-variant border border-outline-variant/20">
+                            Python
+                            <button class="material-symbols-outlined text-[16px] hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-center gap-xs px-sm py-base bg-surface-container rounded-full font-label-bold text-on-surface-variant border border-outline-variant/20">
+                            Tailwind CSS
+                            <button class="material-symbols-outlined text-[16px] hover:text-error transition-colors">close</button>
+</div>
+<div class="flex items-center gap-xs px-sm py-base bg-surface-container rounded-full font-label-bold text-on-surface-variant border border-outline-variant/20">
+                            Prototyping
+                            <button class="material-symbols-outlined text-[16px] hover:text-error transition-colors">close</button>
+</div>
+</div>
+<div class="relative">
+<input class="w-full px-md py-sm pr-12 rounded-lg border border-outline-variant focus:border-on-secondary-container outline-none transition-all" placeholder="Add a skill..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-secondary-container material-symbols-outlined">add</button>
+</div>
+</div>
+<!-- Education -->
+<div class="bg-white p-lg rounded-[24px] shadow-sm border border-outline-variant/30">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded-xl bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h3 class="font-headline-md text-primary">Education</h3>
+</div>
+<div class="space-y-md">
+<div class="relative pl-gutter border-l-2 border-outline-variant/30 py-base">
+<div class="absolute -left-[9px] top-base w-4 h-4 rounded-full bg-on-tertiary-container shadow-sm"></div>
+<h4 class="font-label-bold text-primary">MFA Interaction Design</h4>
+<p class="font-label-sm text-on-surface-variant">School of Visual Arts</p>
+<p class="font-label-sm text-outline">2016 — 2018</p>
+</div>
+<div class="relative pl-gutter border-l-2 border-outline-variant/30 py-base">
+<div class="absolute -left-[9px] top-base w-4 h-4 rounded-full bg-outline-variant shadow-sm"></div>
+<h4 class="font-label-bold text-primary">BS Digital Media</h4>
+<p class="font-label-sm text-on-surface-variant">Stanford University</p>
+<p class="font-label-sm text-outline">2012 — 2016</p>
+</div>
+</div>
+</div>
+<!-- Match Strength (Decorative/Info) -->
+<div class="glass-card p-lg rounded-[24px] shadow-sm border border-outline-variant/30 relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-label-bold text-on-tertiary-container mb-base uppercase tracking-widest">Match Strength</h4>
+<div class="flex items-end gap-xs mb-sm">
+<span class="font-display text-[48px] text-primary">94%</span>
+<span class="font-label-bold text-on-tertiary-container mb-base">Profile Score</span>
+</div>
+<div class="w-full bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-full w-[94%]" style="box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
+</div>
+<p class="mt-md font-label-sm text-on-surface-variant">Your profile is highly optimized for "Senior Designer" roles in the SF Bay Area.</p>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-5">
+<span class="material-symbols-outlined text-[120px]">verified_user</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Actions -->
+<footer class="mt-xl py-lg flex justify-between items-center border-t border-outline-variant/30">
+<button class="text-error font-label-bold flex items-center gap-xs hover:bg-error-container/20 px-md py-sm rounded-lg transition-all">
+<span class="material-symbols-outlined">delete_forever</span>
+                Deactivate Profile
+            </button>
+<div class="flex gap-md">
+<button class="px-xl py-sm rounded-full font-label-bold text-on-surface-variant hover:text-primary transition-colors">Discard</button>
+<button class="px-xl py-sm rounded-full font-label-bold bg-primary text-white shadow-lg hover:translate-y-[-2px] transition-all">Save Changes</button>
+</div>
+</footer>
+</main>
+<!-- Floating Action Feedback (JS Simulation) -->
+<div class="fixed bottom-lg right-lg translate-y-20 opacity-0 bg-primary-container text-white px-lg py-sm rounded-xl shadow-2xl flex items-center gap-md transition-all duration-300 z-50" id="toast">
+<span class="material-symbols-outlined text-on-tertiary-container">check_circle</span>
+<span class="font-label-bold">Changes saved successfully</span>
+</div>
+<script>
+        // Simple Interaction logic
+        const saveBtns = document.querySelectorAll('button');
+        const toast = document.getElementById('toast');
+
+        saveBtns.forEach(btn => {
+            if(btn.innerText.includes('Save Changes')) {
+                btn.addEventListener('click', () => {
+                    // Show success toast
+                    toast.classList.remove('translate-y-20', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                    
+                    // Ripple/Active effect
+                    btn.classList.add('scale-95', 'opacity-80');
+                    setTimeout(() => {
+                        btn.classList.remove('scale-95', 'opacity-80');
+                    }, 200);
+
+                    // Hide toast
+                    setTimeout(() => {
+                        toast.classList.add('translate-y-20', 'opacity-0');
+                        toast.classList.remove('translate-y-0', 'opacity-100');
+                    }, 3000);
+                });
+            }
+        });
+
+        // Skill tag removal logic
+        document.querySelectorAll('.skill-tag button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('div').remove();
+            });
+        });
+    </script>
+</body></html>

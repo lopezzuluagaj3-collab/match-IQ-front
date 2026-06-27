@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatchIQ Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#a4c9f8",
+                    "on-primary-fixed-variant": "#34495c",
+                    "primary": "#000f1d",
+                    "primary-container": "#0f2537",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#002113",
+                    "primary-fixed": "#cfe5fd",
+                    "on-primary-container": "#788da3",
+                    "tertiary-container": "#002a1a",
+                    "on-surface-variant": "#43474c",
+                    "outline-variant": "#c3c7cd",
+                    "background": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "on-background": "#191c1e",
+                    "primary-fixed-dim": "#b3c9e0",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-fixed": "#061d2f",
+                    "on-secondary-fixed": "#001d36",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "secondary": "#3b618a",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#d1e4ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#009e6d",
+                    "tertiary-fixed": "#6ffbbe",
+                    "secondary-container": "#aacffe",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#b3c9e0",
+                    "on-secondary-fixed-variant": "#204971",
+                    "surface": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "inverse-surface": "#2d3133",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#4c6075",
+                    "outline": "#74777d",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-container": "#eceef0",
+                    "tertiary": "#001209",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#325881"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "16px",
+                    "base": "4px",
+                    "xl": "64px",
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(195, 199, 205, 0.3);
+            box-shadow: 0px 4px 20px rgba(15, 37, 55, 0.08);
+        }
+        .sidebar-active {
+            border-left: 4px solid #4edea3;
+            background-color: #0f2537;
+            color: #009e6d;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #000f1d; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #34495c; border-radius: 10px; }
+        .ai-gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- SideNavBar Integration -->
+<aside class="h-screen w-64 flex flex-col fixed left-0 top-0 z-40 bg-primary dark:bg-on-background shadow-xl py-lg overflow-y-auto custom-scrollbar">
+<div class="px-md mb-xl">
+<h1 class="font-headline-md text-on-primary">MatchIQ</h1>
+<p class="font-label-sm text-on-primary-container opacity-70">Admin Console</p>
+</div>
+<nav class="flex-1 space-y-base">
+<!-- Active Tab: Overview (Closest match to Dashboard) -->
+<a class="flex items-center gap-sm bg-primary-container text-on-tertiary-container border-l-4 border-tertiary-fixed-dim px-md py-sm transition-all translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold">Overview</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-bold">Talent Pool</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">alt_route</span>
+<span class="font-label-bold">Pipeline</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold">Reports</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold">Settings</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-lg border-t border-on-primary-fixed-variant/20">
+<button class="w-full ai-gradient-bg text-white font-label-bold py-sm rounded-lg shadow-lg hover:opacity-90 transition-all active:scale-95 mb-lg">
+                Invite Team
+            </button>
+<div class="space-y-base">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-bold">Help Center</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-bold">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-lg max-w-container-max mx-auto">
+<!-- Header Section -->
+<header class="mb-xl flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-primary">Platform Performance</h2>
+<p class="font-body-lg text-on-surface-variant">Master Business Control Panel</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container-high text-on-surface font-label-bold px-lg py-sm rounded-lg border border-outline-variant/30 hover:bg-surface-variant/50 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined">filter_list</span>
+                    Last 30 Days
+                </button>
+<button class="bg-primary text-on-primary font-label-bold px-lg py-sm rounded-lg hover:opacity-90 transition-all active:scale-95">
+                    Export Report
+                </button>
+</div>
+</header>
+<!-- KPI Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-xl">
+<!-- Card 1 -->
+<div class="glass-card rounded-[24px] p-md flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-sm">
+<span class="material-symbols-outlined text-primary-container p-base bg-primary-fixed/30 rounded-lg">corporate_fare</span>
+<span class="text-on-tertiary-container font-label-bold flex items-center text-[12px]">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12%
+                        </span>
+</div>
+<p class="font-label-bold text-on-surface-variant">Total Companies</p>
+</div>
+<h3 class="font-display text-primary mt-base">1.2k</h3>
+</div>
+<!-- Card 2 -->
+<div class="glass-card rounded-[24px] p-md flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-sm">
+<span class="material-symbols-outlined text-primary-container p-base bg-primary-fixed/30 rounded-lg">person_search</span>
+<span class="text-on-tertiary-container font-label-bold flex items-center text-[12px]">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5.2k
+                        </span>
+</div>
+<p class="font-label-bold text-on-surface-variant">Total Candidates</p>
+</div>
+<h3 class="font-display text-primary mt-base">45k</h3>
+</div>
+<!-- Card 3 -->
+<div class="glass-card rounded-[24px] p-md flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-sm">
+<span class="material-symbols-outlined text-primary-container p-base bg-primary-fixed/30 rounded-lg">assignment_turned_in</span>
+<span class="text-error font-label-bold flex items-center text-[12px]">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> -2%
+                        </span>
+</div>
+<p class="font-label-bold text-on-surface-variant">Active Offers</p>
+</div>
+<h3 class="font-display text-primary mt-base">890</h3>
+</div>
+<!-- Card 4 -->
+<div class="glass-card rounded-[24px] p-md flex flex-col justify-between border-2 border-on-tertiary-container/20">
+<div>
+<div class="flex justify-between items-center mb-sm">
+<span class="material-symbols-outlined text-on-tertiary-container p-base bg-tertiary-fixed/30 rounded-lg">verified_user</span>
+<span class="text-on-tertiary-container font-label-bold flex items-center text-[12px]">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> AI MATCH
+                        </span>
+</div>
+<p class="font-label-bold text-on-surface-variant">Total Matches</p>
+</div>
+<h3 class="font-display text-primary mt-base">15k+</h3>
+</div>
+</section>
+<!-- Secondary KPIs & Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-xl">
+<!-- Registrations Line Chart -->
+<div class="lg:col-span-8 glass-card rounded-[24px] p-lg">
+<div class="flex justify-between items-center mb-lg">
+<h4 class="font-headline-md text-primary">Registrations Over Time</h4>
+<div class="flex gap-xs">
+<button class="p-base hover:bg-surface-variant rounded-lg transition-all"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="relative h-[280px] w-full bg-surface-container-low/30 rounded-xl overflow-hidden flex items-end justify-between px-md pb-md">
+<!-- Simple SVG Line Chart Mockup -->
+<svg class="absolute inset-0 w-full h-full p-lg" preserveaspectratio="none" viewbox="0 0 800 200">
+<path d="M0,150 Q100,120 200,160 T400,80 T600,110 T800,20" fill="none" stroke="#000f1d" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0,150 Q100,120 200,160 T400,80 T600,110 T800,20 L800,200 L0,200 Z" fill="url(#gradient-line)" opacity="0.1"></path>
+<defs>
+<lineargradient id="gradient-line" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#000f1d;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#000f1d;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Y-Axis Ticks -->
+<div class="absolute left-4 top-4 bottom-4 flex flex-col justify-between text-label-sm text-outline opacity-50">
+<span>50k</span><span>25k</span><span>0</span>
+</div>
+<!-- Labels -->
+<div class="w-full flex justify-between text-label-sm text-outline px-lg">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+</div>
+</div>
+</div>
+<!-- AI Evaluations Column -->
+<div class="lg:col-span-4 space-y-gutter">
+<div class="glass-card rounded-[24px] p-md bg-primary text-white">
+<div class="flex items-center gap-sm mb-base">
+<span class="material-symbols-outlined text-tertiary-fixed">psychology</span>
+<p class="font-label-bold text-primary-fixed">AI Evaluations</p>
+</div>
+<h3 class="font-display text-white">128.4k</h3>
+<div class="mt-md h-2 bg-on-primary-fixed-variant/30 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim w-4/5"></div>
+</div>
+<p class="text-label-sm mt-sm opacity-80">80% Efficiency increase vs last quarter</p>
+</div>
+<div class="glass-card rounded-[24px] p-md">
+<div class="flex items-center gap-sm mb-base">
+<span class="material-symbols-outlined text-secondary">contract_edit</span>
+<p class="font-label-bold text-on-surface-variant">Tests Sent</p>
+</div>
+<h3 class="font-display text-primary">3,492</h3>
+<div class="mt-md flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="w-8 h-8 rounded-full bg-primary-fixed border-2 border-white flex items-center justify-center text-[10px] font-bold">AS</div>
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed border-2 border-white flex items-center justify-center text-[10px] font-bold">MK</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant border-2 border-white flex items-center justify-center text-[10px] font-bold">+12</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Tables Section -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-gutter mb-xl">
+<!-- Companies Table -->
+<div class="glass-card rounded-[24px] overflow-hidden">
+<div class="p-lg border-b border-outline-variant/30 flex justify-between items-center">
+<h4 class="font-headline-md text-primary">Recent Companies</h4>
+<a class="text-on-secondary-fixed-variant font-label-bold hover:underline" href="#">View All</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-bold text-sm">
+<tr>
+<th class="px-lg py-md">Organization</th>
+<th class="px-lg py-md">Status</th>
+<th class="px-lg py-md">Growth</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center font-bold text-primary">N</div>
+<span class="font-label-bold">NexGen AI</span>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-tertiary-fixed/20 text-on-tertiary-container rounded text-xs font-bold uppercase tracking-wider">Active</span>
+</td>
+<td class="px-lg py-md text-on-tertiary-container font-label-bold">+24%</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center font-bold text-primary">S</div>
+<span class="font-label-bold">Stellar Cloud</span>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-secondary-container/20 text-on-secondary-container rounded text-xs font-bold uppercase tracking-wider">Pending</span>
+</td>
+<td class="px-lg py-md text-on-tertiary-container font-label-bold">+18%</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center font-bold text-primary">Q</div>
+<span class="font-label-bold">Quantify Inc</span>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-tertiary-fixed/20 text-on-tertiary-container rounded text-xs font-bold uppercase tracking-wider">Active</span>
+</td>
+<td class="px-lg py-md text-error font-label-bold">-2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Candidates Table -->
+<div class="glass-card rounded-[24px] overflow-hidden">
+<div class="p-lg border-b border-outline-variant/30 flex justify-between items-center">
+<h4 class="font-headline-md text-primary">Top Candidates</h4>
+<a class="text-on-secondary-fixed-variant font-label-bold hover:underline" href="#">Browse Pool</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-bold text-sm">
+<tr>
+<th class="px-lg py-md">Candidate</th>
+<th class="px-lg py-md">Score</th>
+<th class="px-lg py-md">Stage</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a diverse male developer in a modern bright office setting, wearing casual business attire, soft natural lighting, high-quality corporate photography style, deep navy and emerald background elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfH5HgirO2ayYC--llLCYDLXwDItMBEaZduEcQ1OpQmJdduTnPgJd92zs011eOMQo5Vy4jaSrS2UzA9cd8rBYFR3fsVDQeAxHwyVT19nnmgQ_w5pmFY80gKj3648Rq0Z4_izB6F3aL8WaSp9gEzXIt8JFNJ72oMvDco0gb6ljOdhr6S3xHQrrQgJLOLHmRoP9sG9K6ACln6UXQsUf5E2MENVl9UCfnUyQdbiKeyTHpq4uC3Qxgcea7Yx7ASN54Zg_SxXAmdYv19s8"/>
+</div>
+<div>
+<p class="font-label-bold">Alex Rivera</p>
+<p class="text-[10px] text-outline">Sr. Frontend Engineer</p>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold">98/100</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-primary-fixed/30 text-primary-container rounded text-xs font-bold">Interview</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a confident woman in a sleek dark blue blazer, minimal high-end office background with emerald green plants, cinematic lighting, 8k resolution, corporate aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNktBM3exjSeLmJpr_DczIzG_skm8GRC8JsAlq6zFNNPOxG9VA5tElh7bvmQkYCYA_grhcR-GCye6duAc8huxZbt5bpZgKMX3T9rGsKkI7Nnko80l8kJ9D8YDL6jNNxfIUQc2yGnXDO2yGwzDC2yWOsYUUGJ2sxFzj2fI4vfPmnKlrcHHVUunVMsAOWwAFmkcftHqG54Do31qIf9M1s38K37SAa4vy-sV5SsSOKB0EfcaXot1q1hdiPuz7WinLpYOm1wyxDGsgGdHs"/>
+</div>
+<div>
+<p class="font-label-bold">Sarah Chen</p>
+<p class="text-[10px] text-outline">Product Designer</p>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold">94/100</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-tertiary-fixed/20 text-on-tertiary-container rounded text-xs font-bold">Matched</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="px-lg py-md flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a senior male executive in a clean minimalist tech workspace, professional lighting with soft shadows, deep navy palette with bright emerald accents in the background, sharp focus, professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQmXSSkylDz7q09vEFRBHEhO4UYh4olaJTLqJ0M_hVZECRhnGRcI3nJ1L10fDDg80CwfdlbP7g28Aa2WjWsoCRo69UxtEoluFDdmP4BqnG5S6PXeEd0S44C1B_JHydSk56pB_CRBW9a58lXvpjGbQmYt0zFHyfXtkTb536n7wuWysaStOkHu5VUyb9_HIfpEbWR4YA_t5iNn3HsFl_dFMTGUaMAoawUom5U98_DmJOD98sNrqIyVstsv426qprQX-ResggdBr9sbDd"/>
+</div>
+<div>
+<p class="font-label-bold">James Wilson</p>
+<p class="text-[10px] text-outline">Head of Operations</p>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-bold">91/100</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<span class="px-base py-1 bg-surface-variant text-on-surface-variant rounded text-xs font-bold">Vetting</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Matches by Week - Bar Chart Section -->
+<section class="glass-card rounded-[24px] p-lg mb-xl">
+<div class="flex justify-between items-center mb-lg">
+<h4 class="font-headline-md text-primary">Matches by Week</h4>
+<div class="flex items-center gap-sm">
+<span class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full ai-gradient-bg"></span> AI Auto-Match
+                    </span>
+<span class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-secondary"></span> Manual
+                    </span>
+</div>
+</div>
+<div class="flex items-end justify-between h-48 gap-sm px-md">
+<!-- Bar 1 -->
+<div class="flex-1 flex flex-col items-center gap-base">
+<div class="w-full max-w-[40px] bg-secondary rounded-t-lg h-2/3 relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">120</div>
+</div>
+<span class="text-label-sm text-outline">W1</span>
+</div>
+<!-- Bar 2 -->
+<div class="flex-1 flex flex-col items-center gap-base">
+<div class="w-full max-w-[40px] ai-gradient-bg rounded-t-lg h-4/5 relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">180</div>
+</div>
+<span class="text-label-sm text-outline">W2</span>
+</div>
+<!-- Bar 3 -->
+<div class="flex-1 flex flex-col items-center gap-base">
+<div class="w-full max-w-[40px] ai-gradient-bg rounded-t-lg h-3/4 relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">165</div>
+</div>
+<span class="text-label-sm text-outline">W3</span>
+</div>
+<!-- Bar 4 -->
+<div class="flex-1 flex flex-col items-center gap-base">
+<div class="w-full max-w-[40px] ai-gradient-bg rounded-t-lg h-full relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">210</div>
+</div>
+<span class="text-label-sm text-outline">W4</span>
+</div>
+<!-- Bar 5 -->
+<div class="flex-1 flex flex-col items-center gap-base">
+<div class="w-full max-w-[40px] bg-secondary rounded-t-lg h-1/2 relative group">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">90</div>
+</div>
+<span class="text-label-sm text-outline">W5</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

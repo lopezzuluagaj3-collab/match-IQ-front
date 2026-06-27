@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatchIQ | Company Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#a4c9f8",
+                    "on-primary-fixed-variant": "#34495c",
+                    "primary": "#000f1d",
+                    "primary-container": "#0f2537",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#002113",
+                    "primary-fixed": "#cfe5fd",
+                    "on-primary-container": "#788da3",
+                    "tertiary-container": "#002a1a",
+                    "on-surface-variant": "#43474c",
+                    "outline-variant": "#c3c7cd",
+                    "background": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "on-background": "#191c1e",
+                    "primary-fixed-dim": "#b3c9e0",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-fixed": "#061d2f",
+                    "on-secondary-fixed": "#001d36",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "secondary": "#3b618a",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#d1e4ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#009e6d",
+                    "tertiary-fixed": "#6ffbbe",
+                    "secondary-container": "#aacffe",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#b3c9e0",
+                    "on-secondary-fixed-variant": "#204971",
+                    "surface": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "inverse-surface": "#2d3133",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#4c6075",
+                    "outline": "#74777d",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-container": "#eceef0",
+                    "tertiary": "#001209",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#325881"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "16px",
+                    "base": "4px",
+                    "xl": "64px",
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-bold": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(195, 199, 205, 0.3);
+        }
+        .emerald-gradient {
+            background: linear-gradient(135deg, #4edea3 0%, #009e6d 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="h-screen w-64 flex flex-col fixed left-0 top-0 z-40 bg-primary shadow-xl">
+<div class="flex flex-col h-full py-lg">
+<!-- Header Section -->
+<div class="px-md mb-xl">
+<div class="flex items-center gap-xs mb-base">
+<div class="w-8 h-8 rounded emerald-gradient flex items-center justify-center text-on-primary font-bold">M</div>
+<span class="font-headline-md text-on-primary text-headline-md">MatchIQ</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-primary-fixed-variant opacity-80 uppercase tracking-widest">Admin Console</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-base overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold">Overview</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-bold text-label-bold">Talent Pool</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="alt_route">alt_route</span>
+<span class="font-label-bold text-label-bold">Pipeline</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-bold text-label-bold">Reports</span>
+</a>
+<!-- Active Item: Settings / Company Profile -->
+<a class="flex items-center gap-sm bg-primary-container text-on-tertiary-container border-l-4 border-tertiary-fixed-dim px-md py-sm translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+</nav>
+<!-- CTA Section -->
+<div class="px-md mb-lg">
+<button class="w-full emerald-gradient text-on-tertiary-fixed font-label-bold py-xs px-sm rounded shadow-lg hover:opacity-90 transition-opacity">
+                    Invite Team
+                </button>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto pt-sm border-t border-on-primary-fixed-variant/20">
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-bold text-label-bold">Help Center</span>
+</a>
+<a class="flex items-center gap-sm text-on-primary-container hover:bg-on-primary-fixed-variant/20 px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-bold text-label-bold">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 min-h-screen p-lg max-w-container-max mx-auto">
+<!-- Header & Breadcrumbs -->
+<header class="mb-lg flex justify-between items-end">
+<div>
+<nav class="flex gap-base text-label-sm text-outline mb-base">
+<span>Admin</span>
+<span>/</span>
+<span class="text-primary font-semibold">Company Profile</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-primary">Company Identity</h1>
+</div>
+<div class="hidden md:flex items-center gap-sm">
+<span class="font-label-bold text-label-bold text-on-surface-variant">Last updated: Oct 24, 2023</span>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Sidebar: Logo & Quick Stats (Column 4) -->
+<div class="lg:col-span-4 space-y-gutter">
+<div class="bg-white rounded-[24px] p-lg shadow-[0px_4px_20px_rgba(15,37,55,0.08)] flex flex-col items-center">
+<div class="relative group">
+<div class="w-32 h-32 rounded-xl emerald-gradient flex items-center justify-center text-on-primary text-[64px] font-display mb-sm shadow-xl">
+                            C
+                        </div>
+<button class="absolute -bottom-2 -right-2 bg-primary text-white p-base rounded-full shadow-md hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mt-sm">CyberPulse AI</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Enterprise SaaS Solutions</p>
+<div class="w-full pt-md border-t border-outline-variant/30 grid grid-cols-2 gap-sm">
+<div class="text-center">
+<p class="text-label-sm text-outline">Match Score</p>
+<p class="text-headline-md text-on-tertiary-container font-bold">98%</p>
+</div>
+<div class="text-center">
+<p class="text-label-sm text-outline">Active Jobs</p>
+<p class="text-headline-md text-primary font-bold">12</p>
+</div>
+</div>
+</div>
+<div class="bg-primary-container rounded-[24px] p-lg shadow-xl overflow-hidden relative">
+<div class="relative z-10">
+<h3 class="font-label-bold text-label-bold text-tertiary-fixed mb-sm uppercase tracking-widest">AI INSIGHT</h3>
+<p class="text-on-primary text-body-md leading-relaxed">
+                            "Your profile completeness is at 85%. Adding a more detailed company description can improve candidate matching by 15%."
+                        </p>
+</div>
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-tertiary-fixed-dim/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+<!-- Form: Profile Edit (Column 8) -->
+<div class="lg:col-span-8">
+<div class="bg-white rounded-[24px] p-lg shadow-[0px_4px_20px_rgba(15,37,55,0.08)]">
+<form class="space-y-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Company Name -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-primary" for="company-name">Company Name</label>
+<input class="w-full border border-outline-variant rounded-lg p-sm bg-surface-bright focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all font-body-md" id="company-name" type="text" value="CyberPulse AI"/>
+</div>
+<!-- Website -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-primary" for="website">Website</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline" data-icon="language">language</span>
+<input class="w-full border border-outline-variant rounded-lg p-sm pl-xl bg-surface-bright focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all font-body-md" id="website" type="url" value="https://cyberpulse.ai"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Industry -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-primary" for="industry">Industry</label>
+<select class="w-full border border-outline-variant rounded-lg p-sm bg-surface-bright focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all font-body-md" id="industry">
+<option>Artificial Intelligence</option>
+<option>Software as a Service</option>
+<option>Fintech</option>
+<option>Healthcare Tech</option>
+</select>
+</div>
+<!-- Location -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-primary" for="location">Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline" data-icon="location_on">location_on</span>
+<input class="w-full border border-outline-variant rounded-lg p-sm pl-xl bg-surface-bright focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all font-body-md" id="location" type="text" value="San Francisco, CA"/>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-base">
+<label class="font-label-bold text-label-bold text-primary" for="description">Description</label>
+<textarea class="w-full border border-outline-variant rounded-lg p-sm bg-surface-bright focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all font-body-md resize-none" id="description" rows="5">CyberPulse AI is at the forefront of the generative revolution, building sophisticated risk-management tools for high-stakes enterprise environments. We specialize in real-time pulse monitoring and ethical AI integration across financial and security sectors.</textarea>
+<p class="text-label-sm text-outline text-right">Character count: 242 / 500</p>
+</div>
+<!-- Map Visual (Abstract) -->
+<div class="rounded-xl h-48 overflow-hidden relative shadow-inner bg-surface-variant">
+<img class="w-full h-full object-cover opacity-60" data-alt="A minimalist architectural 3D map of a modern metropolitan tech hub like San Francisco, featuring clean lines, glass towers, and a soft blue and emerald color palette. High-key natural lighting with soft shadows. Sophisticated enterprise aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi0kAMal9Z6eCw4qZPAzwR0motDWlJ50tpcQoWP6r2mtiKzlZmlUW3KOEbOrO21txFRKzV9jw8nc13V5i1WuELZ-b9HTWUWRHqsQw45smwTsnO_Lk84izM-x8gL2HPeCWBNifdn5-57ow0QQMlZpEzk7yNINPyjr8ICY1kvaI1sHmDMllxE1wA-SfNJKnGEzOMFi1fMygYW2cU8sQ84ZkrL4bKk9JhHD21_Jh3jholoLNI627seY5xU3Vx15JCyS1YHukn6W-OwBJm"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent"></div>
+<div class="absolute bottom-sm left-sm bg-white px-sm py-xs rounded-full shadow-md flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full emerald-gradient animate-pulse"></span>
+<span class="font-label-bold text-label-sm">Headquarters active</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-lg flex items-center justify-end gap-md">
+<button class="font-label-bold text-on-surface-variant hover:text-primary transition-colors px-md py-sm" type="button">Discard Changes</button>
+<button class="bg-primary text-white font-label-bold px-xl py-sm rounded-lg shadow-lg hover:bg-primary-container active:scale-95 transition-all" type="submit">
+                                Save Changes
+                            </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span>';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined" data-icon="check">check</span> Saved';
+                btn.classList.add('emerald-gradient');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('emerald-gradient');
+                    btn.disabled = false;
+                }, 2000);
+            }, 1000);
+        });
+
+        // Simple Hover logic for Sidebar Active state preservation
+        const navLinks = document.querySelectorAll('aside nav a');
+        navLinks.forEach(link => {
+            if(!link.classList.contains('bg-primary-container')) {
+                link.addEventListener('mouseenter', () => {
+                    link.style.transform = 'translateX(4px)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    link.style.transform = 'translateX(0px)';
+                });
+            }
+        });
+    </script>
+</body></html>

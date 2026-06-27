@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'config/router/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'features/presentarion/bloc/admin_cubit.dart';
@@ -8,6 +9,7 @@ import 'features/presentarion/bloc/auth_event.dart';
 import 'features/presentarion/bloc/auth_state.dart';
 import 'features/presentarion/bloc/candidate_cubit.dart';
 import 'features/presentarion/bloc/company_cubit.dart';
+import 'features/presentarion/bloc/theme_cubit.dart';
 import 'injection/injection_container.dart';
 
 void main() async {
@@ -23,6 +25,9 @@ class MatchIQApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<ThemeCubit>(
+          create: (_) => sl<ThemeCubit>(),
+        ),
         BlocProvider<AuthBloc>(
           create: (_) => sl<AuthBloc>()..add(const CheckSessionRequested()),
         ),
@@ -35,41 +40,108 @@ class MatchIQApp extends StatelessWidget {
   }
 }
 
-class _AppRoot extends StatelessWidget {
+class _AppRoot extends StatefulWidget {
   const _AppRoot();
 
   @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> {
+  GoRouter? _router;
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        // Show a neutral splash while the session check runs
-        if (state is AuthInitial || state is AuthLoading) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: _SplashScreen(),
-          );
-        }
-        final router = AppRouter.router(context);
-        return MaterialApp.router(
-          title: 'MatchIQ',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          routerConfig: router,
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            if (authState is AuthInitial || authState is AuthLoading) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                themeMode: themeMode,
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
+                home: const _SplashScreen(),
+              );
+            }
+            _router ??= AppRouter.router(context);
+            return MaterialApp.router(
+              title: 'MatchIQ',
+              debugShowCheckedModeBanner: false,
+              themeMode: themeMode,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              routerConfig: _router!,
+            );
+          },
         );
       },
     );
   }
 }
 
-class _SplashScreen extends StatelessWidget {
+class _SplashScreen extends StatefulWidget {
   const _SplashScreen();
 
   @override
+  State<_SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<_SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+  late Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _scale = Tween<double>(begin: 0.75, end: 1.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack),
+    );
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.0, 0.6)),
+    );
+    _ctrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFF0F2537),
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F2537),
       body: Center(
-        child: CircularProgressIndicator(color: Color(0xFF4ADE80)),
+        child: FadeTransition(
+          opacity: _opacity,
+          child: ScaleTransition(
+            scale: _scale,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('lib/assets/logo_dark.jpeg', height: 90),
+                const SizedBox(height: 32),
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF00C785),
+                    strokeWidth: 2.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

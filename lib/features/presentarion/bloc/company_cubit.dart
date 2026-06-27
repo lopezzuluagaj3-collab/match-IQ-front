@@ -95,7 +95,7 @@ class CompanyCubit extends Cubit<CompanyState> {
     final matchesRes = await _datasource.getCompanyMatches();
     final offersRes = await _datasource.getCompanyOffers();
 
-    CompanyProfile? profile = profileRes.getOrElse(() => null);
+    CompanyProfile? profile = profileRes.fold((l) => null, (r) => r);
     final List<CandidateMatch> matches = matchesRes.getOrElse(() => []);
     final List<JobOffer> offers = offersRes.getOrElse(() => []);
 
