@@ -13,20 +13,22 @@ jobs:
       - name: Deploy via Bastion
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY_BASTION }}" > ~/.ssh/bastion_key
+          echo "${{ secrets.SSH_PRIVATE_KEY_PRIVATE }}" > ~/.ssh/private_key
+          chmod 600 ~/.ssh/bastion_key
+          chmod 600 ~/.ssh/private_key
 
           cat >> ~/.ssh/config <<EOF
           Host bastion
             HostName ${{ secrets.BASTION_HOST }}
             User ubuntu
-            IdentityFile ~/.ssh/id_rsa
+            IdentityFile ~/.ssh/bastion_key
             StrictHostKeyChecking no
 
           Host private
-            HostName ${{secrets.IP_ec2_front}}
+            HostName ${{ secrets.IP_ec2_front }}
             User ubuntu
-            IdentityFile ~/.ssh/id_rsa
+            IdentityFile ~/.ssh/private_key
             ProxyJump bastion
             StrictHostKeyChecking no
           EOF
