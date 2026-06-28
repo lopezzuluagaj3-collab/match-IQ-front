@@ -34,8 +34,24 @@ jobs:
           EOF
 
           ssh private << 'ENDSSH'
+            set -e
+
             cd /home/ubuntu/match-IQ-front
+
+            echo "Actualizando repositorio..."
             git pull origin main
-            docker compose down
-            docker compose up -d
+
+            echo "Limpiando proyecto..."
+            flutter clean
+
+            echo "Instalando dependencias..."
+            flutter pub get
+
+            echo "Compilando Flutter Web..."
+            flutter build web
+
+            echo "Reiniciando servicio..."
+            sudo systemctl restart flutter-web
+
+            echo "Despliegue completado."
           ENDSSH
