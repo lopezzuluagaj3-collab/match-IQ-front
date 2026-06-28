@@ -32,26 +32,23 @@ jobs:
             ProxyJump bastion
             StrictHostKeyChecking no
           EOF
-
+          
           ssh private << 'ENDSSH'
             set -e
-
+          
             cd /home/ubuntu/match-IQ-front
-
+          
             echo "Actualizando repositorio..."
             git pull origin main
-
-            echo "Limpiando proyecto..."
-            flutter clean
-
+          
             echo "Instalando dependencias..."
-            flutter pub get
-
+            /home/ubuntu/flutter/bin/flutter pub get
+          
             echo "Compilando Flutter Web..."
-            flutter build web
-
+            /home/ubuntu/flutter/bin/flutter build web
+          
             echo "Reiniciando servicio..."
             sudo systemctl restart flutter-web
-
+          
             echo "Despliegue completado."
           ENDSSH
