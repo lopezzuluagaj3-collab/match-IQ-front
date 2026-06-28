@@ -10,7 +10,12 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../core/utils/web/camera.dart';
+import '../../../core/utils/web/fullscreen.dart';
 import '../../domain/entities/technical_test.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_state.dart';
+import '../bloc/proctor_cubit.dart';
 import '../bloc/test_cubit.dart';
 import '../widgets/shared/app_card.dart';
 
@@ -30,6 +35,15 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
   final Map<int, String> _mcAnswers = {};
   final Map<int, String> _codeAnswers = {};
 
+  // Proctoring
+  Timer? _frameTimer;
+  bool _proctoringStarted = false;
+  bool _proctoringEnded = false;
+  bool _showingFullscreenWarning = false;
+  late ProctorCubit _proctoringCubit;
+  final CameraCapture _camera = CameraCapture();
+  final FullscreenService _fullscreen = FullscreenService();
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +52,13 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
     if (offerId != null) {
       context.read<TestCubit>().previewTest(offerId);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Store cubit reference before dispose() is called, when context is still valid
+    _proctoringCubit = context.read<ProctorCubit>();
   }
 
   Future<void> _initSecurity() async {
@@ -49,6 +70,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
   @override
   void dispose() {
     _timer?.cancel();
+    _stopProctoring();
     if (!kIsWeb && Platform.isAndroid) {
       FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE).catchError((_) => false);
     }
@@ -69,7 +91,17 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
   }
 
   void _submit(TestSession session) {
-    context.read<TestCubit>().submitTest(session.testId, _mcAnswers, _codeAnswers);
+    if (_proctoringEnded) return;
+    _proctoringEnded = true;
+    _frameTimer?.cancel();
+    _frameTimer = null;
+    _camera.dispose();
+    _fullscreen.dispose();
+    // Both calls in parallel — neither depends on the other
+    Future.wait([
+      _proctoringCubit.isClosed ? Future.value() : _proctoringCubit.endSession(),
+      context.read<TestCubit>().submitTest(session.testId, _mcAnswers, _codeAnswers),
+    ]);
   }
 
   String get _formattedTime {
@@ -112,7 +144,151 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
 
     if (!mounted) return;
     context.read<TestCubit>().startTest(offerId);
+    // startSession is deferred to when session loads — we need submissionId from the response
   }
+
+  // ─── Proctoring ────────────────────────────────────────────────────────────
+
+  Future<void> _startProctoringCapture(int submissionId) async {
+    _proctoringStarted = true;
+    // Start proctoring session now that we have submissionId from the test response
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      _proctoringCubit.startSession(authState.user.id, submissionId);
+    }
+    await _camera.initialize();
+    if (!mounted) return;
+    _fullscreen.enter();
+    _fullscreen.onExitFullscreen(() {
+      if (mounted && !_proctoringEnded) _showFullscreenWarning();
+    });
+    _frameTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      final frame = _camera.captureFrame();
+      if (frame != null && !_proctoringCubit.isClosed) {
+        _proctoringCubit.processFrame(frame);
+      }
+    });
+  }
+
+  void _stopProctoring() {
+    if (_proctoringEnded) return;
+    _proctoringEnded = true;
+    _frameTimer?.cancel();
+    _frameTimer = null;
+    _camera.dispose();
+    _fullscreen.dispose();
+    if (!_proctoringCubit.isClosed) {
+      _proctoringCubit.endSession();
+    }
+  }
+
+  void _showFullscreenWarning() {
+    if (_showingFullscreenWarning) return;
+    _showingFullscreenWarning = true;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.errorContainer.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Symbols.warning_amber, color: AppColors.error, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Text('¡Advertencia!',
+                style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
+          ],
+        ),
+        content: Text(
+          'Has salido de pantalla completa. Salir durante el examen puede ser considerado una infracción y podría resultar en tu descalificación.',
+          style: AppTextStyles.bodyMd
+              .copyWith(color: AppColors.onSurfaceVariant),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showingFullscreenWarning = false;
+            },
+            child: Text('Continuar sin pantalla completa',
+                style: AppTextStyles.labelBold
+                    .copyWith(color: AppColors.onSurfaceVariant)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              _showingFullscreenWarning = false;
+              _fullscreen.enter();
+            },
+            icon: const Icon(Symbols.fullscreen, size: 18),
+            label: const Text('Volver a pantalla completa'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryContainer,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showProctoringAlert(String type) {
+    final isDevice = type == 'device';
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.errorContainer.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                isDevice ? Symbols.phone_android : Symbols.person_alert,
+                color: AppColors.error,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text('Violación detectada',
+                style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
+          ],
+        ),
+        content: Text(
+          isDevice
+              ? 'Se detectó un dispositivo no permitido en la cámara. Esta infracción ha sido registrada.'
+              : 'Se detectó otra persona en el encuadre de la cámara. Esta infracción ha sido registrada.',
+          style: AppTextStyles.bodyMd
+              .copyWith(color: AppColors.onSurfaceVariant),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryContainer,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Entendido'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Camera settings fallback (native only) ────────────────────────────────
 
   void _showCameraSettingsDialog() {
     showDialog(
@@ -161,10 +337,19 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TestCubit, TestState>(
+    return BlocListener<ProctorCubit, ProctorState>(
+      listenWhen: (prev, curr) =>
+          (!prev.hasIntruder && curr.hasIntruder) ||
+          (!prev.hasDevice && curr.hasDevice),
+      listener: (_, ps) {
+        if (ps.hasIntruder) _showProctoringAlert('intruder');
+        if (ps.hasDevice) _showProctoringAlert('device');
+      },
+      child: BlocConsumer<TestCubit, TestState>(
       listener: (context, state) {
         if (state.session != null && _timer == null && !state.isLoading) {
           _startTimer(state.session!.timeLimitMinutes);
+          if (!_proctoringStarted) _startProctoringCapture(state.session!.submissionId);
         }
         if (state.isSubmitted) {
           _timer?.cancel();
@@ -389,6 +574,45 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
             title: Text(session.title),
             centerTitle: false,
             actions: [
+              BlocBuilder<ProctorCubit, ProctorState>(
+                builder: (_, ps) {
+                  if (ps.status != ProctorStatus.monitoring) {
+                    return const SizedBox.shrink();
+                  }
+                  final looking = ps.isLooking;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: looking ? AppColors.onTertiaryContainer : AppColors.error,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          looking ? 'Monitored' : 'Look at camera',
+                          style: AppTextStyles.labelSm.copyWith(
+                            color: looking
+                                ? AppColors.tertiaryFixed
+                                : AppColors.error,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -523,6 +747,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
           ),
         );
       },
+      ),
     );
   }
 

@@ -82,9 +82,13 @@ class TestSession extends Equatable {
     required this.title,
     required this.timeLimitMinutes,
     required this.questions,
+    this.submissionId = 0,
   });
 
   final int testId;
+  /// ID de la submission devuelto por /candidate/start — requerido para proctoring.
+  /// Es 0 cuando el TestSession fue creado desde el lado empresa (generate/regenerate).
+  final int submissionId;
   final int offerId;
   final String title;
   final int timeLimitMinutes;
@@ -217,6 +221,54 @@ class MatchTestSubmission extends Equatable {
 
   @override
   List<Object?> get props => [matchId];
+}
+
+// ─── Proctoring report (company view, after candidate completes test) ────────
+
+class ProctoringEvent extends Equatable {
+  const ProctoringEvent({
+    required this.tipo,
+    required this.timestamp,
+    this.detalle,
+    this.evidencia,
+  });
+
+  final String tipo;
+  final String? detalle;
+  final String? evidencia;
+  final DateTime timestamp;
+
+  @override
+  List<Object?> get props => [tipo, timestamp];
+}
+
+class ProctoringReport extends Equatable {
+  const ProctoringReport({
+    required this.sessionId,
+    required this.inicio,
+    required this.fin,
+    required this.totalFramesProcesados,
+    required this.totalEventos,
+    required this.integrityScore,
+    required this.eventos,
+    this.integritySummary,
+  });
+
+  final String sessionId;
+  final DateTime inicio;
+  final DateTime fin;
+  final int totalFramesProcesados;
+  final int totalEventos;
+
+  /// 0–100. Calculated on first company fetch and cached. Color: ≥80 green, 50–79 yellow, <50 red.
+  final double integrityScore;
+
+  /// AI-generated Spanish paragraph summarizing incidents. Null until first fetch.
+  final String? integritySummary;
+  final List<ProctoringEvent> eventos;
+
+  @override
+  List<Object?> get props => [sessionId];
 }
 
 // ─── Chat result (company editing questions via AI) ───────────────────────────

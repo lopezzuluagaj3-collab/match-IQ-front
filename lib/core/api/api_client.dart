@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import '../errors/failures.dart';
@@ -72,6 +73,19 @@ class ApiClient {
     try {
       final res = await _dio.patch(path, data: body);
       return _parseResponse(res);
+    } on DioException catch (e) {
+      return Left(_handleError(e));
+    }
+  }
+
+  /// Downloads raw bytes — used for binary responses like Excel files.
+  Future<Either<Failure, Uint8List>> getBytes(String path) async {
+    try {
+      final res = await _dio.get<List<int>>(
+        path,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return Right(Uint8List.fromList(res.data ?? []));
     } on DioException catch (e) {
       return Left(_handleError(e));
     }

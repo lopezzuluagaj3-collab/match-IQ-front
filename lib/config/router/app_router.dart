@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/domain/entities/user.dart';
 import '../../features/presentarion/bloc/auth_bloc.dart';
 import '../../features/presentarion/bloc/auth_state.dart';
+import '../../features/presentarion/bloc/proctor_cubit.dart';
 import '../../features/presentarion/bloc/test_cubit.dart';
 import '../../features/presentarion/pages/active_technical_test_page.dart';
 import '../../features/presentarion/pages/admin_dashboard_page.dart';
@@ -104,8 +105,11 @@ class AppRouter {
           ),
           GoRoute(
             path: AppRoutes.technicalTest,
-            builder: (_, state) => BlocProvider(
-              create: (_) => sl<TestCubit>(),
+            builder: (_, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<TestCubit>()),
+                BlocProvider(create: (_) => sl<ProctorCubit>()),
+              ],
               child: ActiveTechnicalTestPage(
                   offerId: state.pathParameters['id'] ?? ''),
             ),

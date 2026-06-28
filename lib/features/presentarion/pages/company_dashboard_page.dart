@@ -118,7 +118,33 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
+        BlocBuilder<CompanyCubit, CompanyState>(
+          buildWhen: (prev, cur) =>
+              prev.isDownloadingReport != cur.isDownloadingReport,
+          builder: (context, state) => OutlinedButton.icon(
+            onPressed: state.isDownloadingReport
+                ? null
+                : () => context.read<CompanyCubit>().downloadReport(),
+            icon: state.isDownloadingReport
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Symbols.download, size: 18),
+            label: const Text('Descargar reporte'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.secondary,
+              side: const BorderSide(color: AppColors.secondary),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
         ElevatedButton.icon(
           onPressed: () => context.go(AppRoutes.createOffer),
           icon: const Icon(Symbols.add, size: 18),
