@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
-import '../../domain/entities/user.dart';
 import '../../domain/entities/admin_stats.dart';
+import '../../domain/entities/user.dart';
 import '../bloc/admin_cubit.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
@@ -32,24 +33,117 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       child: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.onTertiaryContainer));
+            return const Center(
+                child: CircularProgressIndicator(
+                    color: AppColors.onTertiaryContainer));
           }
-          final stats = state.stats;
+          final s = state.stats;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Header(),
+                _Header(onViewUsers: () => context.go(AppRoutes.adminUsers)),
                 const SizedBox(height: 32),
-                _KpiGrid(stats: stats),
-                const SizedBox(height: 32),
+
+                // ── Usuarios ─────────────────────────────────────────────
+                _SectionTitle(icon: Symbols.person, label: 'Usuarios'),
+                const SizedBox(height: 12),
+                Row(children: [
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.person,
+                    value: '${s?.totalCandidates ?? 0}',
+                    label: 'Candidatos',
+                    sub: '+${s?.usersRegisteredLast30Days ?? 0} últimos 30 días',
+                    iconColor: AppColors.secondary,
+                    bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.corporate_fare,
+                    value: '${s?.totalCompanies ?? 0}',
+                    label: 'Empresas',
+                    iconColor: AppColors.primary,
+                    bgColor: AppColors.primaryContainer.withValues(alpha: 0.15),
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.group_add,
+                    value: '${s?.usersRegisteredLast30Days ?? 0}',
+                    label: 'Nuevos / 30 días',
+                    iconColor: AppColors.onTertiaryContainer,
+                    bgColor:
+                        AppColors.onTertiaryContainer.withValues(alpha: 0.1),
+                  )),
+                ]),
+                const SizedBox(height: 28),
+
+                // ── Ofertas ───────────────────────────────────────────────
+                _SectionTitle(icon: Symbols.work, label: 'Ofertas'),
+                const SizedBox(height: 12),
+                Row(children: [
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.work,
+                    value: '${s?.totalOffers ?? 0}',
+                    label: 'Total ofertas',
+                    sub: '+${s?.offersCreatedLast30Days ?? 0} últimos 30 días',
+                    iconColor: AppColors.secondary,
+                    bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.check_circle,
+                    value: '${s?.offersActive ?? 0}',
+                    label: 'Activas',
+                    iconColor: AppColors.onTertiaryContainer,
+                    bgColor:
+                        AppColors.onTertiaryContainer.withValues(alpha: 0.1),
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.pending_actions,
+                    value: '${s?.offersPendingPayment ?? 0}',
+                    label: 'Pendiente pago',
+                    iconColor: const Color(0xFFF59E0B),
+                    bgColor: const Color(0xFFF59E0B0D),
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                      child: _StatCard(
+                    icon: Symbols.cancel,
+                    value:
+                        '${(s?.offersCancelled ?? 0) + (s?.offersExpired ?? 0)}',
+                    label: 'Canceladas / Expiradas',
+                    iconColor: AppColors.error,
+                    bgColor: AppColors.error.withValues(alpha: 0.08),
+                  )),
+                ]),
+                const SizedBox(height: 28),
+
+                // ── Matching + Tests ──────────────────────────────────────
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(flex: 2, child: _RecentActivityTable()),
-                    const SizedBox(width: 24),
-                    Expanded(child: _SystemHealthCard(stats: stats)),
+                    Expanded(child: _MatchingCard(s: s)),
+                    const SizedBox(width: 20),
+                    Expanded(child: _TestsCard(s: s)),
+                  ],
+                ),
+                const SizedBox(height: 28),
+
+                // ── Ingresos + Tasas ──────────────────────────────────────
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _RevenueCard(s: s)),
+                    const SizedBox(width: 20),
+                    Expanded(child: _RatesCard(s: s)),
                   ],
                 ),
               ],
@@ -61,7 +155,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 }
 
+// ─── Header ───────────────────────────────────────────────────────────────────
+
 class _Header extends StatelessWidget {
+  const _Header({required this.onViewUsers});
+  final VoidCallback onViewUsers;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -72,23 +171,23 @@ class _Header extends StatelessWidget {
             children: [
               Text('Admin Overview', style: AppTextStyles.headlineLg),
               const SizedBox(height: 4),
-              Text('Platform-wide analytics and management',
-                  style: AppTextStyles.bodyLg.copyWith(color: AppColors.onSurfaceVariant)),
+              Text('Estadísticas de la plataforma en tiempo real',
+                  style: AppTextStyles.bodyLg
+                      .copyWith(color: AppColors.onSurfaceVariant)),
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppColors.onTertiaryContainer.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              const Icon(Symbols.circle, size: 8, color: AppColors.onTertiaryContainer),
-              const SizedBox(width: 8),
-              Text('System Healthy', style: AppTextStyles.labelBold.copyWith(color: AppColors.onTertiaryContainer)),
-            ],
+        ElevatedButton.icon(
+          onPressed: onViewUsers,
+          icon: const Icon(Symbols.group, size: 18),
+          label: const Text('Gestionar Usuarios'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.onTertiaryContainer,
+            foregroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
         ),
       ],
@@ -96,70 +195,27 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _KpiGrid extends StatelessWidget {
-  const _KpiGrid({required this.stats});
-  final AdminStats? stats;
+// ─── Section title ────────────────────────────────────────────────────────────
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 3,
-      mainAxisSpacing: 20,
-      crossAxisSpacing: 20,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 2,
+    return Row(
       children: [
-        _StatCard(
-          icon: Symbols.person,
-          value: '${stats?.totalCandidates ?? 0}',
-          label: 'Total Candidates',
-          trend: '+${stats?.usersLast30Days ?? 0} last 30 days',
-          trendPositive: true,
-          iconColor: AppColors.secondary,
-          bgColor: AppColors.secondaryContainer.withOpacity(0.2),
-        ),
-        _StatCard(
-          icon: Symbols.corporate_fare,
-          value: '${stats?.totalCompanies ?? 0}',
-          label: 'Active Companies',
-          iconColor: AppColors.primary,
-          bgColor: AppColors.primaryContainer.withOpacity(0.1),
-        ),
-        _StatCard(
-          icon: Symbols.work,
-          value: '${stats?.totalOffers ?? 0}',
-          label: 'Total Offers',
-          trend: '+${stats?.offersLast30Days ?? 0} last 30 days',
-          trendPositive: true,
-          iconColor: AppColors.onTertiaryContainer,
-          bgColor: AppColors.onTertiaryContainer.withOpacity(0.1),
-        ),
-        _StatCard(
-          icon: Symbols.auto_awesome,
-          value: '${stats?.totalMatches ?? 0}',
-          label: 'Total AI Matches',
-          iconColor: AppColors.onTertiaryContainer,
-          bgColor: AppColors.onTertiaryContainer.withOpacity(0.1),
-        ),
-        _StatCard(
-          icon: Symbols.assignment,
-          value: '${stats?.activeTests ?? 0}',
-          label: 'Active Tests',
-          iconColor: AppColors.outline,
-          bgColor: AppColors.surfaceContainer,
-        ),
-        _StatCard(
-          icon: Symbols.pending_actions,
-          value: '${stats?.pendingSubmissions ?? 0}',
-          label: 'Pending Submissions',
-          iconColor: AppColors.secondary,
-          bgColor: AppColors.secondaryContainer.withOpacity(0.2),
-        ),
+        Icon(icon, size: 18, color: AppColors.secondary),
+        const SizedBox(width: 8),
+        Text(label,
+            style: AppTextStyles.headlineMd.copyWith(fontSize: 17)),
       ],
     );
   }
 }
+
+// ─── Stat card ────────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   const _StatCard({
@@ -168,53 +224,50 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.iconColor,
     required this.bgColor,
-    this.trend,
-    this.trendPositive,
+    this.sub,
   });
   final IconData icon;
   final String value;
   final String label;
   final Color iconColor;
   final Color bgColor;
-  final String? trend;
-  final bool? trendPositive;
+  final String? sub;
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      radius: 18,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: iconColor, size: 22),
+            decoration: BoxDecoration(
+                color: bgColor, borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(value, style: AppTextStyles.headlineMd.copyWith(fontSize: 28, height: 1.1)),
-                Text(label, style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
-                if (trend != null)
-                  Row(
-                    children: [
-                      Icon(
-                        trendPositive == true ? Symbols.trending_up : Symbols.trending_down,
-                        size: 12,
-                        color: trendPositive == true ? AppColors.onTertiaryContainer : AppColors.error,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(trend!,
-                          style: AppTextStyles.labelSm.copyWith(
-                              color: trendPositive == true
-                                  ? AppColors.onTertiaryContainer
-                                  : AppColors.error,
-                              fontSize: 11)),
-                    ],
-                  ),
+                Text(value,
+                    style: AppTextStyles.headlineMd
+                        .copyWith(fontSize: 26, height: 1.1)),
+                Text(label,
+                    style: AppTextStyles.labelSm
+                        .copyWith(color: AppColors.onSurfaceVariant)),
+                if (sub != null) ...[
+                  const SizedBox(height: 2),
+                  Row(children: [
+                    const Icon(Symbols.trending_up,
+                        size: 11, color: AppColors.onTertiaryContainer),
+                    const SizedBox(width: 3),
+                    Text(sub!,
+                        style: AppTextStyles.labelSm.copyWith(
+                            color: AppColors.onTertiaryContainer,
+                            fontSize: 10)),
+                  ]),
+                ],
               ],
             ),
           ),
@@ -224,104 +277,91 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _RecentActivityTable extends StatelessWidget {
+// ─── Matching card ────────────────────────────────────────────────────────────
+
+class _MatchingCard extends StatelessWidget {
+  const _MatchingCard({required this.s});
+  final AdminStats? s;
+
   @override
   Widget build(BuildContext context) {
-    const events = [
-      ('María González registered', 'Candidate', '2 min ago'),
-      ('Stellar AI posted new offer', 'Company', '15 min ago'),
-      ('AI matched 12 candidates', 'System', '1 hour ago'),
-      ('Carlos Rueda completed test', 'Candidate', '2 hours ago'),
-      ('Nexus FinTech updated profile', 'Company', '3 hours ago'),
-      ('System: weekly report generated', 'System', 'Today, 06:00'),
-    ];
-
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Platform Activity', style: AppTextStyles.headlineMd),
-          const SizedBox(height: 20),
-          ...events.map((e) => Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(color: AppColors.outlineVariant.withOpacity(0.3))),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8, height: 8,
-                      decoration: BoxDecoration(
-                        color: switch (e.$2) {
-                          'Candidate' => AppColors.secondary,
-                          'Company' => AppColors.onTertiaryContainer,
-                          _ => AppColors.outline,
-                        },
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(e.$1, style: AppTextStyles.bodyMd.copyWith(fontSize: 14))),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(e.$2, style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant, fontSize: 11)),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(e.$3, style: AppTextStyles.labelSm.copyWith(color: AppColors.outline)),
-                  ],
-                ),
-              )),
+          _CardHeader(icon: Symbols.auto_awesome, label: 'Matching IA'),
+          const SizedBox(height: 16),
+          _RowStat('Total matches', '${s?.totalMatches ?? 0}'),
+          _RowStat('Test enviados', '${s?.matchesTestSent ?? 0}'),
+          _RowStat('Test completados', '${s?.matchesTestCompleted ?? 0}',
+              color: AppColors.onTertiaryContainer),
+          _RowStat('Seleccionados', '${s?.matchesSelected ?? 0}',
+              color: AppColors.onTertiaryContainer),
+          _RowStat('Rechazados', '${s?.matchesRejected ?? 0}',
+              color: AppColors.error),
         ],
       ),
     );
   }
 }
 
-class _SystemHealthCard extends StatelessWidget {
-  const _SystemHealthCard({required this.stats});
-  final AdminStats? stats;
+// ─── Tests card ───────────────────────────────────────────────────────────────
+
+class _TestsCard extends StatelessWidget {
+  const _TestsCard({required this.s});
+  final AdminStats? s;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardHeader(icon: Symbols.assignment, label: 'Tests Técnicos'),
+          const SizedBox(height: 16),
+          _RowStat('Tests activos', '${s?.activeTests ?? 0}'),
+          _RowStat('Pendientes evaluación', '${s?.pendingSubmissions ?? 0}',
+              color: const Color(0xFFF59E0B)),
+          _RowStat('Evaluados', '${s?.submissionsEvaluated ?? 0}',
+              color: AppColors.onTertiaryContainer),
+          _RowStat('Expirados', '${s?.submissionsExpired ?? 0}',
+              color: AppColors.error),
+          const SizedBox(height: 8),
+          _ScoreBar(score: s?.averageTestScore ?? 0),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScoreBar extends StatelessWidget {
+  const _ScoreBar({required this.score});
+  final double score;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Symbols.monitor_heart, color: AppColors.onTertiaryContainer, size: 22),
-                  const SizedBox(width: 8),
-                  Text('System Health', style: AppTextStyles.headlineMd),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _HealthBar(label: 'API Response', value: 0.98, color: AppColors.onTertiaryContainer),
-              _HealthBar(label: 'AI Engine', value: 0.95, color: AppColors.onTertiaryContainer),
-              _HealthBar(label: 'Database', value: 0.99, color: AppColors.onTertiaryContainer),
-              _HealthBar(label: 'Storage', value: 0.72, color: AppColors.secondary),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Score promedio',
+                style: AppTextStyles.labelSm
+                    .copyWith(color: AppColors.onSurfaceVariant)),
+            Text('${score.toStringAsFixed(1)}%',
+                style: AppTextStyles.labelBold
+                    .copyWith(color: AppColors.secondary)),
+          ],
         ),
-        const SizedBox(height: 20),
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Quick Actions', style: AppTextStyles.headlineMd),
-              const SizedBox(height: 16),
-              _ActionButton(icon: Symbols.download, label: 'Export Platform Report'),
-              _ActionButton(icon: Symbols.person_add, label: 'Invite Admin User'),
-              _ActionButton(icon: Symbols.settings, label: 'System Configuration'),
-              _ActionButton(icon: Symbols.backup, label: 'Trigger Manual Backup'),
-            ],
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: score / 100,
+            backgroundColor: AppColors.surfaceVariant,
+            color: AppColors.secondary,
+            minHeight: 6,
           ),
         ),
       ],
@@ -329,55 +369,173 @@ class _SystemHealthCard extends StatelessWidget {
   }
 }
 
-class _HealthBar extends StatelessWidget {
-  const _HealthBar({required this.label, required this.value, required this.color});
-  final String label;
-  final double value;
-  final Color color;
+// ─── Revenue card ─────────────────────────────────────────────────────────────
+
+class _RevenueCard extends StatelessWidget {
+  const _RevenueCard({required this.s});
+  final AdminStats? s;
+
+  String _formatCop(double v) {
+    if (v >= 1000000) return '\$${(v / 1000000).toStringAsFixed(2)}M COP';
+    if (v >= 1000) return '\$${(v / 1000).toStringAsFixed(0)}K COP';
+    return '\$${v.toStringAsFixed(0)} COP';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(label, style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
+          _CardHeader(icon: Symbols.payments, label: 'Ingresos'),
+          const SizedBox(height: 16),
+          Text(
+            _formatCop(s?.totalRevenueCop ?? 0),
+            style: AppTextStyles.headlineLg
+                .copyWith(color: AppColors.onTertiaryContainer, fontSize: 28),
           ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: value,
-                backgroundColor: AppColors.surfaceVariant,
-                color: color,
-                minHeight: 6,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text('${(value * 100).toInt()}%',
-              style: AppTextStyles.labelBold.copyWith(color: color, fontSize: 12)),
+          Text('ingresos totales',
+              style: AppTextStyles.labelSm
+                  .copyWith(color: AppColors.onSurfaceVariant)),
+          const SizedBox(height: 12),
+          _RowStat('Pagos completados', '${s?.paymentsCompleted ?? 0}',
+              color: AppColors.onTertiaryContainer),
+          _RowStat('Pagos pendientes', '${s?.paymentsPending ?? 0}',
+              color: const Color(0xFFF59E0B)),
         ],
       ),
     );
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.label});
+// ─── Rates card ───────────────────────────────────────────────────────────────
+
+class _RatesCard extends StatelessWidget {
+  const _RatesCard({required this.s});
+  final AdminStats? s;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardHeader(icon: Symbols.analytics, label: 'Tasas de Rendimiento'),
+          const SizedBox(height: 16),
+          _RateBar(
+            label: 'Tasa completitud de tests',
+            tooltip:
+                'Submissions evaluadas vs (evaluadas + expiradas)',
+            value: (s?.testCompletionRate ?? 0) / 100,
+            percent: s?.testCompletionRate ?? 0,
+            color: AppColors.onTertiaryContainer,
+          ),
+          const SizedBox(height: 16),
+          _RateBar(
+            label: 'Tasa de selección',
+            tooltip:
+                'Seleccionados vs (testCompleted + selected + rejected)',
+            value: (s?.selectionRate ?? 0) / 100,
+            percent: s?.selectionRate ?? 0,
+            color: AppColors.secondary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RateBar extends StatelessWidget {
+  const _RateBar({
+    required this.label,
+    required this.tooltip,
+    required this.value,
+    required this.percent,
+    required this.color,
+  });
+  final String label;
+  final String tooltip;
+  final double value;
+  final double percent;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(label,
+                  style: AppTextStyles.labelBold.copyWith(fontSize: 13)),
+            ),
+            Tooltip(
+              message: tooltip,
+              child: const Icon(Symbols.info,
+                  size: 14, color: AppColors.outline),
+            ),
+            const SizedBox(width: 8),
+            Text('${percent.toStringAsFixed(1)}%',
+                style: AppTextStyles.labelBold.copyWith(color: color)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: value.clamp(0.0, 1.0),
+            backgroundColor: AppColors.surfaceVariant,
+            color: color,
+            minHeight: 10,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Shared helpers ───────────────────────────────────────────────────────────
+
+class _CardHeader extends StatelessWidget {
+  const _CardHeader({required this.icon, required this.label});
   final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: AppColors.secondary, size: 20),
-      title: Text(label, style: AppTextStyles.labelBold.copyWith(color: AppColors.onSurface)),
-      trailing: const Icon(Symbols.chevron_right, size: 18, color: AppColors.outline),
-      onTap: () {},
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.secondary),
+        const SizedBox(width: 8),
+        Text(label, style: AppTextStyles.headlineMd.copyWith(fontSize: 16)),
+      ],
+    );
+  }
+}
+
+class _RowStat extends StatelessWidget {
+  const _RowStat(this.label, this.value, {this.color});
+  final String label;
+  final String value;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              style: AppTextStyles.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant, fontSize: 13)),
+          Text(value,
+              style: AppTextStyles.labelBold.copyWith(
+                  fontSize: 14,
+                  color: color ?? AppColors.onSurface)),
+        ],
+      ),
     );
   }
 }

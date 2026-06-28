@@ -39,6 +39,7 @@ class CandidateMatch extends Equatable {
     required this.offerTitle,
     this.avatarUrl,
     this.email,
+    this.adjustedScore,
     this.testScore,
     this.testFeedback,
     this.aiInsight,
@@ -58,6 +59,7 @@ class CandidateMatch extends Equatable {
   final String offerTitle;
   final String? avatarUrl;
   final String? email;
+  final double? adjustedScore;
   final int? testScore;
   final String? testFeedback;
   final String? aiInsight;
@@ -67,13 +69,14 @@ class CandidateMatch extends Equatable {
   final MatchStatus status;
 
   bool get canSendTest => status == MatchStatus.new_;
-  bool get canSelect => status == MatchStatus.reviewed && testScore != null;
+  bool get canSelect => status == MatchStatus.testCompleted && testScore != null;
   bool get canReject =>
       status == MatchStatus.new_ ||
-      status == MatchStatus.reviewed;
+      status == MatchStatus.testSent ||
+      status == MatchStatus.testCompleted;
 
   @override
   List<Object?> get props => [matchId, candidateId, offerId];
 }
 
-enum MatchStatus { new_, reviewed, shortlisted, rejected }
+enum MatchStatus { new_, testSent, testCompleted, shortlisted, rejected }

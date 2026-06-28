@@ -1,9 +1,11 @@
 import '../../../core/utils/typedef.dart';
 import '../../domain/entities/activity.dart';
 import '../../domain/entities/admin_stats.dart';
+import '../../domain/entities/admin_user.dart';
 import '../../domain/entities/candidate.dart';
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
+import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/technical_test.dart';
 
@@ -35,6 +37,7 @@ abstract class AppDatasource {
   ResultFuture<TestResult> submitCandidateTest(int testId, List<AnswerItem> answers);
 
   // Company profile
+  ResultFuture<CompanyDashboardStats> getCompanyDashboard();
   ResultVoid updateCompanyProfile(String companyName);
 
   // Company offers
@@ -43,18 +46,37 @@ abstract class AppDatasource {
   ResultFuture<AiParseResult> parseOfferDescription(String rawDescription);
   ResultFuture<JobOffer> createOffer(CreateOfferInput input);
   ResultFuture<List<JobOffer>> getCompanyOffers();
+  ResultFuture<JobOffer> getOfferById(int offerId);
   ResultFuture<String> createCheckout(int offerId);
 
   // Company matching
   ResultFuture<List<CandidateMatch>> getCompanyMatches();
   ResultFuture<List<CandidateMatch>> getMatchesByOffer(int offerId);
+  ResultFuture<List<CandidateMatch>> runMatching(int offerId);
+  ResultFuture<List<CandidateMatch>> reevaluateMatching(int offerId);
   ResultVoid sendTests(List<int> matchIds);
   ResultFuture<CandidateMatch> selectCandidate(int matchId);
   ResultVoid rejectCandidate(int matchId);
 
   // Company tests
-  ResultFuture<TestSession> generateTest(int offerId);
+  ResultFuture<MatchTestSubmission> getTestSubmission(int matchId);
+  ResultFuture<TestSession> generateTest(int offerId, int timeLimitMinutes);
+  ResultFuture<TestSession?> getTestByOffer(int offerId); // null if not yet generated
+  ResultFuture<TestSession> regenerateTest(int offerId, int timeLimitMinutes);
+  ResultFuture<ChatResult> chatWithQuestion(int questionId, String message);
+  ResultFuture<JobOffer> updateOffer(int offerId, Map<String, dynamic> fields);
 
   // Admin
   ResultFuture<AdminStats> getAdminStats();
+  ResultFuture<List<AdminUser>> getAdminUsers({String? role, bool? isActive});
+  ResultFuture<AdminUser> getAdminUserById(int userId);
+  ResultVoid createAdminUser({
+    required String fullName,
+    required String email,
+    required String cedula,
+    required String password,
+    required String confirmPassword,
+  });
+  ResultFuture<AdminUser> toggleUserStatus(int userId);
+  ResultVoid deleteUser(int userId);
 }

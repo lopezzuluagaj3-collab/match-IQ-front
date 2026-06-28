@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
@@ -30,13 +29,13 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
   final _salaryCtrl = TextEditingController();
   final _expCtrl = TextEditingController();
   final _positionsCtrl = TextEditingController(text: '1');
+  final _deadlineCtrl = TextEditingController(text: '7');
 
   String _modality = 'remote';
   String? _englishLevel;
   int? _selectedTierId;
   int? _selectedCategoryId;
   final Set<int> _selectedSkillIds = {};
-  final Set<int> _selectedCategoryIds = {};
   bool _showAiSuggestions = false;
 
   static const _englishLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -58,6 +57,7 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
     _salaryCtrl.dispose();
     _expCtrl.dispose();
     _positionsCtrl.dispose();
+    _deadlineCtrl.dispose();
     super.dispose();
   }
 
@@ -68,7 +68,12 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
     if (r.minExperienceYears != null) _expCtrl.text = r.minExperienceYears.toString();
     if (r.requiredEnglishLevel != null) setState(() => _englishLevel = r.requiredEnglishLevel);
     if (r.suggestedCategoryIds.isNotEmpty) {
-      setState(() => _selectedCategoryIds.addAll(r.suggestedCategoryIds));
+      final firstId = r.suggestedCategoryIds.first;
+      setState(() {
+        _selectedCategoryId = firstId;
+        _selectedSkillIds.clear();
+      });
+      context.read<CompanyCubit>().loadSkillsByCategory(firstId);
     }
     if (r.suggestedSkillIds.isNotEmpty) {
       setState(() => _selectedSkillIds.addAll(r.suggestedSkillIds));
@@ -87,6 +92,7 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
     final salary = int.tryParse(_salaryCtrl.text.trim());
     final exp = int.tryParse(_expCtrl.text.trim());
     final positions = int.tryParse(_positionsCtrl.text.trim()) ?? 1;
+    final deadline = int.tryParse(_deadlineCtrl.text.trim()) ?? 7;
     context.read<CompanyCubit>().createOffer(CreateOfferInput(
           title: _titleCtrl.text.trim(),
           modality: _modality,
@@ -95,8 +101,9 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
           salary: salary,
           minExperienceYears: exp,
           requiredEnglishLevel: _englishLevel,
+          testDeadlineDays: deadline,
           positionsAvailable: positions,
-          categoryIds: _selectedCategoryIds.toList(),
+          categoryIds: _selectedCategoryId != null ? [_selectedCategoryId!] : [],
           skillIds: _selectedSkillIds.toList(),
         ));
   }
@@ -106,25 +113,15 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
     return BlocListener<CompanyCubit, CompanyState>(
       listenWhen: (prev, curr) =>
           curr.aiParseResult != prev.aiParseResult ||
-          curr.createdOffer != prev.createdOffer ||
-          curr.checkoutUrl != prev.checkoutUrl,
-      listener: (context, state) async {
+          curr.createdOffer != prev.createdOffer,
+      listener: (context, state) {
         if (state.aiParseResult != null) {
           _applyAiResult(state.aiParseResult!);
         }
-        if (state.checkoutUrl != null) {
-          final uri = Uri.tryParse(state.checkoutUrl!);
-          if (uri != null) await launchUrl(uri, mode: LaunchMode.externalApplication);
-          if (mounted) context.go(AppRoutes.companyDashboard);
-        } else if (state.createdOffer != null && !state.isSaving) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Offer created!'),
-                backgroundColor: AppColors.onTertiaryContainer,
-              ),
-            );
-            context.go(AppRoutes.companyDashboard);
+        if (state.createdOffer != null && !state.isSaving) {
+          final offerId = int.tryParse(state.createdOffer!.id);
+          if (offerId != null && mounted) {
+            context.go(AppRoutes.offerPendingPath(offerId));
           }
         }
       },
@@ -353,6 +350,29 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppTextField(
+                                    label: 'Test Deadline (days)',
+                                    hint: '7',
+                                    prefixIcon: Symbols.timer,
+                                    controller: _deadlineCtrl,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    validator: (v) {
+                                      final n = int.tryParse(v ?? '');
+                                      if (n == null || n < 1 || n > 90) {
+                                        return 'Enter a value between 1 and 90';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                const Expanded(child: SizedBox()),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -405,15 +425,12 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                                 spacing: 8, runSpacing: 8,
                                 children: state.categories.map((c) => _OptionChip(
                                       label: c.name,
-                                      selected: _selectedCategoryIds.contains(c.id),
+                                      selected: _selectedCategoryId == c.id,
                                       onTap: () {
+                                        if (_selectedCategoryId == c.id) return;
                                         setState(() {
-                                          if (_selectedCategoryIds.contains(c.id)) {
-                                            _selectedCategoryIds.remove(c.id);
-                                          } else {
-                                            _selectedCategoryIds.add(c.id);
-                                            _selectedCategoryId = c.id;
-                                          }
+                                          _selectedCategoryId = c.id;
+                                          _selectedSkillIds.clear();
                                         });
                                         context.read<CompanyCubit>().loadSkillsByCategory(c.id);
                                       },

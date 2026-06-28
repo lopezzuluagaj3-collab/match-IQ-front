@@ -155,3 +155,6 @@ Surface:              #FFFFFF (cards)
 - El nombre de carpeta `presentarion` (sin segunda 'e') es un typo existente — **no renombrar** para no romper imports
 - El `main.dart` tiene el contador default de Flutter — necesita ser reemplazado con el setup real (MaterialApp + GoRouter + GetIt init + BlocProviders)
 - Las dependencias de `pubspec.yaml` están vacías — faltan `flutter_bloc`, `get_it`, `firebase_auth`, `go_router`, `dartz` (o `fpdart`), `connectivity_plus`
+
+
+flutter run -d web-server --web-port 3000

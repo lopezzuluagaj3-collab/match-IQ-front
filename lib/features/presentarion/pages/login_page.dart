@@ -185,6 +185,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
             BlocBuilder<AuthBloc, AuthState>(
+              buildWhen: (_, curr) =>
+                  curr is AuthLoading ||
+                  curr is AuthInitial ||
+                  curr is AuthFailureState,
               builder: (context, state) => SizedBox(
                 width: double.infinity,
                 child: AppButton(

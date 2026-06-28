@@ -7,6 +7,7 @@ import '../../features/presentarion/bloc/auth_state.dart';
 import '../../features/presentarion/bloc/test_cubit.dart';
 import '../../features/presentarion/pages/active_technical_test_page.dart';
 import '../../features/presentarion/pages/admin_dashboard_page.dart';
+import '../../features/presentarion/pages/admin_users_page.dart';
 import '../../features/presentarion/pages/auth_utility_page.dart';
 import '../../features/presentarion/pages/candidate_dashboard_page.dart';
 import '../../features/presentarion/pages/candidate_profile_page.dart';
@@ -17,6 +18,10 @@ import '../../features/presentarion/pages/company_profile_settings_page.dart';
 import '../../features/presentarion/pages/company_registration_page.dart';
 import '../../features/presentarion/pages/create_new_offer_page.dart';
 import '../../features/presentarion/pages/forgot_password_page.dart';
+import '../../features/presentarion/pages/match_test_results_page.dart';
+import '../../features/presentarion/pages/offer_matches_page.dart';
+import '../../features/presentarion/pages/offer_pending_page.dart';
+import '../../features/presentarion/pages/payment_result_page.dart';
 import '../../features/presentarion/pages/job_offers_list_page.dart';
 import '../../features/presentarion/pages/landing_page.dart';
 import '../../features/presentarion/pages/login_page.dart';
@@ -123,11 +128,53 @@ class AppRouter {
             path: AppRoutes.createOffer,
             builder: (_, __) => const CreateNewOfferPage(),
           ),
+          GoRoute(
+            path: AppRoutes.offerPending,
+            builder: (_, state) {
+              final id = int.parse(state.pathParameters['id'] ?? '0');
+              return OfferPendingPage(offerId: id);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.offerMatches,
+            builder: (_, state) {
+              final id = int.parse(state.pathParameters['id'] ?? '0');
+              return OfferMatchesPage(offerId: id);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.matchTestResults,
+            builder: (_, state) {
+              final matchId =
+                  int.parse(state.pathParameters['matchId'] ?? '0');
+              return MatchTestResultsPage(matchId: matchId);
+            },
+          ),
+
+          // Payment return URLs
+          GoRoute(
+            path: AppRoutes.paymentSuccess,
+            builder: (_, state) {
+              final offerId = int.tryParse(state.uri.queryParameters['offerId'] ?? '');
+              return PaymentResultPage(success: true, offerId: offerId);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.paymentCancel,
+            builder: (_, state) {
+              final offerId = int.tryParse(state.uri.queryParameters['offerId'] ?? '');
+              return PaymentResultPage(success: false, offerId: offerId);
+            },
+          ),
 
           // Admin
           GoRoute(
             path: AppRoutes.adminDashboard,
             builder: (_, __) => const AdminDashboardPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminUsers,
+            builder: (_, __) => const AdminUsersPage(),
           ),
         ],
       );

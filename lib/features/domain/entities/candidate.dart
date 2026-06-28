@@ -1,18 +1,29 @@
 import 'package:equatable/equatable.dart';
 
+class SkillEntry extends Equatable {
+  const SkillEntry({required this.id, required this.name, this.level = 3});
+  final int id;
+  final String name;
+  final int level;
+
+  @override
+  List<Object?> get props => [id];
+}
+
 class CandidateProfile extends Equatable {
   const CandidateProfile({
     required this.userId,
     required this.name,
     required this.email,
     required this.headline,
-    required this.skills,
+    required this.skillEntries,
     required this.experience,
     required this.education,
     required this.matchScore,
     required this.profileStrength,
     required this.pendingTests,
     required this.activeApplications,
+    this.primaryCategoryId,
     this.avatarUrl,
     this.location,
     this.bio,
@@ -27,13 +38,14 @@ class CandidateProfile extends Equatable {
   final String name;
   final String email;
   final String headline;
-  final List<String> skills;
+  final List<SkillEntry> skillEntries;
   final List<ExperienceItem> experience;
   final List<EducationItem> education;
   final int matchScore;
   final int profileStrength;
   final int pendingTests;
   final int activeApplications;
+  final int? primaryCategoryId;
   final String? avatarUrl;
   final String? location;
   final String? bio;
@@ -42,6 +54,8 @@ class CandidateProfile extends Equatable {
   final String? seniority;
   final String? englishLevel;
   final int? experienceYears;
+
+  List<String> get skills => skillEntries.map((e) => e.name).toList();
 
   @override
   List<Object?> get props => [userId];

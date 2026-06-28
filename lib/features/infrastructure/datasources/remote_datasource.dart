@@ -6,9 +6,11 @@ import '../../../core/errors/failures.dart';
 import '../../../core/utils/typedef.dart';
 import '../../domain/entities/activity.dart';
 import '../../domain/entities/admin_stats.dart';
-import '../../domain/entities/candidate.dart';
+import '../../domain/entities/admin_user.dart';
+import '../../domain/entities/candidate.dart' show CandidateProfile, SkillEntry;
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
+import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
@@ -66,11 +68,19 @@ class RemoteDatasource implements AppDatasource {
           return const Left(ServerFailure(message: 'Perfil no encontrado'));
         }
         final map = data as Map<String, dynamic>;
-        final skills = (map['skills'] as List<dynamic>? ?? [])
-            .map((s) => s['skillName'] as String)
-            .toList();
-        final firstCategory = (map['categories'] as List<dynamic>? ?? [])
-            .firstOrNull?['name'] as String?;
+        final rawSkills = map['skills'] as List<dynamic>? ?? [];
+        final skillEntries = rawSkills.map((s) {
+          final m = s as Map<String, dynamic>;
+          return SkillEntry(
+            id: m['skillId'] as int? ?? m['id'] as int? ?? 0,
+            name: m['skillName'] as String? ?? '',
+            level: m['level'] as int? ?? 3,
+          );
+        }).where((e) => e.id > 0).toList();
+        final rawCategories = map['categories'] as List<dynamic>? ?? [];
+        final firstCategoryMap = rawCategories.firstOrNull as Map<String, dynamic>?;
+        final firstCategory = firstCategoryMap?['name'] as String?;
+        final primaryCategoryId = firstCategoryMap?['id'] as int?;
         final seniority = map['seniority'] as String? ?? '';
         final years = map['experienceYears'] as int? ?? 0;
 
@@ -83,13 +93,14 @@ class RemoteDatasource implements AppDatasource {
             if (firstCategory != null) firstCategory,
             if (years > 0) '${years}y exp',
           ].join(' · '),
-          skills: skills,
+          skillEntries: skillEntries,
           experience: const [],
           education: const [],
           matchScore: 0,
           profileStrength: (map['profileCompleted'] as bool? ?? false) ? 100 : 40,
           pendingTests: 0,
           activeApplications: 0,
+          primaryCategoryId: primaryCategoryId,
           avatarUrl: map['profilePhotoUrl'] as String?,
           location: null,
           bio: null,
@@ -134,11 +145,19 @@ class RemoteDatasource implements AppDatasource {
           return const Left(ServerFailure(message: 'Error al actualizar perfil'));
         }
         final map = data as Map<String, dynamic>;
-        final skillList = (map['skills'] as List<dynamic>? ?? [])
-            .map((s) => s['skillName'] as String)
-            .toList();
-        final firstCategory = (map['categories'] as List<dynamic>? ?? [])
-            .firstOrNull?['name'] as String?;
+        final rawSkillsU = map['skills'] as List<dynamic>? ?? [];
+        final skillEntriesU = rawSkillsU.map((s) {
+          final m = s as Map<String, dynamic>;
+          return SkillEntry(
+            id: m['skillId'] as int? ?? m['id'] as int? ?? 0,
+            name: m['skillName'] as String? ?? '',
+            level: m['level'] as int? ?? 3,
+          );
+        }).where((e) => e.id > 0).toList();
+        final rawCatsU = map['categories'] as List<dynamic>? ?? [];
+        final firstCatU = rawCatsU.firstOrNull as Map<String, dynamic>?;
+        final firstCategoryU = firstCatU?['name'] as String?;
+        final primaryCategoryIdU = firstCatU?['id'] as int?;
         final sen = map['seniority'] as String? ?? '';
         final years = map['experienceYears'] as int? ?? 0;
         return Right(CandidateProfile(
@@ -147,16 +166,17 @@ class RemoteDatasource implements AppDatasource {
           email: map['email'] as String,
           headline: [
             if (sen.isNotEmpty) _capitalize(sen),
-            if (firstCategory != null) firstCategory,
+            if (firstCategoryU != null) firstCategoryU,
             if (years > 0) '${years}y exp',
           ].join(' · '),
-          skills: skillList,
+          skillEntries: skillEntriesU,
           experience: const [],
           education: const [],
           matchScore: 0,
           profileStrength: (map['profileCompleted'] as bool? ?? false) ? 100 : 40,
           pendingTests: 0,
           activeApplications: 0,
+          primaryCategoryId: primaryCategoryIdU,
           avatarUrl: map['profilePhotoUrl'] as String?,
           location: null,
           bio: null,
@@ -315,6 +335,61 @@ class RemoteDatasource implements AppDatasource {
       functionSignature: q['functionSignature'] as String?,
       exampleInput: q['exampleInput'] as String?,
       expectedBehavior: q['expectedBehavior'] as String?,
+      correctAnswer: q['correctAnswer'] as String?,
+      explanation: q['explanation'] as String?,
+      isGorilla: q['isGorilla'] as bool? ?? false,
+      gorillaHint: q['gorillaHint'] as String?,
+    );
+  }
+
+  // ─── Company Dashboard ────────────────────────────────────────────────────
+
+  @override
+  ResultFuture<CompanyDashboardStats> getCompanyDashboard() async {
+    final result = await _client.get(ApiConstants.companyDashboard);
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(
+              ServerFailure(message: 'Dashboard no disponible'));
+        }
+        final map = data as Map<String, dynamic>;
+
+        final o = map['offers'] as Map<String, dynamic>? ?? {};
+        final m = map['matches'] as Map<String, dynamic>? ?? {};
+        final t = map['tests'] as Map<String, dynamic>? ?? {};
+
+        return Right(CompanyDashboardStats(
+          offers: CompanyDashboardOffers(
+            total: o['total'] as int? ?? 0,
+            open: o['open'] as int? ?? 0,
+            testSent: o['testSent'] as int? ?? 0,
+            completed: o['completed'] as int? ?? 0,
+            cancelled: o['cancelled'] as int? ?? 0,
+            expired: o['expired'] as int? ?? 0,
+            pendingPayment: o['pendingPayment'] as int? ?? 0,
+          ),
+          matches: CompanyDashboardMatches(
+            total: m['total'] as int? ?? 0,
+            testSent: m['testSent'] as int? ?? 0,
+            testCompleted: m['testCompleted'] as int? ?? 0,
+            selected: m['selected'] as int? ?? 0,
+            rejected: m['rejected'] as int? ?? 0,
+            selectionRate:
+                (m['selectionRate'] as num?)?.toDouble() ?? 0.0,
+          ),
+          tests: CompanyDashboardTests(
+            sent: t['sent'] as int? ?? 0,
+            completed: t['completed'] as int? ?? 0,
+            evaluated: t['evaluated'] as int? ?? 0,
+            expired: t['expired'] as int? ?? 0,
+            completionRate:
+                (t['completionRate'] as num?)?.toDouble() ?? 0.0,
+            averageScore: (t['averageScore'] as num?)?.toDouble(),
+          ),
+        ));
+      },
     );
   }
 
@@ -422,6 +497,7 @@ class RemoteDatasource implements AppDatasource {
           'requiredEnglishLevel': input.requiredEnglishLevel,
         'positionsAvailable': input.positionsAvailable,
         'tierId': input.tierId,
+        'testDeadlineDays': input.testDeadlineDays,
         'categoryIds': input.categoryIds,
         'skillIds': input.skillIds,
       },
@@ -447,6 +523,20 @@ class RemoteDatasource implements AppDatasource {
         return Right(list
             .map((o) => _parseOffer(o as Map<String, dynamic>))
             .toList());
+      },
+    );
+  }
+
+  @override
+  ResultFuture<JobOffer> getOfferById(int offerId) async {
+    final result = await _client.get(ApiConstants.offerById(offerId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(ServerFailure(message: 'Oferta no encontrada'));
+        }
+        return Right(_parseOffer(data as Map<String, dynamic>));
       },
     );
   }
@@ -508,6 +598,7 @@ class RemoteDatasource implements AppDatasource {
       positionsAvailable: m['positionsAvailable'] as int? ?? 1,
       categoryIds: categoryIds,
       skillIds: skillIds,
+      testDeadlineDays: m['testDeadlineDays'] as int?,
     );
   }
 
@@ -547,17 +638,7 @@ class RemoteDatasource implements AppDatasource {
 
   @override
   ResultFuture<List<CandidateMatch>> getMatchesByOffer(int offerId) async {
-    // Get offer title first
-    final offerResult = await _client.get(ApiConstants.offerById(offerId));
-    String offerTitle = 'Offer #$offerId';
-    if (offerResult.isRight()) {
-      final offerData = offerResult.getOrElse(() => null);
-      if (offerData != null) {
-        offerTitle = (offerData as Map<String, dynamic>)['title'] as String? ??
-            offerTitle;
-      }
-    }
-
+    final offerTitle = await _fetchOfferTitle(offerId);
     final result = await _client.get(ApiConstants.matchingByOffer(offerId));
     return result.fold(
       (f) => Left(f),
@@ -590,12 +671,15 @@ class RemoteDatasource implements AppDatasource {
         if (experienceYears > 0) '${experienceYears}y exp',
       ].join(' · '),
       matchScore: (m['matchPercentage'] as num? ?? 0).round(),
+      adjustedScore: m['adjustedScore'] != null
+          ? (m['adjustedScore'] as num).toDouble()
+          : null,
       skills: skills,
       offerId: offerId,
       offerTitle: offerTitle,
       email: m['email'] as String?,
-      testScore: m['adjustedScore'] != null
-          ? (m['adjustedScore'] as num).round()
+      testScore: m['testScore'] != null
+          ? (m['testScore'] as num).round()
           : null,
       testFeedback: m['testFeedback'] as String?,
       aiInsight: m['aiInsight'] as String?,
@@ -604,6 +688,44 @@ class RemoteDatasource implements AppDatasource {
           (m['aiOpportunities'] as List<dynamic>? ?? []).cast<String>(),
       aiRecommendation: m['aiRecommendation'] as String?,
       status: _parseStage(stage),
+    );
+  }
+
+  @override
+  ResultFuture<List<CandidateMatch>> runMatching(int offerId) async {
+    final offerTitle = await _fetchOfferTitle(offerId);
+    final result = await _client.post(ApiConstants.runMatching(offerId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        final list = data as List<dynamic>? ?? [];
+        return Right(list
+            .map((m) => _parseMatch(m as Map<String, dynamic>, offerId.toString(), offerTitle))
+            .toList());
+      },
+    );
+  }
+
+  @override
+  ResultFuture<List<CandidateMatch>> reevaluateMatching(int offerId) async {
+    final offerTitle = await _fetchOfferTitle(offerId);
+    final result = await _client.post(ApiConstants.reevaluateMatching(offerId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        final list = data as List<dynamic>? ?? [];
+        return Right(list
+            .map((m) => _parseMatch(m as Map<String, dynamic>, offerId.toString(), offerTitle))
+            .toList());
+      },
+    );
+  }
+
+  Future<String> _fetchOfferTitle(int offerId) async {
+    final r = await _client.get(ApiConstants.offerById(offerId));
+    return r.fold(
+      (_) => 'Offer #$offerId',
+      (data) => (data as Map<String, dynamic>?)?['title'] as String? ?? 'Offer #$offerId',
     );
   }
 
@@ -643,9 +765,67 @@ class RemoteDatasource implements AppDatasource {
   // ─── Company Tests ────────────────────────────────────────────────────────
 
   @override
-  ResultFuture<TestSession> generateTest(int offerId) async {
+  ResultFuture<MatchTestSubmission> getTestSubmission(int matchId) async {
     final result =
-        await _client.post(ApiConstants.generateTest(offerId));
+        await _client.get(ApiConstants.testSubmissionsByMatch(matchId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(
+              ServerFailure(message: 'Submission no encontrada'));
+        }
+        final map = data as Map<String, dynamic>;
+        final questions = (map['questions'] as List<dynamic>? ?? [])
+            .map((q) => _parseSubmissionQuestion(q as Map<String, dynamic>))
+            .toList();
+        return Right(MatchTestSubmission(
+          matchId: map['matchId'] as int? ?? matchId,
+          candidateName: map['candidateFullName'] as String? ??
+              map['candidateName'] as String? ?? 'Candidato',
+          status: map['status'] as String? ?? 'Evaluated',
+          score: (map['score'] as num?)?.toDouble(),
+          globalFeedback: map['globalFeedback'] as String?,
+          submittedAt: map['submittedAt'] != null
+              ? DateTime.tryParse(map['submittedAt'] as String)
+              : null,
+          aiEvaluatedAt: map['aiEvaluatedAt'] != null
+              ? DateTime.tryParse(map['aiEvaluatedAt'] as String)
+              : null,
+          questions: questions,
+        ));
+      },
+    );
+  }
+
+  SubmissionQuestion _parseSubmissionQuestion(Map<String, dynamic> q) {
+    Map<String, String>? options;
+    final rawOptions = q['options'] as Map<String, dynamic>?;
+    if (rawOptions != null) {
+      options = rawOptions.map((k, v) => MapEntry(k, v.toString()));
+    }
+    return SubmissionQuestion(
+      id: q['questionId'] as int? ?? q['id'] as int? ?? 0,
+      orderIndex: q['orderIndex'] as int? ?? 0,
+      questionType: q['questionType'] as String? ?? 'MultipleChoice',
+      questionText: q['questionText'] as String? ?? '',
+      options: options,
+      functionSignature: q['functionSignature'] as String?,
+      expectedBehavior: q['expectedBehavior'] as String?,
+      correctAnswer: q['correctAnswer'] as String?,
+      selectedOption: q['selectedOption'] as String?,
+      codeSubmitted: q['codeSubmitted'] as String?,
+      isCorrect: q['isCorrect'] as bool?,
+      aiFeedback: q['aiFeedback'] as String?,
+    );
+  }
+
+  @override
+  ResultFuture<TestSession> generateTest(int offerId, int timeLimitMinutes) async {
+    final result = await _client.post(
+      ApiConstants.generateTest(offerId),
+      body: {'timeLimitMinutes': timeLimitMinutes},
+    );
     return result.fold(
       (f) => Left(f),
       (data) {
@@ -667,6 +847,100 @@ class RemoteDatasource implements AppDatasource {
     );
   }
 
+  @override
+  ResultFuture<TestSession?> getTestByOffer(int offerId) async {
+    final result = await _client.get(ApiConstants.testByOffer(offerId));
+    return result.fold(
+      (f) {
+        if (f is ServerFailure && f.statusCode == 404) {
+          return const Right(null);
+        }
+        return Left(f);
+      },
+      (data) {
+        if (data == null) return const Right(null);
+        final map = data as Map<String, dynamic>;
+        final questions = (map['questions'] as List<dynamic>? ?? [])
+            .map((q) => _parseQuestion(q as Map<String, dynamic>))
+            .toList();
+        return Right(TestSession(
+          testId: map['id'] as int,
+          offerId: map['offerId'] as int,
+          title: map['title'] as String? ?? 'Technical Test',
+          timeLimitMinutes: map['timeLimitMinutes'] as int? ?? 60,
+          questions: questions,
+        ));
+      },
+    );
+  }
+
+  @override
+  ResultFuture<TestSession> regenerateTest(int offerId, int timeLimitMinutes) async {
+    final result = await _client.post(
+      ApiConstants.regenerateTest(offerId),
+      body: {'timeLimitMinutes': timeLimitMinutes},
+    );
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(ServerFailure(message: 'Error al regenerar test'));
+        }
+        final map = data as Map<String, dynamic>;
+        final questions = (map['questions'] as List<dynamic>? ?? [])
+            .map((q) => _parseQuestion(q as Map<String, dynamic>))
+            .toList();
+        return Right(TestSession(
+          testId: map['id'] as int,
+          offerId: map['offerId'] as int,
+          title: map['title'] as String? ?? 'Technical Test',
+          timeLimitMinutes: map['timeLimitMinutes'] as int? ?? 60,
+          questions: questions,
+        ));
+      },
+    );
+  }
+
+  @override
+  ResultFuture<ChatResult> chatWithQuestion(int questionId, String message) async {
+    final result = await _client.post(
+      ApiConstants.questionChat(questionId),
+      body: {'message': message},
+    );
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(ServerFailure(message: 'Respuesta vacía'));
+        }
+        final map = data as Map<String, dynamic>;
+        final updatedQ =
+            _parseQuestion(map['updatedQuestion'] as Map<String, dynamic>);
+        return Right(ChatResult(
+          updatedQuestion: updatedQ,
+          assistantMessage: map['assistantMessage'] as String? ?? '',
+        ));
+      },
+    );
+  }
+
+  @override
+  ResultFuture<JobOffer> updateOffer(
+      int offerId, Map<String, dynamic> fields) async {
+    final result =
+        await _client.put(ApiConstants.offerById(offerId), body: fields);
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(
+              ServerFailure(message: 'Error al actualizar oferta'));
+        }
+        return Right(_parseOffer(data as Map<String, dynamic>));
+      },
+    );
+  }
+
   // ─── Admin ────────────────────────────────────────────────────────────────
 
   @override
@@ -678,18 +952,133 @@ class RemoteDatasource implements AppDatasource {
         if (data == null) {
           return const Left(ServerFailure(message: 'Estadísticas no disponibles'));
         }
-        final map = data as Map<String, dynamic>;
+        final m = data as Map<String, dynamic>;
+        final u = m['usuarios'] as Map<String, dynamic>? ?? {};
+        final o = m['ofertas'] as Map<String, dynamic>? ?? {};
+        final match = m['matching'] as Map<String, dynamic>? ?? {};
+        final t = m['tests'] as Map<String, dynamic>? ?? {};
+        final ing = m['ingresos'] as Map<String, dynamic>? ?? {};
+        final tas = m['tasas'] as Map<String, dynamic>? ?? {};
+        final byStatus = (o['offersByStatus'] as Map<String, dynamic>? ?? {})
+            .map((k, v) => MapEntry(k, (v as num).toInt()));
         return Right(AdminStats(
-          totalCandidates: map['totalCandidates'] as int? ?? 0,
-          totalCompanies: map['totalCompanies'] as int? ?? 0,
-          totalOffers: map['totalOffers'] as int? ?? 0,
-          totalMatches: map['totalMatches'] as int? ?? 0,
-          activeTests: map['activeTests'] as int? ?? 0,
-          pendingSubmissions: map['pendingSubmissions'] as int? ?? 0,
-          usersLast30Days: map['usersRegisteredLast30Days'] as int? ?? 0,
-          offersLast30Days: map['offersCreatedLast30Days'] as int? ?? 0,
+          totalCandidates: u['totalCandidates'] as int? ?? 0,
+          totalCompanies: u['totalCompanies'] as int? ?? 0,
+          usersRegisteredLast30Days: u['usersRegisteredLast30Days'] as int? ?? 0,
+          totalOffers: o['totalOffers'] as int? ?? 0,
+          offersCreatedLast30Days: o['offersCreatedLast30Days'] as int? ?? 0,
+          offersActive: o['offersActive'] as int? ?? 0,
+          offersCompleted: o['offersCompleted'] as int? ?? 0,
+          offersCancelled: o['offersCancelled'] as int? ?? 0,
+          offersExpired: o['offersExpired'] as int? ?? 0,
+          offersPendingPayment: o['offersPendingPayment'] as int? ?? 0,
+          offersByStatus: byStatus,
+          totalMatches: match['totalMatches'] as int? ?? 0,
+          matchesSelected: match['matchesSelected'] as int? ?? 0,
+          matchesRejected: match['matchesRejected'] as int? ?? 0,
+          matchesTestSent: match['matchesTestSent'] as int? ?? 0,
+          matchesTestCompleted: match['matchesTestCompleted'] as int? ?? 0,
+          activeTests: t['activeTests'] as int? ?? 0,
+          pendingSubmissions: t['pendingSubmissions'] as int? ?? 0,
+          submissionsEvaluated: t['submissionsEvaluated'] as int? ?? 0,
+          submissionsExpired: t['submissionsExpired'] as int? ?? 0,
+          averageTestScore: (t['averageTestScore'] as num? ?? 0).toDouble(),
+          totalRevenueCop: (ing['totalRevenueCop'] as num? ?? 0).toDouble(),
+          paymentsCompleted: ing['paymentsCompleted'] as int? ?? 0,
+          paymentsPending: ing['paymentsPending'] as int? ?? 0,
+          testCompletionRate: (tas['testCompletionRate'] as num? ?? 0).toDouble(),
+          selectionRate: (tas['selectionRate'] as num? ?? 0).toDouble(),
         ));
       },
+    );
+  }
+
+  @override
+  ResultFuture<List<AdminUser>> getAdminUsers(
+      {String? role, bool? isActive}) async {
+    final params = <String, String>{};
+    if (role != null) params['role'] = role;
+    if (isActive != null) params['isActive'] = isActive.toString();
+    final query =
+        params.isEmpty ? '' : '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+    final result =
+        await _client.get('${ApiConstants.adminUsers}$query');
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        final list = data as List<dynamic>? ?? [];
+        return Right(list
+            .map((u) => _parseAdminUser(u as Map<String, dynamic>))
+            .toList());
+      },
+    );
+  }
+
+  @override
+  ResultFuture<AdminUser> getAdminUserById(int userId) async {
+    final result = await _client.get(ApiConstants.adminUserById(userId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return Left(ServerFailure(message: 'Usuario $userId no encontrado.'));
+        }
+        return Right(_parseAdminUser(data as Map<String, dynamic>));
+      },
+    );
+  }
+
+  @override
+  ResultVoid createAdminUser({
+    required String fullName,
+    required String email,
+    required String cedula,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    final result = await _client.post(ApiConstants.adminUsers, body: {
+      'fullName': fullName,
+      'email': email,
+      'cedula': cedula,
+      'password': password,
+      'confirmPassword': confirmPassword,
+    });
+    return result.fold((f) => Left(f), (_) => const Right(null));
+  }
+
+  @override
+  ResultFuture<AdminUser> toggleUserStatus(int userId) async {
+    final result =
+        await _client.patch(ApiConstants.toggleUserStatus(userId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(ServerFailure(message: 'Error al cambiar estado'));
+        }
+        return Right(_parseAdminUser(data as Map<String, dynamic>));
+      },
+    );
+  }
+
+  @override
+  ResultVoid deleteUser(int userId) async {
+    final result = await _client.delete(ApiConstants.deleteUser(userId));
+    return result.fold((f) => Left(f), (_) => const Right(null));
+  }
+
+  AdminUser _parseAdminUser(Map<String, dynamic> m) {
+    return AdminUser(
+      id: m['id'] as int,
+      email: m['email'] as String,
+      fullName: m['fullName'] as String,
+      cedula: m['cedula'] as String? ?? '',
+      role: m['role'] as String,
+      isActive: m['isActive'] as bool? ?? true,
+      emailVerified: m['emailVerified'] as bool? ?? false,
+      createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+      profileName: m['profileName'] as String?,
     );
   }
 
@@ -704,8 +1093,8 @@ class RemoteDatasource implements AppDatasource {
 
   MatchStatus _parseStage(String stage) => switch (stage) {
         'Matched' => MatchStatus.new_,
-        'TestSent' => MatchStatus.reviewed,
-        'TestCompleted' => MatchStatus.reviewed,
+        'TestSent' => MatchStatus.testSent,
+        'TestCompleted' => MatchStatus.testCompleted,
         'Selected' => MatchStatus.shortlisted,
         'Rejected' => MatchStatus.rejected,
         _ => MatchStatus.new_,

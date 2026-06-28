@@ -47,17 +47,12 @@ class AppSidebar extends StatelessWidget {
         ],
       UserRole.company => [
           _NavItem(icon: Symbols.dashboard, label: 'Overview', route: AppRoutes.companyDashboard),
-          _NavItem(icon: Symbols.group, label: 'Talent Pool', route: AppRoutes.companyMatches),
-          _NavItem(icon: Symbols.alt_route, label: 'Pipeline', route: AppRoutes.companyMatches),
-          _NavItem(icon: Symbols.analytics, label: 'Reports', route: AppRoutes.companyDashboard),
+          _NavItem(icon: Symbols.work, label: 'Offers', route: AppRoutes.companyMatches),
           _NavItem(icon: Symbols.settings, label: 'Settings', route: AppRoutes.companySettings),
         ],
       UserRole.admin => [
           _NavItem(icon: Symbols.dashboard, label: 'Overview', route: AppRoutes.adminDashboard),
-          _NavItem(icon: Symbols.group, label: 'Talent Pool', route: AppRoutes.adminDashboard),
-          _NavItem(icon: Symbols.alt_route, label: 'Pipeline', route: AppRoutes.adminDashboard),
-          _NavItem(icon: Symbols.analytics, label: 'Reports', route: AppRoutes.adminDashboard),
-          _NavItem(icon: Symbols.settings, label: 'Settings', route: AppRoutes.adminDashboard),
+          _NavItem(icon: Symbols.group, label: 'Usuarios', route: AppRoutes.adminUsers),
         ],
     };
 

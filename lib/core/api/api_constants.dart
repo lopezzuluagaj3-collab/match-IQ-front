@@ -21,6 +21,7 @@ abstract class ApiConstants {
 
   // Company
   static const companyProfile = '/api/company/profile';
+  static const companyDashboard = '/api/company/dashboard';
 
   // Offers
   static const offerTiers = '/api/offers/tiers';
@@ -54,6 +55,8 @@ abstract class ApiConstants {
   static String testResult(int testId) => '/api/tests/$testId/result';
   static String questionChat(int questionId) =>
       '/api/tests/questions/$questionId/chat';
+  static String testSubmissionsByMatch(int matchId) =>
+      '/api/tests/submissions/$matchId';
 
   // Admin
   static const adminUsers = '/api/admin/users';

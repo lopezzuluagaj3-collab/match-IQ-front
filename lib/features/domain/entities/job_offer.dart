@@ -28,6 +28,7 @@ class JobOffer extends Equatable {
     this.positionsAvailable = 1,
     this.categoryIds = const [],
     this.skillIds = const [],
+    this.testDeadlineDays,
   });
 
   final String id;
@@ -54,6 +55,7 @@ class JobOffer extends Equatable {
   final int positionsAvailable;
   final List<int> categoryIds;
   final List<int> skillIds;
+  final int? testDeadlineDays;
 
   bool get isPendingPayment => status == 'PendingPayment';
   bool get isOpen => status == 'Open';
@@ -92,6 +94,7 @@ class CreateOfferInput {
     required this.title,
     required this.modality,
     required this.tierId,
+    required this.testDeadlineDays,
     this.description = '',
     this.salary,
     this.minExperienceYears,
@@ -104,6 +107,7 @@ class CreateOfferInput {
   final String title;
   final String modality; // 'remote'|'hybrid'|'onsite'
   final int tierId;
+  final int testDeadlineDays; // 1–90
   final String description;
   final int? salary;
   final int? minExperienceYears;

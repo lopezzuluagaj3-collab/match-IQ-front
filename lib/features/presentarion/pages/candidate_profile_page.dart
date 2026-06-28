@@ -118,13 +118,18 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
   }
 
-  void _openEditDialog(BuildContext context, CandidateProfile profile) {
-    context.read<CandidateCubit>().loadCategories();
+  Future<void> _openEditDialog(BuildContext context, CandidateProfile profile) async {
+    final cubit = context.read<CandidateCubit>();
+    await cubit.loadCategories();
+    if (profile.primaryCategoryId != null) {
+      await cubit.loadSkillsByCategory(profile.primaryCategoryId!);
+    }
+    if (!context.mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => BlocProvider.value(
-        value: context.read<CandidateCubit>(),
+        value: cubit,
         child: _ProfileEditDialog(profile: profile),
       ),
     );
@@ -572,6 +577,19 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
     if (p.englishLevel != null && _englishOptions.contains(p.englishLevel)) {
       _englishLevel = p.englishLevel!;
     }
+    // Pre-populate skills (IDs already loaded before dialog opened)
+    for (final entry in p.skillEntries) {
+      _selectedSkills[entry.id] = entry.level;
+    }
+    // Pre-select category after first frame (categories are in state by now)
+    if (p.primaryCategoryId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final cats = context.read<CandidateCubit>().state.categories;
+        final cat = cats.where((c) => c.id == p.primaryCategoryId).firstOrNull;
+        if (cat != null) setState(() => _selectedCategory = cat);
+      });
+    }
   }
 
   @override
@@ -611,6 +629,17 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
         .map((e) => {'skillId': e.key, 'level': e.value})
         .toList();
 
+    // Fall back to existing profile data if the user didn't change category/skills
+    final profile = widget.profile;
+    final categoryIds = _selectedCategory != null
+        ? [_selectedCategory!.id]
+        : (profile.primaryCategoryId != null ? [profile.primaryCategoryId!] : <int>[]);
+    final skills = skillsList.isNotEmpty
+        ? skillsList
+        : profile.skillEntries
+            .map((e) => {'skillId': e.id, 'level': e.level})
+            .toList();
+
     await cubit.updateProfile(
       experienceYears: int.tryParse(_yearsCtrl.text),
       seniority: _seniority,
@@ -621,8 +650,8 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
           _linkedinCtrl.text.trim().isEmpty ? null : _linkedinCtrl.text.trim(),
       profilePhotoUrl:
           _photoCtrl.text.trim().isEmpty ? null : _photoCtrl.text.trim(),
-      categoryIds: _selectedCategory != null ? [_selectedCategory!.id] : [],
-      skills: skillsList,
+      categoryIds: categoryIds,
+      skills: skills,
     );
 
     if (mounted) Navigator.of(context).pop();
@@ -1012,52 +1041,67 @@ class _SkillSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = level != null;
-    return GestureDetector(
-      onTap: onToggle,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
+    // Label and stars are SIBLING gesture zones (not nested) so tapping a star
+    // never triggers the toggle that would immediately deselect the skill.
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      decoration: BoxDecoration(
+        color: selected
+            ? AppColors.primaryContainer.withValues(alpha: 0.4)
+            : AppColors.surfaceContainer,
+        border: Border.all(
           color: selected
-              ? AppColors.primaryContainer.withValues(alpha: 0.4)
-              : AppColors.surfaceContainer,
-          border: Border.all(
-            color: selected
-                ? AppColors.onTertiaryContainer
-                : AppColors.outlineVariant,
-          ),
-          borderRadius: BorderRadius.circular(999),
+              ? AppColors.onTertiaryContainer
+              : AppColors.outlineVariant,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              skill.name,
-              style: AppTextStyles.labelSm.copyWith(
-                color: selected
-                    ? AppColors.onTertiaryContainer
-                    : AppColors.onSurface,
-                fontWeight: FontWeight.w600,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ── Label: tap to toggle selection ─────────────────────────
+          GestureDetector(
+            onTap: onToggle,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 12,
+                top: 7,
+                bottom: 7,
+                right: selected ? 6 : 12,
+              ),
+              child: Text(
+                skill.name,
+                style: AppTextStyles.labelSm.copyWith(
+                  color: selected
+                      ? AppColors.onTertiaryContainer
+                      : AppColors.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            if (selected) ...[
-              const SizedBox(width: 8),
-              Row(
-                children: List.generate(5, (i) {
-                  final star = i + 1;
-                  return GestureDetector(
-                    onTap: () => onLevelChanged(star),
-                    child: Icon(
-                      star <= (level ?? 0) ? Symbols.star : Symbols.star_outline,
-                      size: 14,
-                      color: AppColors.onTertiaryContainer,
-                    ),
-                  );
-                }),
-              ),
-            ],
+          ),
+          // ── Stars: tap to set level — separate from label zone ─────
+          if (selected) ...[
+            ...List.generate(5, (i) {
+              final star = i + 1;
+              return GestureDetector(
+                onTap: () => onLevelChanged(star),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 2, vertical: 8),
+                  child: Icon(
+                    star <= (level ?? 0)
+                        ? Symbols.star
+                        : Symbols.star_outline,
+                    size: 15,
+                    color: AppColors.onTertiaryContainer,
+                  ),
+                ),
+              );
+            }),
+            const SizedBox(width: 8),
           ],
-        ),
+        ],
       ),
     );
   }

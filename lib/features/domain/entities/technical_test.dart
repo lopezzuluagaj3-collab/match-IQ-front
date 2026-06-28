@@ -49,6 +49,10 @@ class TestQuestion extends Equatable {
     this.functionSignature,
     this.exampleInput,
     this.expectedBehavior,
+    this.correctAnswer,
+    this.explanation,
+    this.isGorilla = false,
+    this.gorillaHint,
   });
 
   final int id;
@@ -60,6 +64,10 @@ class TestQuestion extends Equatable {
   final String? functionSignature;
   final String? exampleInput;
   final String? expectedBehavior;
+  final String? correctAnswer; // e.g. "B"
+  final String? explanation;   // only visible to company
+  final bool isGorilla;
+  final String? gorillaHint;
 
   bool get isMultipleChoice => questionType == 'MultipleChoice';
 
@@ -143,4 +151,85 @@ class TestResult extends Equatable {
 
   @override
   List<Object?> get props => [status, score];
+}
+
+// ─── Match test submission (company view) ────────────────────────────────────
+
+class SubmissionQuestion extends Equatable {
+  const SubmissionQuestion({
+    required this.id,
+    required this.orderIndex,
+    required this.questionType,
+    required this.questionText,
+    this.options,
+    this.functionSignature,
+    this.expectedBehavior,
+    this.correctAnswer,
+    this.selectedOption,
+    this.codeSubmitted,
+    this.isCorrect,
+    this.aiFeedback,
+  });
+
+  final int id;
+  final int orderIndex;
+  final String questionType;
+  final String questionText;
+  final Map<String, String>? options;
+  final String? functionSignature;
+  final String? expectedBehavior;
+  final String? correctAnswer;
+  final String? selectedOption;
+  final String? codeSubmitted;
+  final bool? isCorrect;
+  final String? aiFeedback;
+
+  bool get isMultipleChoice => questionType == 'MultipleChoice';
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class MatchTestSubmission extends Equatable {
+  const MatchTestSubmission({
+    required this.matchId,
+    required this.candidateName,
+    required this.status,
+    required this.questions,
+    this.score,
+    this.globalFeedback,
+    this.submittedAt,
+    this.aiEvaluatedAt,
+  });
+
+  final int matchId;
+  final String candidateName;
+  final String status;
+  final List<SubmissionQuestion> questions;
+  final double? score;
+  final String? globalFeedback;
+  final DateTime? submittedAt;
+  final DateTime? aiEvaluatedAt;
+
+  int get totalQuestions => questions.length;
+  int get correctAnswers => questions.where((q) => q.isCorrect == true).length;
+  bool get isPending => status == 'Pending' || status == 'Failed';
+
+  @override
+  List<Object?> get props => [matchId];
+}
+
+// ─── Chat result (company editing questions via AI) ───────────────────────────
+
+class ChatResult extends Equatable {
+  const ChatResult({
+    required this.updatedQuestion,
+    required this.assistantMessage,
+  });
+
+  final TestQuestion updatedQuestion;
+  final String assistantMessage;
+
+  @override
+  List<Object?> get props => [updatedQuestion, assistantMessage];
 }

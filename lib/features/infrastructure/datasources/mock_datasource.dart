@@ -1,10 +1,13 @@
 import 'package:dartz/dartz.dart';
+import '../../../core/errors/failures.dart';
 import '../../../core/utils/typedef.dart';
 import '../../domain/entities/activity.dart';
 import '../../domain/entities/admin_stats.dart';
+import '../../domain/entities/admin_user.dart';
 import '../../domain/entities/candidate.dart';
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
+import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
@@ -136,6 +139,40 @@ class MockDatasource implements AppDatasource {
     ));
   }
 
+  // --- Company Dashboard ---
+
+  @override
+  ResultFuture<CompanyDashboardStats> getCompanyDashboard() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return const Right(CompanyDashboardStats(
+      offers: CompanyDashboardOffers(
+        total: 10,
+        open: 3,
+        testSent: 2,
+        completed: 4,
+        cancelled: 1,
+        expired: 0,
+        pendingPayment: 0,
+      ),
+      matches: CompanyDashboardMatches(
+        total: 87,
+        testSent: 40,
+        testCompleted: 31,
+        selected: 8,
+        rejected: 15,
+        selectionRate: 20.0,
+      ),
+      tests: CompanyDashboardTests(
+        sent: 40,
+        completed: 31,
+        evaluated: 28,
+        expired: 3,
+        completionRate: 77.5,
+        averageScore: 72.4,
+      ),
+    ));
+  }
+
   // --- Company Profile ---
 
   @override
@@ -205,6 +242,18 @@ class MockDatasource implements AppDatasource {
   }
 
   @override
+  ResultFuture<JobOffer> getOfferById(int offerId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final offer = _mockCompanyOffers
+        .where((o) => o.id == offerId.toString())
+        .firstOrNull;
+    if (offer == null) {
+      return const Left(ServerFailure(message: 'Oferta no encontrada'));
+    }
+    return Right(offer);
+  }
+
+  @override
   ResultFuture<String> createCheckout(int offerId) async {
     await Future.delayed(const Duration(milliseconds: 600));
     return const Right('https://checkout.wompi.co/l/mock-checkout-link');
@@ -229,6 +278,18 @@ class MockDatasource implements AppDatasource {
             .where((m) => m.offerId == offerId.toString())
             .toList()
         : _mockCandidateMatches);
+  }
+
+  @override
+  ResultFuture<List<CandidateMatch>> runMatching(int offerId) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    return Right(_mockCandidateMatches);
+  }
+
+  @override
+  ResultFuture<List<CandidateMatch>> reevaluateMatching(int offerId) async {
+    await Future.delayed(const Duration(milliseconds: 1000));
+    return Right(_mockCandidateMatches);
   }
 
   @override
@@ -267,24 +328,185 @@ class MockDatasource implements AppDatasource {
 
   // --- Company Tests ---
 
+  static const _mockTestSession = TestSession(
+    testId: 99,
+    offerId: 1,
+    title: 'Test técnico generado por IA',
+    timeLimitMinutes: 45,
+    questions: [
+      TestQuestion(
+        id: 100,
+        orderIndex: 0,
+        questionType: 'MultipleChoice',
+        questionText: '¿Cuál es la complejidad de búsqueda en un HashMap?',
+        options: {'A': 'O(n)', 'B': 'O(log n)', 'C': 'O(1)', 'D': 'O(n²)'},
+        correctAnswer: 'C',
+        explanation: 'HashMap utiliza hashing para O(1) promedio.',
+      ),
+    ],
+  );
+
   @override
-  ResultFuture<TestSession> generateTest(int offerId) async {
-    await Future.delayed(const Duration(milliseconds: 1500));
-    return const Right(TestSession(
-      testId: 99,
-      offerId: 1,
-      title: 'Test técnico generado por IA',
-      timeLimitMinutes: 45,
-      questions: [
-        TestQuestion(
-          id: 100,
-          orderIndex: 0,
+  ResultFuture<MatchTestSubmission> getTestSubmission(int matchId) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    return Right(MatchTestSubmission(
+      matchId: matchId,
+      candidateName: 'Carlos Mendoza',
+      status: 'Evaluated',
+      score: 82.5,
+      globalFeedback:
+          'El candidato demuestra un dominio sólido de estructuras de datos y algoritmos. '
+          'Respondió correctamente la mayoría de las preguntas de opción múltiple y presentó '
+          'una solución funcional al reto de código con complejidad O(n log n). '
+          'Se recomienda avanzar a la siguiente etapa del proceso.',
+      submittedAt: DateTime.now().subtract(const Duration(hours: 2)),
+      aiEvaluatedAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 55)),
+      questions: const [
+        SubmissionQuestion(
+          id: 1,
+          orderIndex: 1,
           questionType: 'MultipleChoice',
-          questionText: '¿Cuál es la complejidad de búsqueda en un HashMap?',
+          questionText: '¿Cuál es la complejidad temporal de búsqueda en un HashMap?',
           options: {'A': 'O(n)', 'B': 'O(log n)', 'C': 'O(1)', 'D': 'O(n²)'},
+          correctAnswer: 'C',
+          selectedOption: 'C',
+          isCorrect: true,
+          aiFeedback: 'HashMap usa hashing para lograr O(1) en el caso promedio.',
+        ),
+        SubmissionQuestion(
+          id: 2,
+          orderIndex: 2,
+          questionType: 'MultipleChoice',
+          questionText: '¿Qué patrón de arquitectura separa la lógica de negocio de la UI en Flutter?',
+          options: {
+            'A': 'MVC',
+            'B': 'BLoC / Cubit',
+            'C': 'Singleton',
+            'D': 'Observer'
+          },
+          correctAnswer: 'B',
+          selectedOption: 'B',
+          isCorrect: true,
+          aiFeedback: 'BLoC (Business Logic Component) es el patrón recomendado en Flutter para separar lógica de UI.',
+        ),
+        SubmissionQuestion(
+          id: 3,
+          orderIndex: 3,
+          questionType: 'MultipleChoice',
+          questionText: '¿Cuál de los siguientes NO es un principio SOLID?',
+          options: {
+            'A': 'Single Responsibility',
+            'B': 'Open/Closed',
+            'C': 'Dynamic Binding',
+            'D': 'Dependency Inversion'
+          },
+          correctAnswer: 'C',
+          selectedOption: 'A',
+          isCorrect: false,
+          aiFeedback: 'Dynamic Binding no es un principio SOLID. SOLID incluye: SRP, OCP, LSP, ISP, DIP.',
+        ),
+        SubmissionQuestion(
+          id: 4,
+          orderIndex: 4,
+          questionType: 'MultipleChoice',
+          questionText: '¿Qué estructura de datos es LIFO (Last In, First Out)?',
+          options: {
+            'A': 'Queue',
+            'B': 'Stack',
+            'C': 'LinkedList',
+            'D': 'Heap'
+          },
+          correctAnswer: 'B',
+          selectedOption: 'B',
+          isCorrect: true,
+          aiFeedback: 'Stack (pila) sigue el principio LIFO — el último elemento añadido es el primero en salir.',
+        ),
+        SubmissionQuestion(
+          id: 5,
+          orderIndex: 5,
+          questionType: 'MultipleChoice',
+          questionText: '¿Cuál es la diferencia principal entre `async/await` y `Future.then()` en Dart?',
+          options: {
+            'A': 'No hay diferencia, son equivalentes',
+            'B': 'async/await es más legible y maneja errores con try/catch',
+            'C': 'Future.then() es más eficiente en rendimiento',
+            'D': 'async/await solo funciona con streams'
+          },
+          correctAnswer: 'B',
+          selectedOption: 'B',
+          isCorrect: true,
+          aiFeedback: 'async/await es azúcar sintáctica sobre Futures que mejora la legibilidad y permite manejo de errores con try/catch.',
+        ),
+        SubmissionQuestion(
+          id: 6,
+          orderIndex: 6,
+          questionType: 'CodeChallenge',
+          questionText:
+              'Implementa una función en Dart que reciba una lista de enteros y retorne los elementos únicos ordenados de mayor a menor.',
+          functionSignature: 'List<int> uniqueSorted(List<int> nums)',
+          expectedBehavior: 'Retorna los elementos únicos de la lista, ordenados de mayor a menor.',
+          codeSubmitted: '''List<int> uniqueSorted(List<int> nums) {
+  return nums.toSet().toList()..sort((a, b) => b.compareTo(a));
+}''',
+          isCorrect: true,
+          aiFeedback: 'Solución correcta: usa Set para eliminar duplicados y sort con comparador inverso.',
         ),
       ],
     ));
+  }
+
+  @override
+  ResultFuture<TestSession> generateTest(int offerId, int timeLimitMinutes) async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    return Right(TestSession(
+      testId: _mockTestSession.testId,
+      offerId: offerId,
+      title: _mockTestSession.title,
+      timeLimitMinutes: timeLimitMinutes,
+      questions: _mockTestSession.questions,
+    ));
+  }
+
+  @override
+  ResultFuture<TestSession?> getTestByOffer(int offerId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return const Right(null); // no test yet in mock
+  }
+
+  @override
+  ResultFuture<TestSession> regenerateTest(int offerId, int timeLimitMinutes) async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    return Right(TestSession(
+      testId: _mockTestSession.testId,
+      offerId: offerId,
+      title: _mockTestSession.title,
+      timeLimitMinutes: timeLimitMinutes,
+      questions: _mockTestSession.questions,
+    ));
+  }
+
+  @override
+  ResultFuture<ChatResult> chatWithQuestion(int questionId, String message) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    const updatedQ = TestQuestion(
+      id: 100,
+      orderIndex: 0,
+      questionType: 'MultipleChoice',
+      questionText: '¿Cuál es la complejidad promedio de búsqueda en un HashMap?',
+      options: {'A': 'O(n)', 'B': 'O(log n)', 'C': 'O(1)', 'D': 'O(n²)'},
+      correctAnswer: 'C',
+      explanation: 'HashMap usa hashing para lograr O(1) en el caso promedio.',
+    );
+    return const Right(ChatResult(
+      updatedQuestion: updatedQ,
+      assistantMessage: 'He ajustado la pregunta para ser más específica sobre la complejidad promedio.',
+    ));
+  }
+
+  @override
+  ResultFuture<JobOffer> updateOffer(int offerId, Map<String, dynamic> fields) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return const Left(ServerFailure(message: 'Mock: updateOffer not implemented'));
   }
 
   // --- Admin ---
@@ -295,6 +517,71 @@ class MockDatasource implements AppDatasource {
     return Right(_mockAdminStats);
   }
 
+  @override
+  ResultFuture<List<AdminUser>> getAdminUsers(
+      {String? role, bool? isActive}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    var list = List<AdminUser>.from(_mockAdminUsers);
+    if (role != null) list = list.where((u) => u.role == role).toList();
+    if (isActive != null) {
+      list = list.where((u) => u.isActive == isActive).toList();
+    }
+    return Right(list);
+  }
+
+  @override
+  ResultFuture<AdminUser> getAdminUserById(int userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    try {
+      return Right(_mockAdminUsers.firstWhere((u) => u.id == userId));
+    } catch (_) {
+      return Left(ServerFailure(message: 'Usuario $userId no encontrado.'));
+    }
+  }
+
+  @override
+  ResultVoid createAdminUser({
+    required String fullName,
+    required String email,
+    required String cedula,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    return const Right(null);
+  }
+
+  @override
+  ResultFuture<AdminUser> toggleUserStatus(int userId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    try {
+      final user = _mockAdminUsers.firstWhere((u) => u.id == userId);
+      final updated = AdminUser(
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        cedula: user.cedula,
+        role: user.role,
+        isActive: !user.isActive,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+        profileName: user.profileName,
+      );
+      final idx = _mockAdminUsers.indexWhere((u) => u.id == userId);
+      _mockAdminUsers[idx] = updated;
+      return Right(updated);
+    } catch (_) {
+      return Left(ServerFailure(message: 'Usuario $userId no encontrado.'));
+    }
+  }
+
+  @override
+  ResultVoid deleteUser(int userId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    _mockAdminUsers.removeWhere((u) => u.id == userId);
+    return const Right(null);
+  }
+
   // ---- Mock Data ----
 
   static final _mockCandidateProfile = CandidateProfile(
@@ -302,8 +589,11 @@ class MockDatasource implements AppDatasource {
     name: 'Alex Reyes',
     email: 'candidate@test.com',
     headline: 'Senior Product Designer',
-    skills: const [
-      'UI/UX Design', 'Figma', 'Flutter', 'React', 'Design Systems', 'Prototyping'
+    primaryCategoryId: 2,
+    skillEntries: const [
+      SkillEntry(id: 5, name: 'React', level: 4),
+      SkillEntry(id: 7, name: 'TypeScript', level: 3),
+      SkillEntry(id: 8, name: 'Flutter', level: 5),
     ],
     matchScore: 94,
     profileStrength: 82,
@@ -479,7 +769,7 @@ class MockDatasource implements AppDatasource {
       aiStrengths: const ['React avanzado', 'TypeScript sólido', 'Experiencia en proyectos escalables'],
       aiOpportunities: const ['Puede reforzar Node.js'],
       aiRecommendation: 'Altamente recomendada para el test técnico.',
-      status: MatchStatus.reviewed,
+      status: MatchStatus.testCompleted,
     ),
     CandidateMatch(
       matchId: 2,
@@ -510,13 +800,102 @@ class MockDatasource implements AppDatasource {
   ];
 
   static const _mockAdminStats = AdminStats(
-    totalCandidates: 1248,
-    totalCompanies: 87,
+    totalCandidates: 120,
+    totalCompanies: 35,
+    usersRegisteredLast30Days: 45,
     totalOffers: 58,
-    totalMatches: 3421,
-    activeTests: 156,
+    offersCreatedLast30Days: 10,
+    offersActive: 18,
+    offersCompleted: 20,
+    offersCancelled: 3,
+    offersExpired: 1,
+    offersPendingPayment: 5,
+    offersByStatus: {
+      'PendingPayment': 5,
+      'Open': 18,
+      'Completed': 20,
+      'Cancelled': 3,
+      'Expired': 1,
+    },
+    totalMatches: 430,
+    matchesSelected: 28,
+    matchesRejected: 45,
+    matchesTestSent: 62,
+    matchesTestCompleted: 38,
+    activeTests: 12,
     pendingSubmissions: 8,
-    usersLast30Days: 43,
-    offersLast30Days: 10,
+    submissionsEvaluated: 95,
+    submissionsExpired: 12,
+    averageTestScore: 74.3,
+    totalRevenueCop: 4850000,
+    paymentsCompleted: 24,
+    paymentsPending: 3,
+    testCompletionRate: 88.8,
+    selectionRate: 25.2,
   );
+
+  static final _mockAdminUsers = <AdminUser>[
+    AdminUser(
+      id: 1,
+      email: 'admin@matchiq.co',
+      fullName: 'Admin MatchIQ',
+      cedula: '0000000001',
+      role: 'Admin',
+      isActive: true,
+      emailVerified: true,
+      createdAt: DateTime(2026, 1, 1),
+    ),
+    AdminUser(
+      id: 2,
+      email: 'maria.gonzalez@gmail.com',
+      fullName: 'María González',
+      cedula: '1234567890',
+      role: 'Candidate',
+      isActive: true,
+      emailVerified: true,
+      createdAt: DateTime(2026, 3, 15),
+    ),
+    AdminUser(
+      id: 3,
+      email: 'carlos.rueda@gmail.com',
+      fullName: 'Carlos Rueda',
+      cedula: '0987654321',
+      role: 'Candidate',
+      isActive: true,
+      emailVerified: true,
+      createdAt: DateTime(2026, 4, 2),
+    ),
+    AdminUser(
+      id: 4,
+      email: 'sofia.m@gmail.com',
+      fullName: 'Sofía Martínez',
+      cedula: '1122334455',
+      role: 'Candidate',
+      isActive: false,
+      emailVerified: false,
+      createdAt: DateTime(2026, 5, 10),
+    ),
+    AdminUser(
+      id: 5,
+      email: 'hr@stellarai.co',
+      fullName: 'Stellar AI HR',
+      cedula: '2233445566',
+      role: 'Company',
+      isActive: true,
+      emailVerified: true,
+      createdAt: DateTime(2026, 2, 20),
+      profileName: 'Stellar AI',
+    ),
+    AdminUser(
+      id: 6,
+      email: 'talent@nexusfintech.com',
+      fullName: 'Nexus FinTech Talent',
+      cedula: '3344556677',
+      role: 'Company',
+      isActive: true,
+      emailVerified: true,
+      createdAt: DateTime(2026, 3, 5),
+      profileName: 'Nexus FinTech',
+    ),
+  ];
 }

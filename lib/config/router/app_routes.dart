@@ -15,6 +15,19 @@ abstract class AppRoutes {
   static const companySettings = '/company/settings';
   static const companyMatches = '/company/matches';
   static const createOffer = '/company/offers/new';
+  static const offerPending = '/company/offers/:id/pending';
+  static String offerPendingPath(int id) => '/company/offers/$id/pending';
+
+  static const offerMatches = '/company/offers/:id/matches';
+  static String offerMatchesPath(int id) => '/company/offers/$id/matches';
+
+  static const matchTestResults = '/company/matches/:matchId/results';
+  static String matchTestResultsPath(int matchId) =>
+      '/company/matches/$matchId/results';
 
   static const adminDashboard = '/admin/dashboard';
+  static const adminUsers = '/admin/users';
+
+  static const paymentSuccess = '/payment/success';
+  static const paymentCancel = '/payment/cancel';
 }

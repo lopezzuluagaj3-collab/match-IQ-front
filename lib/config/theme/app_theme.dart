@@ -33,7 +33,10 @@ abstract class AppTheme {
           inversePrimary: AppColors.inversePrimary,
         ),
         scaffoldBackgroundColor: AppColors.background,
-        textTheme: GoogleFonts.interTextTheme(),
+        // fontFamily applies Inter to all default M3 text styles without
+        // overriding them with GoogleFonts objects (which carry extra metadata
+        // that can interfere with TextStyle.lerp during button state animations).
+        fontFamily: GoogleFonts.inter().fontFamily,
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.surfaceContainerLowest,
@@ -57,7 +60,10 @@ abstract class AppTheme {
             foregroundColor: AppColors.onPrimary,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            // No textStyle here — letting all states fall through to
+            // textTheme.labelLarge (inherit: false) avoids the lerp crash where
+            // one state resolves inherit:false and the other inherit:true.
+            // AppButton sets its own Text style explicitly so this has no visual effect.
           ),
         ),
         cardTheme: CardThemeData(
