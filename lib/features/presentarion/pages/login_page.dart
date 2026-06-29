@@ -75,9 +75,25 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            Center(
+            // ── Botón volver ──────────────────────────────────────────
+          Positioned(
+            top: 16,
+            left: 16,
+            child: SafeArea(
+              child: TextButton.icon(
+                onPressed: () => context.go(AppRoutes.landing),
+                icon: const Icon(Symbols.arrow_back, size: 17),
+                label: const Text('Inicio'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.onSurfaceVariant,
+                  textStyle: AppTextStyles.labelBold,
+                ),
+              ),
+            ),
+          ),
+          Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 56, 16, 16),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 480),
                   child: Column(
@@ -101,20 +117,16 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildHeader() {
     return Column(
       children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: const Icon(Symbols.auto_awesome, color: AppColors.onTertiaryContainer, size: 30),
+        Image.asset(
+          'assets/images/logo.jpeg',
+          height: 90,
+          fit: BoxFit.contain,
         ),
-        const SizedBox(height: 16),
-        Text('Platform Access', style: AppTextStyles.headlineLg),
+        const SizedBox(height: 20),
+        Text('Bienvenido de nuevo', style: AppTextStyles.headlineLg),
         const SizedBox(height: 6),
         Text(
-          'Welcome back, please login to your account',
+          'Inicia sesión para acceder a tu cuenta',
           style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),

@@ -1160,13 +1160,6 @@ class _EventRow extends StatelessWidget {
                   style: AppTextStyles.bodyMd
                       .copyWith(color: AppColors.onSurfaceVariant, fontSize: 12),
                 ),
-                if (event.evidencia != null) ...[
-                  const SizedBox(height: 6),
-                  Text('Ver evidencia',
-                      style: AppTextStyles.labelBold.copyWith(
-                          color: AppColors.secondary,
-                          decoration: TextDecoration.underline)),
-                ],
               ],
             ),
           ),

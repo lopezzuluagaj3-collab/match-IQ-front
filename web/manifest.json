@@ -1,11 +1,11 @@
 {
-    "name": "matchiq_frontend",
-    "short_name": "matchiq_frontend",
+    "name": "MatchIQ",
+    "short_name": "MatchIQ",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#000F1D",
+    "theme_color": "#000F1D",
+    "description": "AI-powered recruitment platform — match candidates with companies using intelligent scoring and automated technical assessments.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
