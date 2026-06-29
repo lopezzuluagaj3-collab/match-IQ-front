@@ -36,6 +36,7 @@ class AppRouter {
         initialLocation: AppRoutes.landing,
         refreshListenable: refreshListenable,
         debugLogDiagnostics: true,
+        errorBuilder: (_, state) => _NotFoundPage(uri: state.uri.toString()),
         redirect: (ctx, state) {
           final authState = ctx.read<AuthBloc>().state;
 
@@ -45,11 +46,14 @@ class AppRouter {
           final isAuth = authState is AuthAuthenticated;
           final path = state.uri.path;
 
+          // Reset-password must be reachable regardless of auth state
+          // (user may be logged in on another tab when they click the email link)
+          if (path == AppRoutes.resetPassword || path == '/reset-password') return null;
+
           const publicRoutes = [
             AppRoutes.landing,
             AppRoutes.login,
             AppRoutes.forgotPassword,
-            AppRoutes.resetPassword,
             AppRoutes.authUtility,
             AppRoutes.registerCandidate,
             AppRoutes.registerCompany,
@@ -84,6 +88,12 @@ class AppRouter {
             builder: (_, state) => ResetPasswordPage(
               token: state.uri.queryParameters['token'] ?? '',
             ),
+          ),
+          // Alias without /auth/ prefix — in case the backend generates /reset-password?token=...
+          GoRoute(
+            path: '/reset-password',
+            redirect: (_, state) =>
+                '${AppRoutes.resetPassword}?token=${state.uri.queryParameters['token'] ?? ''}',
           ),
           GoRoute(
             path: AppRoutes.authUtility,
@@ -199,4 +209,65 @@ class AppRouter {
           ),
         ],
       );
+}
+
+// ─── 404 page ─────────────────────────────────────────────────────────────────
+
+class _NotFoundPage extends StatelessWidget {
+  const _NotFoundPage({required this.uri});
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F9FB),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3B618A).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.link_off_rounded,
+                    size: 48, color: Color(0xFF3B618A)),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Página no encontrada',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000F1D)),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'La ruta "$uri" no existe en la aplicación.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 15, color: Color(0xFF5A7187)),
+              ),
+              const SizedBox(height: 32),
+              FilledButton.icon(
+                onPressed: () => GoRouter.of(context).go('/'),
+                icon: const Icon(Icons.home_rounded, size: 18),
+                label: const Text('Volver al inicio'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF3B618A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
