@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Steven/Desktop/matchiq-backend/MatchIQ.Application/**)",
+      "Read(//c/Users/Steven/Desktop/matchiq-backend/MatchIQ.Infrastructure/**)",
+      "Read(//c/Users/Steven/Desktop/matchiq-backend/MatchIQ.Domain/Entities/**)",
+      "Read(//c/Users/Steven/Desktop/matchiq-backend/MatchIQ.Domain/Enums/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Steven\\Desktop\\matchiq-backend\\MatchIQ.API",
+      "C:\\Users\\Steven\\Desktop\\matchiq-backend\\MatchIQ.Infrastructure\\Persistence"
+    ]
+  }
+}

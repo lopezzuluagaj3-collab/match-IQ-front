@@ -6,7 +6,6 @@ import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
 import '../../../core/utils/snackbar_helper.dart';
-import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -42,16 +41,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthAuthenticated) {
-          switch (state.user.role) {
-            case UserRole.candidate:
-              context.go(AppRoutes.candidateAssessments);
-            case UserRole.company:
-              context.go(AppRoutes.companyDashboard);
-            case UserRole.admin:
-              context.go(AppRoutes.adminDashboard);
-          }
-        }
         if (state is AuthPendingVerification) {
           context.go(
             AppRoutes.authUtility,

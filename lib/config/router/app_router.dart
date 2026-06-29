@@ -30,11 +30,16 @@ import '../../injection/injection_container.dart';
 import 'app_routes.dart';
 
 class AppRouter {
-  static GoRouter router(BuildContext context) => GoRouter(
+  static GoRouter router(BuildContext context, {Listenable? refreshListenable}) => GoRouter(
         initialLocation: AppRoutes.landing,
+        refreshListenable: refreshListenable,
         debugLogDiagnostics: true,
         redirect: (ctx, state) {
           final authState = ctx.read<AuthBloc>().state;
+
+          // Don't redirect while the initial session check is in flight
+          if (authState is AuthInitial || authState is AuthLoading) return null;
+
           final isAuth = authState is AuthAuthenticated;
           final path = state.uri.path;
 
@@ -51,7 +56,7 @@ class AppRouter {
 
           // Redirect authenticated users away from login/register
           if (isAuth && isPublic) {
-            final user = (authState as AuthAuthenticated).user; // isAuth guarantees this cast
+            final user = authState.user;
             return switch (user.role) {
               UserRole.candidate => AppRoutes.candidateAssessments,
               UserRole.company => AppRoutes.companyDashboard,
