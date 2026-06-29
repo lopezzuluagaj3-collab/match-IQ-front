@@ -1042,41 +1042,36 @@ class RemoteDatasource implements AppDatasource {
           return const Left(ServerFailure(message: 'Estadísticas no disponibles'));
         }
         final m = data as Map<String, dynamic>;
-        final u = m['usuarios'] as Map<String, dynamic>? ?? {};
-        final o = m['ofertas'] as Map<String, dynamic>? ?? {};
-        final match = m['matching'] as Map<String, dynamic>? ?? {};
-        final t = m['tests'] as Map<String, dynamic>? ?? {};
-        final ing = m['ingresos'] as Map<String, dynamic>? ?? {};
-        final tas = m['tasas'] as Map<String, dynamic>? ?? {};
-        final byStatus = (o['offersByStatus'] as Map<String, dynamic>? ?? {})
-            .map((k, v) => MapEntry(k, (v as num).toInt()));
+        final byStatus =
+            (m['offersByStatus'] as Map<String, dynamic>? ?? {})
+                .map((k, v) => MapEntry(k, (v as num).toInt()));
         return Right(AdminStats(
-          totalCandidates: u['totalCandidates'] as int? ?? 0,
-          totalCompanies: u['totalCompanies'] as int? ?? 0,
-          usersRegisteredLast30Days: u['usersRegisteredLast30Days'] as int? ?? 0,
-          totalOffers: o['totalOffers'] as int? ?? 0,
-          offersCreatedLast30Days: o['offersCreatedLast30Days'] as int? ?? 0,
-          offersActive: o['offersActive'] as int? ?? 0,
-          offersCompleted: o['offersCompleted'] as int? ?? 0,
-          offersCancelled: o['offersCancelled'] as int? ?? 0,
-          offersExpired: o['offersExpired'] as int? ?? 0,
-          offersPendingPayment: o['offersPendingPayment'] as int? ?? 0,
+          totalCandidates: m['totalCandidates'] as int? ?? 0,
+          totalCompanies: m['totalCompanies'] as int? ?? 0,
+          usersRegisteredLast30Days: m['usersRegisteredLast30Days'] as int? ?? 0,
+          totalOffers: m['totalOffers'] as int? ?? 0,
+          offersCreatedLast30Days: m['offersCreatedLast30Days'] as int? ?? 0,
+          offersActive: m['offersActive'] as int? ?? 0,
+          offersCompleted: m['offersCompleted'] as int? ?? 0,
+          offersCancelled: m['offersCancelled'] as int? ?? 0,
+          offersExpired: m['offersExpired'] as int? ?? 0,
+          offersPendingPayment: m['offersPendingPayment'] as int? ?? 0,
           offersByStatus: byStatus,
-          totalMatches: match['totalMatches'] as int? ?? 0,
-          matchesSelected: match['matchesSelected'] as int? ?? 0,
-          matchesRejected: match['matchesRejected'] as int? ?? 0,
-          matchesTestSent: match['matchesTestSent'] as int? ?? 0,
-          matchesTestCompleted: match['matchesTestCompleted'] as int? ?? 0,
-          activeTests: t['activeTests'] as int? ?? 0,
-          pendingSubmissions: t['pendingSubmissions'] as int? ?? 0,
-          submissionsEvaluated: t['submissionsEvaluated'] as int? ?? 0,
-          submissionsExpired: t['submissionsExpired'] as int? ?? 0,
-          averageTestScore: (t['averageTestScore'] as num? ?? 0).toDouble(),
-          totalRevenueCop: (ing['totalRevenueCop'] as num? ?? 0).toDouble(),
-          paymentsCompleted: ing['paymentsCompleted'] as int? ?? 0,
-          paymentsPending: ing['paymentsPending'] as int? ?? 0,
-          testCompletionRate: (tas['testCompletionRate'] as num? ?? 0).toDouble(),
-          selectionRate: (tas['selectionRate'] as num? ?? 0).toDouble(),
+          totalMatches: m['totalMatches'] as int? ?? 0,
+          matchesSelected: m['matchesSelected'] as int? ?? 0,
+          matchesRejected: m['matchesRejected'] as int? ?? 0,
+          matchesTestSent: m['matchesTestSent'] as int? ?? 0,
+          matchesTestCompleted: m['matchesTestCompleted'] as int? ?? 0,
+          activeTests: m['activeTests'] as int? ?? 0,
+          pendingSubmissions: m['pendingSubmissions'] as int? ?? 0,
+          submissionsEvaluated: m['submissionsEvaluated'] as int? ?? 0,
+          submissionsExpired: m['submissionsExpired'] as int? ?? 0,
+          averageTestScore: (m['averageTestScore'] as num? ?? 0).toDouble(),
+          totalRevenueCop: (m['totalRevenueCop'] as num? ?? 0).toDouble(),
+          paymentsCompleted: m['paymentsCompleted'] as int? ?? 0,
+          paymentsPending: m['paymentsPending'] as int? ?? 0,
+          testCompletionRate: (m['testCompletionRate'] as num? ?? 0).toDouble(),
+          selectionRate: (m['selectionRate'] as num? ?? 0).toDouble(),
         ));
       },
     );
@@ -1156,11 +1151,20 @@ class RemoteDatasource implements AppDatasource {
     return result.fold((f) => Left(f), (_) => const Right(null));
   }
 
+  @override
+  ResultFuture<List<int>> downloadAdminReport() async {
+    final result = await _client.getBytes(ApiConstants.adminReport);
+    return result.fold(
+      (f) => Left(f),
+      (bytes) => Right(bytes.toList()),
+    );
+  }
+
   AdminUser _parseAdminUser(Map<String, dynamic> m) {
     return AdminUser(
       id: m['id'] as int,
-      email: m['email'] as String,
-      fullName: m['fullName'] as String,
+      email: m['email'] as String? ?? '',
+      fullName: m['fullName'] as String? ?? '',
       cedula: m['cedula'] as String? ?? '',
       role: m['role'] as String,
       isActive: m['isActive'] as bool? ?? true,

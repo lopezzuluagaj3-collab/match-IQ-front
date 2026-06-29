@@ -1,5 +1,5 @@
 abstract class ApiConstants {
-  static const baseUrl = 'https://bank-n8n.coderhivex.com';
+  static const baseUrl = 'http://localhost:5000';
 
   // Auth
   static const register = '/api/auth/register';
@@ -69,4 +69,5 @@ abstract class ApiConstants {
       '/api/admin/users/$userId/toggle-status';
   static String deleteUser(int userId) => '/api/admin/users/$userId';
   static const adminStats = '/api/admin/stats';
+  static const adminReport = '/api/admin/report';
 }

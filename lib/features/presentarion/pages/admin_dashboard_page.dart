@@ -182,33 +182,79 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final isMobile = Responsive.isMobile(context);
+
+    final titleCol = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        Text('Admin Overview', style: AppTextStyles.headlineLg),
+        const SizedBox(height: 4),
+        Text('Estadísticas de la plataforma en tiempo real',
+            style: AppTextStyles.bodyLg
+                .copyWith(color: AppColors.onSurfaceVariant)),
+      ],
+    );
+
+    final downloadBtn = BlocBuilder<AdminCubit, AdminState>(
+      buildWhen: (p, c) => p.isDownloadingReport != c.isDownloadingReport,
+      builder: (context, state) => OutlinedButton.icon(
+        onPressed: state.isDownloadingReport
+            ? null
+            : () => context.read<AdminCubit>().downloadReport(),
+        icon: state.isDownloadingReport
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2))
+            : const Icon(Symbols.download, size: 18),
+        label: const Text('Reporte'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.secondary,
+          side: const BorderSide(color: AppColors.secondary),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
+    );
+
+    final usersBtn = ElevatedButton.icon(
+      onPressed: onViewUsers,
+      icon: const Icon(Symbols.group, size: 18),
+      label: const Text('Gestionar Usuarios'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.onTertiaryContainer,
+        foregroundColor: Colors.white,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleCol,
+          const SizedBox(height: 16),
+          Row(
             children: [
-              Text('Admin Overview', style: AppTextStyles.headlineLg),
-              const SizedBox(height: 4),
-              Text('Estadísticas de la plataforma en tiempo real',
-                  style: AppTextStyles.bodyLg
-                      .copyWith(color: AppColors.onSurfaceVariant)),
+              downloadBtn,
+              const SizedBox(width: 10),
+              Expanded(child: usersBtn),
             ],
           ),
-        ),
-        ElevatedButton.icon(
-          onPressed: onViewUsers,
-          icon: const Icon(Symbols.group, size: 18),
-          label: const Text('Gestionar Usuarios'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.onTertiaryContainer,
-            foregroundColor: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          ),
-        ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: titleCol),
+        const SizedBox(width: 12),
+        downloadBtn,
+        const SizedBox(width: 10),
+        usersBtn,
       ],
     );
   }

@@ -290,7 +290,12 @@ class CompanyCubit extends Cubit<CompanyState> {
     final result = await _datasource.sendTests(matchIds);
     result.fold(
       (f) => emit(state.copyWith(isSaving: false, error: f.message)),
-      (_) => emit(state.copyWith(isSaving: false)),
+      (_) async {
+        emit(state.copyWith(isSaving: false));
+        if (state.selectedOfferId != null && state.selectedOfferId! > 0) {
+          await loadOfferMatches(state.selectedOfferId!);
+        }
+      },
     );
   }
 

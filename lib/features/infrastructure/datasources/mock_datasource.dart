@@ -638,6 +638,12 @@ class MockDatasource implements AppDatasource {
     return const Right(null);
   }
 
+  @override
+  ResultFuture<List<int>> downloadAdminReport() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return const Right([]);
+  }
+
   // ---- Mock Data ----
 
   static final _mockCandidateProfile = CandidateProfile(

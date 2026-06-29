@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/web/download_helper.dart';
 import '../../domain/entities/admin_stats.dart';
 import '../../domain/entities/admin_user.dart';
 import '../../infrastructure/datasources/app_datasource.dart';
@@ -13,17 +14,19 @@ class AdminState extends Equatable {
     this.isLoading = false,
     this.isLoadingUsers = false,
     this.isSaving = false,
+    this.isDownloadingReport = false,
     this.error,
     this.successMessage,
   });
 
   final AdminStats? stats;
   final List<AdminUser> users;
-  final String? roleFilter;   // null | 'Candidate' | 'Company' | 'Admin'
-  final bool? activeFilter;   // null | true | false
+  final String? roleFilter;
+  final bool? activeFilter;
   final bool isLoading;
   final bool isLoadingUsers;
   final bool isSaving;
+  final bool isDownloadingReport;
   final String? error;
   final String? successMessage;
 
@@ -37,6 +40,7 @@ class AdminState extends Equatable {
     bool? isLoading,
     bool? isLoadingUsers,
     bool? isSaving,
+    bool? isDownloadingReport,
     String? error,
     bool clearError = false,
     String? successMessage,
@@ -51,6 +55,7 @@ class AdminState extends Equatable {
         isLoading: isLoading ?? this.isLoading,
         isLoadingUsers: isLoadingUsers ?? this.isLoadingUsers,
         isSaving: isSaving ?? this.isSaving,
+        isDownloadingReport: isDownloadingReport ?? this.isDownloadingReport,
         error: clearError ? null : (error ?? this.error),
         successMessage:
             clearSuccess ? null : (successMessage ?? this.successMessage),
@@ -59,7 +64,8 @@ class AdminState extends Equatable {
   @override
   List<Object?> get props => [
         stats, users, roleFilter, activeFilter,
-        isLoading, isLoadingUsers, isSaving, error, successMessage,
+        isLoading, isLoadingUsers, isSaving, isDownloadingReport,
+        error, successMessage,
       ];
 }
 
@@ -122,6 +128,20 @@ class AdminCubit extends Cubit<AdminState> {
             isSaving: false,
             users: newUsers,
             successMessage: 'Usuario eliminado.'));
+      },
+    );
+  }
+
+  Future<void> downloadReport() async {
+    emit(state.copyWith(isDownloadingReport: true, clearError: true));
+    final result = await _datasource.downloadAdminReport();
+    result.fold(
+      (f) => emit(state.copyWith(isDownloadingReport: false, error: f.message)),
+      (bytes) {
+        if (bytes.isNotEmpty) {
+          triggerFileDownload(bytes, 'reporte-admin.xlsx');
+        }
+        emit(state.copyWith(isDownloadingReport: false));
       },
     );
   }

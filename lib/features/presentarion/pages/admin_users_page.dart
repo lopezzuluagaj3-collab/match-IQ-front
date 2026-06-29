@@ -83,110 +83,84 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Gestión de Usuarios',
-                              style: AppTextStyles.headlineLg),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${state.users.length} usuario${state.users.length == 1 ? '' : 's'}',
-                            style: AppTextStyles.bodyMd.copyWith(
-                                color: AppColors.onSurfaceVariant),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => _showCreateAdminDialog(context),
-                      icon: const Icon(Symbols.person_add, size: 18),
-                      label: const Text('Nuevo Admin'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.onTertiaryContainer,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 14),
-                      ),
-                    ),
-                  ],
+                _UsersPageHeader(
+                  userCount: state.users.length,
+                  onCreateAdmin: () => _showCreateAdminDialog(context),
                 ),
                 const SizedBox(height: 20),
 
                 // Filters + search
                 AppCard(
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Search
-                      Expanded(
-                        child: TextField(
-                          controller: _searchCtrl,
-                          onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                            hintText: 'Buscar por nombre o email...',
-                            hintStyle: AppTextStyles.bodyMd.copyWith(
-                                color: AppColors.outline),
-                            prefixIcon: const Icon(Symbols.search,
-                                size: 18, color: AppColors.outline),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: AppColors.outlineVariant
-                                      .withValues(alpha: 0.5)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: AppColors.outlineVariant
-                                      .withValues(alpha: 0.5)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                  color: AppColors.secondary),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            isDense: true,
+                      TextField(
+                        controller: _searchCtrl,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: 'Buscar por nombre o email...',
+                          hintStyle: AppTextStyles.bodyMd
+                              .copyWith(color: AppColors.outline),
+                          prefixIcon: const Icon(Symbols.search,
+                              size: 18, color: AppColors.outline),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant
+                                    .withValues(alpha: 0.5)),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant
+                                    .withValues(alpha: 0.5)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: AppColors.secondary),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          isDense: true,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(height: 12),
 
-                      // Role filter
-                      _FilterChip(
-                        label: 'Todos',
-                        active: _roleFilter == null && _activeFilter == null,
-                        onTap: () => _applyFilter(),
-                      ),
-                      const SizedBox(width: 8),
-                      _FilterChip(
-                        label: 'Candidatos',
-                        active: _roleFilter == 'Candidate',
-                        onTap: () => _applyFilter(role: 'Candidate'),
-                      ),
-                      const SizedBox(width: 8),
-                      _FilterChip(
-                        label: 'Empresas',
-                        active: _roleFilter == 'Company',
-                        onTap: () => _applyFilter(role: 'Company'),
-                      ),
-                      const SizedBox(width: 8),
-                      _FilterChip(
-                        label: 'Admins',
-                        active: _roleFilter == 'Admin',
-                        onTap: () => _applyFilter(role: 'Admin'),
-                      ),
-                      const SizedBox(width: 16),
-                      _FilterChip(
-                        label: 'Inactivos',
-                        active: _activeFilter == false,
-                        onTap: () => _applyFilter(active: false),
-                        color: AppColors.error,
+                      // Filter chips — Wrap so they never overflow on mobile
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _FilterChip(
+                            label: 'Todos',
+                            active: _roleFilter == null &&
+                                _activeFilter == null,
+                            onTap: () => _applyFilter(),
+                          ),
+                          _FilterChip(
+                            label: 'Candidatos',
+                            active: _roleFilter == 'Candidate',
+                            onTap: () => _applyFilter(role: 'Candidate'),
+                          ),
+                          _FilterChip(
+                            label: 'Empresas',
+                            active: _roleFilter == 'Company',
+                            onTap: () => _applyFilter(role: 'Company'),
+                          ),
+                          _FilterChip(
+                            label: 'Admins',
+                            active: _roleFilter == 'Admin',
+                            onTap: () => _applyFilter(role: 'Admin'),
+                          ),
+                          _FilterChip(
+                            label: 'Inactivos',
+                            active: _activeFilter == false,
+                            onTap: () => _applyFilter(active: false),
+                            color: AppColors.error,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -287,6 +261,64 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
           confirmCtrl: confirmCtrl,
         ),
       ),
+    );
+  }
+}
+
+// ─── Users page header ────────────────────────────────────────────────────────
+
+class _UsersPageHeader extends StatelessWidget {
+  const _UsersPageHeader(
+      {required this.userCount, required this.onCreateAdmin});
+  final int userCount;
+  final VoidCallback onCreateAdmin;
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
+    final titleCol = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Gestión de Usuarios', style: AppTextStyles.headlineLg),
+        const SizedBox(height: 4),
+        Text(
+          '$userCount usuario${userCount == 1 ? '' : 's'}',
+          style:
+              AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+        ),
+      ],
+    );
+
+    final createBtn = ElevatedButton.icon(
+      onPressed: onCreateAdmin,
+      icon: const Icon(Symbols.person_add, size: 18),
+      label: const Text('Nuevo Admin'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.onTertiaryContainer,
+        foregroundColor: Colors.white,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleCol,
+          const SizedBox(height: 12),
+          SizedBox(width: double.infinity, child: createBtn),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: titleCol),
+        createBtn,
+      ],
     );
   }
 }

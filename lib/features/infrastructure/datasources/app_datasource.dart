@@ -85,4 +85,5 @@ abstract class AppDatasource {
   });
   ResultFuture<AdminUser> toggleUserStatus(int userId);
   ResultVoid deleteUser(int userId);
+  ResultFuture<List<int>> downloadAdminReport();
 }
