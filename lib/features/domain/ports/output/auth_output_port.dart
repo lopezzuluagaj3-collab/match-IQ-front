@@ -16,6 +16,11 @@ abstract class AuthOutputPort {
     required String password,
   });
   ResultVoid forgotPassword({required String email});
+  ResultVoid changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  });
   ResultVoid resetPassword({
     required String token,
     required String newPassword,

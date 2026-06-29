@@ -9,6 +9,7 @@ abstract class ApiConstants {
   static const refresh = '/api/auth/refresh';
   static const forgotPassword = '/api/auth/forgot-password';
   static const resetPassword = '/api/auth/reset-password';
+  static const changePassword = '/api/auth/change-password';
 
   static const logout = '/api/auth/logout';
 

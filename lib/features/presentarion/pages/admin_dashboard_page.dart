@@ -11,6 +11,7 @@ import '../../domain/entities/user.dart';
 import '../bloc/admin_cubit.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
+import '../widgets/shared/change_password_card.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -134,6 +135,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           Expanded(child: _RatesCard(s: s)),
                         ]),
                 ),
+                const SizedBox(height: 28),
+
+                // ── Cuenta ────────────────────────────────────────────────
+                _SectionTitle(icon: Symbols.manage_accounts, label: 'Cuenta'),
+                const SizedBox(height: 12),
+                const ChangePasswordCard(),
               ],
             ),
           );

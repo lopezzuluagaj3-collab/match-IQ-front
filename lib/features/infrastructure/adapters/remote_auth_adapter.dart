@@ -152,6 +152,23 @@ class RemoteAuthAdapter implements AuthOutputPort {
   }
 
   @override
+  ResultVoid changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final result = await _client.post(
+      ApiConstants.changePassword,
+      body: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
+      },
+    );
+    return result.fold((f) => Left(f), (_) => const Right(null));
+  }
+
+  @override
   ResultVoid forgotPassword({required String email}) async {
     final result = await _client.post(
       ApiConstants.forgotPassword,

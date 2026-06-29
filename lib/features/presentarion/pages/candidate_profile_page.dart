@@ -13,6 +13,7 @@ import '../../domain/entities/user.dart';
 import '../bloc/candidate_cubit.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
+import '../widgets/shared/change_password_card.dart';
 
 class CandidateProfilePage extends StatefulWidget {
   const CandidateProfilePage({super.key});
@@ -129,6 +130,8 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                         );
                       },
                     ),
+                    const SizedBox(height: 20),
+                    const ChangePasswordCard(),
                   ],
                 ),
               ),
@@ -175,19 +178,10 @@ class _ProfileHeaderCard extends StatelessWidget {
               // Avatar
               Stack(
                 children: [
-                  CircleAvatar(
+                  _ProfileAvatar(
+                    url: profile.avatarUrl,
+                    name: profile.name,
                     radius: 44,
-                    backgroundColor: AppColors.primaryContainer,
-                    backgroundImage: profile.avatarUrl != null
-                        ? NetworkImage(profile.avatarUrl!)
-                        : null,
-                    child: profile.avatarUrl == null
-                        ? Text(
-                            profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-                            style: AppTextStyles.headlineLg.copyWith(
-                                color: AppColors.onPrimary, fontSize: 30),
-                          )
-                        : null,
                   ),
                   if (profile.profileStrength == 100)
                     Positioned(
@@ -821,6 +815,48 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                         decoration: _dec('https://...'),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _photoCtrl,
+                      builder: (_, value, __) {
+                        final url = value.text.trim();
+                        if (url.isEmpty) return const SizedBox.shrink();
+                        return Row(
+                          children: [
+                            ClipOval(
+                              child: SizedBox(
+                                width: 52,
+                                height: 52,
+                                child: Image.network(
+                                  url,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    color: AppColors.errorContainer,
+                                    child: const Icon(Symbols.broken_image,
+                                        color: AppColors.error, size: 24),
+                                  ),
+                                  loadingBuilder: (_, child, progress) =>
+                                      progress == null
+                                          ? child
+                                          : Container(
+                                              color: AppColors.primaryContainer,
+                                              child: const Center(
+                                                child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: AppColors.onTertiaryContainer),
+                                              ),
+                                            ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text('Preview',
+                                style: AppTextStyles.labelSm
+                                    .copyWith(color: AppColors.onSurfaceVariant)),
+                          ],
+                        );
+                      },
+                    ),
 
                     const SizedBox(height: 20),
                     _SectionLabel('Specialty'),
@@ -1150,6 +1186,66 @@ class _SkillSelectorState extends State<_SkillSelector> {
             const SizedBox(width: 8),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ─── Avatar con Image.network en vez de backgroundImage (evita negro en web) ──
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({
+    required this.url,
+    required this.name,
+    required this.radius,
+  });
+
+  final String? url;
+  final String name;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final size = radius * 2;
+
+    Widget fallback = CircleAvatar(
+      radius: radius,
+      backgroundColor: AppColors.primaryContainer,
+      child: Text(
+        initial,
+        style: AppTextStyles.headlineLg
+            .copyWith(color: AppColors.onPrimary, fontSize: radius * 0.68),
+      ),
+    );
+
+    if (url == null || url!.isEmpty) return fallback;
+
+    return ClipOval(
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Image.network(
+          url!,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => fallback,
+          loadingBuilder: (_, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: size,
+              height: size,
+              color: AppColors.primaryContainer,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.onTertiaryContainer,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

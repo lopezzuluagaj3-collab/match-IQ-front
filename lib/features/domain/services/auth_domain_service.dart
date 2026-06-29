@@ -43,6 +43,17 @@ class AuthDomainService implements AuthInputPort {
       _outputPort.forgotPassword(email: email);
 
   @override
+  ResultVoid changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) =>
+      _outputPort.changePassword(
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword);
+
+  @override
   ResultVoid resetPassword({
     required String token,
     required String newPassword,

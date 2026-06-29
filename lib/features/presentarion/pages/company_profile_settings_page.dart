@@ -10,6 +10,7 @@ import '../../../config/theme/responsive.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
 import '../widgets/shared/app_text_field.dart';
+import '../widgets/shared/change_password_card.dart';
 
 class CompanyProfileSettingsPage extends StatefulWidget {
   const CompanyProfileSettingsPage({super.key});
@@ -158,6 +159,8 @@ class _CompanyProfileSettingsPageState extends State<CompanyProfileSettingsPage>
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    const ChangePasswordCard(),
                   ],
                 );
               },
