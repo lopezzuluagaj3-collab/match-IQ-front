@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/candidate.dart';
 import '../../domain/entities/technical_test.dart';
 import '../../domain/entities/user.dart';
@@ -50,7 +51,7 @@ class _DashboardContent extends StatelessWidget {
         final userName = profile?.name ?? 'there';
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
+          padding: Responsive.pagePadding(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,21 +59,36 @@ class _DashboardContent extends StatelessWidget {
               const SizedBox(height: 32),
               _KpiGrid(profile: profile),
               const SizedBox(height: 32),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _TestsSection(tests: state.pendingTests),
-                  ),
-                  const SizedBox(width: 32),
-                  SizedBox(
-                    width: 300,
-                    child: profile != null
-                        ? _ProfileStrengthCard(profile: profile!)
-                        : const SizedBox.shrink(),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (_, constraints) {
+                  if (constraints.maxWidth < 600) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (profile != null)
+                          _ProfileStrengthCard(profile: profile),
+                        if (profile != null) const SizedBox(height: 20),
+                        _TestsSection(tests: state.pendingTests),
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: _TestsSection(tests: state.pendingTests),
+                      ),
+                      const SizedBox(width: 32),
+                      SizedBox(
+                        width: 300,
+                        child: profile != null
+                            ? _ProfileStrengthCard(profile: profile)
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -156,28 +172,44 @@ class _KpiGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: _ProfileStrengthCircle(strength: profile?.profileStrength ?? 0)),
-        const SizedBox(width: 20),
-        Expanded(child: _KpiCard(
-          icon: Symbols.assignment,
-          value: '${profile?.pendingTests ?? 0}',
-          label: 'Pending Tests',
-          iconBgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
-          iconColor: AppColors.secondary,
-          progress: ((profile?.pendingTests ?? 0) / 10).clamp(0.0, 1.0),
-        )),
-        const SizedBox(width: 20),
-        Expanded(child: _KpiCard(
-          icon: Symbols.send,
-          value: '${profile?.activeApplications ?? 0}',
-          label: 'Active Applications',
-          iconBgColor: AppColors.primaryContainer.withValues(alpha: 0.1),
-          iconColor: AppColors.primary,
-          progress: ((profile?.activeApplications ?? 0) / 10).clamp(0.0, 1.0),
-        )),
-      ],
+    final cards = [
+      _ProfileStrengthCircle(strength: profile?.profileStrength ?? 0),
+      _KpiCard(
+        icon: Symbols.assignment,
+        value: '${profile?.pendingTests ?? 0}',
+        label: 'Pending Tests',
+        iconBgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
+        iconColor: AppColors.secondary,
+        progress: ((profile?.pendingTests ?? 0) / 10).clamp(0.0, 1.0),
+      ),
+      _KpiCard(
+        icon: Symbols.send,
+        value: '${profile?.activeApplications ?? 0}',
+        label: 'Active Applications',
+        iconBgColor: AppColors.primaryContainer.withValues(alpha: 0.1),
+        iconColor: AppColors.primary,
+        progress: ((profile?.activeApplications ?? 0) / 10).clamp(0.0, 1.0),
+      ),
+    ];
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        if (constraints.maxWidth < 520) {
+          final w = (constraints.maxWidth - 12) / 2;
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: cards.map((c) => SizedBox(width: w, child: c)).toList(),
+          );
+        }
+        return Row(
+          children: [
+            for (int i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: 20),
+              Expanded(child: cards[i]),
+            ],
+          ],
+        );
+      },
     );
   }
 }

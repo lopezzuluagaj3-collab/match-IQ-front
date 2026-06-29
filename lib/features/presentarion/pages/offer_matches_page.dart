@@ -9,6 +9,7 @@ import '../../domain/entities/company.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/company_cubit.dart';
+import '../../../config/theme/responsive.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
 
@@ -49,7 +50,7 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
           final offer = _findOffer(state);
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: Responsive.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -115,13 +116,15 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
                                 .read<CompanyCubit>()
                                 .sendTests(ids);
                             if (!context.mounted) return;
-                            setState(() => _selectedMatchIds.clear());
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Tests enviados!'),
-                                  backgroundColor:
-                                      AppColors.onTertiaryContainer),
-                            );
+                            final error =
+                                context.read<CompanyCubit>().state.error;
+                            if (error != null) {
+                              _showErrorSnackbar(context, error);
+                            } else {
+                              setState(() => _selectedMatchIds.clear());
+                              _showSuccessSnackbar(
+                                  context, 'Tests enviados correctamente.');
+                            }
                           },
                   ),
                   const SizedBox(height: 12),
@@ -147,12 +150,14 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
                                     .read<CompanyCubit>()
                                     .sendTests([id]);
                                 if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Test enviado!'),
-                                      backgroundColor:
-                                          AppColors.onTertiaryContainer),
-                                );
+                                final error =
+                                    context.read<CompanyCubit>().state.error;
+                                if (error != null) {
+                                  _showErrorSnackbar(context, error);
+                                } else {
+                                  _showSuccessSnackbar(
+                                      context, 'Test enviado correctamente.');
+                                }
                               },
                               onSelect: (id) => context
                                   .read<CompanyCubit>()
@@ -179,6 +184,33 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
         final sb = b.adjustedScore ?? b.matchScore.toDouble();
         return sb.compareTo(sa);
       });
+  }
+
+  void _showSuccessSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: AppColors.onTertiaryContainer,
+    ));
+  }
+
+  void _showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.warning_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 10),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: AppColors.error,
+      duration: const Duration(seconds: 6),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Colors.white,
+        onPressed: () =>
+            ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+      ),
+    ));
   }
 }
 
@@ -266,7 +298,10 @@ class _MatchingActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 10,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         OutlinedButton.icon(
           onPressed:
@@ -282,8 +317,7 @@ class _MatchingActions extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           ),
         ),
-        if (hasMatches) ...[
-          const SizedBox(width: 10),
+        if (hasMatches)
           OutlinedButton.icon(
             onPressed: isSaving
                 ? null
@@ -301,16 +335,13 @@ class _MatchingActions extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             ),
           ),
-        ],
-        if (isSaving) ...[
-          const SizedBox(width: 12),
+        if (isSaving)
           const SizedBox(
             width: 16,
             height: 16,
             child: CircularProgressIndicator(
                 strokeWidth: 2, color: AppColors.onTertiaryContainer),
           ),
-        ],
       ],
     );
   }
@@ -439,146 +470,181 @@ class _CandidateMatchCard extends StatelessWidget {
       _ => AppColors.outlineVariant,
     };
     final isRejected = match.status == MatchStatus.rejected;
+    final isMobile = Responsive.isMobile(context);
+
+    final rankBadge = Container(
+      width: 36,
+      height: 36,
+      margin: const EdgeInsets.only(top: 2),
+      decoration: BoxDecoration(
+        color: rank <= 3
+            ? rankColor.withValues(alpha: 0.15)
+            : AppColors.surfaceContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Text('#$rank',
+            style: AppTextStyles.labelSm.copyWith(
+                color: rank <= 3 ? rankColor : AppColors.outline,
+                fontWeight: FontWeight.w700,
+                fontSize: 13)),
+      ),
+    );
+
+    final avatar = Opacity(
+      opacity: isRejected ? 0.4 : 1,
+      child: CircleAvatar(
+        radius: 22,
+        backgroundColor: AppColors.secondaryContainer.withValues(alpha: 0.4),
+        child: Text(
+          match.candidateName.isNotEmpty ? match.candidateName[0] : '?',
+          style: AppTextStyles.labelBold
+              .copyWith(color: AppColors.secondary, fontSize: 16),
+        ),
+      ),
+    );
+
+    final infoColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              match.candidateName,
+              style: AppTextStyles.labelBold.copyWith(
+                  fontSize: 15,
+                  color: isRejected ? AppColors.outline : AppColors.onSurface),
+            ),
+            _StatusPill(status: match.status),
+          ],
+        ),
+        if (match.headline.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(match.headline,
+              style: AppTextStyles.labelSm
+                  .copyWith(color: AppColors.onSurfaceVariant)),
+        ],
+        if (match.email != null) ...[
+          const SizedBox(height: 2),
+          Text(match.email!,
+              style: AppTextStyles.labelSm
+                  .copyWith(color: AppColors.secondary, fontSize: 11)),
+        ],
+        if (match.skills.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: match.skills
+                .take(4)
+                .map((s) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainer,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(s,
+                          style: AppTextStyles.labelSm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              fontSize: 11)),
+                    ))
+                .toList(),
+          ),
+        ],
+      ],
+    );
+
+    final scoreAndActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ScoreBox(match: match),
+        const SizedBox(width: 12),
+        if (!isRejected)
+          _ActionButtons(
+            match: match,
+            onSendTest: () => onSendTest(match.matchId),
+            onSelect: () => onSelect(match.matchId),
+            onReject: () => onReject(match.matchId),
+            onViewResults: () => onViewResults(match.matchId),
+          )
+        else
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text('Rechazado',
+                style: TextStyle(
+                    color: AppColors.error,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600)),
+          ),
+      ],
+    );
 
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Checkbox
-              if (match.canSendTest)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Checkbox(
-                    value: isSelected,
-                    onChanged: (_) => onToggleSelect(match.matchId),
-                    activeColor: AppColors.onTertiaryContainer,
-                    side: const BorderSide(color: AppColors.outlineVariant),
-                  ),
-                )
-              else
-                const SizedBox(width: 4),
-
-              // Rank badge
-              Container(
-                width: 36,
-                height: 36,
-                margin: const EdgeInsets.only(top: 2),
-                decoration: BoxDecoration(
-                  color: rank <= 3
-                      ? rankColor.withValues(alpha: 0.15)
-                      : AppColors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text('#$rank',
-                      style: AppTextStyles.labelSm.copyWith(
-                          color: rank <= 3 ? rankColor : AppColors.outline,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13)),
-                ),
-              ),
-              const SizedBox(width: 14),
-
-              // Avatar
-              Opacity(
-                opacity: isRejected ? 0.4 : 1,
-                child: CircleAvatar(
-                  radius: 22,
-                  backgroundColor:
-                      AppColors.secondaryContainer.withValues(alpha: 0.4),
-                  child: Text(
-                    match.candidateName.isNotEmpty
-                        ? match.candidateName[0]
-                        : '?',
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: AppColors.secondary, fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-
-              // Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          match.candidateName,
-                          style: AppTextStyles.labelBold.copyWith(
-                              fontSize: 15,
-                              color: isRejected
-                                  ? AppColors.outline
-                                  : AppColors.onSurface),
-                        ),
-                        const SizedBox(width: 8),
-                        _StatusPill(status: match.status),
-                      ],
+          if (isMobile) ...[
+            // Mobile: top row with checkbox + rank + avatar + info
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (match.canSendTest)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Checkbox(
+                      value: isSelected,
+                      onChanged: (_) => onToggleSelect(match.matchId),
+                      activeColor: AppColors.onTertiaryContainer,
+                      side: const BorderSide(color: AppColors.outlineVariant),
+                      visualDensity: VisualDensity.compact,
                     ),
-                    if (match.headline.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(match.headline,
-                          style: AppTextStyles.labelSm.copyWith(
-                              color: AppColors.onSurfaceVariant)),
-                    ],
-                    if (match.email != null) ...[
-                      const SizedBox(height: 2),
-                      Text(match.email!,
-                          style: AppTextStyles.labelSm.copyWith(
-                              color: AppColors.secondary, fontSize: 11)),
-                    ],
-                    if (match.skills.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
-                        children: match.skills.take(4).map((s) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceContainer,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(s,
-                                  style: AppTextStyles.labelSm.copyWith(
-                                      color: AppColors.onSurfaceVariant,
-                                      fontSize: 11)),
-                            )).toList(),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-
-              // Score
-              _ScoreBox(match: match),
-              const SizedBox(width: 14),
-
-              // Actions
-              if (!isRejected)
-                _ActionButtons(
-                  match: match,
-                  onSendTest: () => onSendTest(match.matchId),
-                  onSelect: () => onSelect(match.matchId),
-                  onReject: () => onReject(match.matchId),
-                  onViewResults: () => onViewResults(match.matchId),
-                )
-              else
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text('Rechazado',
-                      style: TextStyle(
-                          color: AppColors.error,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600)),
-                ),
-            ],
-          ),
+                  )
+                else
+                  const SizedBox(width: 4),
+                rankBadge,
+                const SizedBox(width: 12),
+                avatar,
+                const SizedBox(width: 12),
+                Expanded(child: infoColumn),
+              ],
+            ),
+            // Mobile: score + actions below
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [scoreAndActions],
+            ),
+          ] else ...[
+            // Desktop: everything in one row
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (match.canSendTest)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Checkbox(
+                      value: isSelected,
+                      onChanged: (_) => onToggleSelect(match.matchId),
+                      activeColor: AppColors.onTertiaryContainer,
+                      side: const BorderSide(color: AppColors.outlineVariant),
+                    ),
+                  )
+                else
+                  const SizedBox(width: 4),
+                rankBadge,
+                const SizedBox(width: 14),
+                avatar,
+                const SizedBox(width: 14),
+                Expanded(child: infoColumn),
+                const SizedBox(width: 16),
+                scoreAndActions,
+              ],
+            ),
+          ],
 
           // AI Insight
           if (match.aiInsight != null) ...[

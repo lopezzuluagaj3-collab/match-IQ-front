@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/user.dart';
@@ -129,7 +130,7 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
         currentRoute: AppRoutes.createOffer,
         role: UserRole.company,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
+          padding: Responsive.pagePadding(context),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
             child: BlocBuilder<CompanyCubit, CompanyState>(
@@ -290,88 +291,117 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: AppTextField(
-                                    label: 'Monthly Salary (COP)',
-                                    hint: 'e.g. 5000000',
-                                    prefixIcon: Symbols.payments,
-                                    controller: _salaryCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: AppTextField(
-                                    label: 'Min. Experience (years)',
-                                    hint: 'e.g. 3',
-                                    prefixIcon: Symbols.timeline,
-                                    controller: _expCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('English Level', style: AppTextStyles.labelBold),
-                                      const SizedBox(height: 6),
-                                      DropdownButtonFormField<String>(
-                                        value: _englishLevel,
-                                        decoration: const InputDecoration(hintText: 'Not required'),
-                                        items: [
-                                          const DropdownMenuItem(value: null, child: Text('Not required')),
-                                          ..._englishLevels.map((l) =>
-                                              DropdownMenuItem(value: l, child: Text(l))),
-                                        ],
-                                        onChanged: (v) => setState(() => _englishLevel = v),
+                            LayoutBuilder(
+                              builder: (_, c) => c.maxWidth < 480
+                                  ? Column(children: [
+                                      AppTextField(
+                                        label: 'Monthly Salary (COP)',
+                                        hint: 'e.g. 5000000',
+                                        prefixIcon: Symbols.payments,
+                                        controller: _salaryCtrl,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: AppTextField(
-                                    label: 'Open Positions',
-                                    hint: '1',
-                                    prefixIcon: Symbols.group,
-                                    controller: _positionsCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                  ),
-                                ),
-                              ],
+                                      const SizedBox(height: 16),
+                                      AppTextField(
+                                        label: 'Min. Experience (years)',
+                                        hint: 'e.g. 3',
+                                        prefixIcon: Symbols.timeline,
+                                        controller: _expCtrl,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                      ),
+                                    ])
+                                  : Row(children: [
+                                      Expanded(
+                                        child: AppTextField(
+                                          label: 'Monthly Salary (COP)',
+                                          hint: 'e.g. 5000000',
+                                          prefixIcon: Symbols.payments,
+                                          controller: _salaryCtrl,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: AppTextField(
+                                          label: 'Min. Experience (years)',
+                                          hint: 'e.g. 3',
+                                          prefixIcon: Symbols.timeline,
+                                          controller: _expCtrl,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                        ),
+                                      ),
+                                    ]),
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: AppTextField(
-                                    label: 'Test Deadline (days)',
-                                    hint: '7',
-                                    prefixIcon: Symbols.timer,
-                                    controller: _deadlineCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                    validator: (v) {
-                                      final n = int.tryParse(v ?? '');
-                                      if (n == null || n < 1 || n > 90) {
-                                        return 'Enter a value between 1 and 90';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                const Expanded(child: SizedBox()),
-                              ],
+                            LayoutBuilder(
+                              builder: (_, c) {
+                                final englishDropdown = Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('English Level', style: AppTextStyles.labelBold),
+                                    const SizedBox(height: 6),
+                                    DropdownButtonFormField<String>(
+                                      value: _englishLevel,
+                                      decoration: const InputDecoration(hintText: 'Not required'),
+                                      items: [
+                                        const DropdownMenuItem(value: null, child: Text('Not required')),
+                                        ..._englishLevels.map((l) =>
+                                            DropdownMenuItem(value: l, child: Text(l))),
+                                      ],
+                                      onChanged: (v) => setState(() => _englishLevel = v),
+                                    ),
+                                  ],
+                                );
+                                final positionsField = AppTextField(
+                                  label: 'Open Positions',
+                                  hint: '1',
+                                  prefixIcon: Symbols.group,
+                                  controller: _positionsCtrl,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                );
+                                if (c.maxWidth < 480) {
+                                  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                    englishDropdown,
+                                    const SizedBox(height: 16),
+                                    positionsField,
+                                  ]);
+                                }
+                                return Row(children: [
+                                  Expanded(child: englishDropdown),
+                                  const SizedBox(width: 16),
+                                  Expanded(child: positionsField),
+                                ]);
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            LayoutBuilder(
+                              builder: (_, c) {
+                                final deadlineField = AppTextField(
+                                  label: 'Test Deadline (days)',
+                                  hint: '7',
+                                  prefixIcon: Symbols.timer,
+                                  controller: _deadlineCtrl,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  validator: (v) {
+                                    final n = int.tryParse(v ?? '');
+                                    if (n == null || n < 1 || n > 90) {
+                                      return 'Enter a value between 1 and 90';
+                                    }
+                                    return null;
+                                  },
+                                );
+                                if (c.maxWidth < 480) return deadlineField;
+                                return Row(children: [
+                                  Expanded(child: deadlineField),
+                                  const Expanded(child: SizedBox()),
+                                ]);
+                              },
                             ),
                           ],
                         ),
@@ -507,11 +537,11 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                           ),
                           const SizedBox(width: 12),
                           AppButton(
-                            label: _selectedTierId != null ? 'Create & Pay' : 'Create Offer',
+                            label: 'Create Offer',
                             isEmerald: true,
                             isLoading: state.isSaving,
                             icon: Symbols.publish,
-                            onPressed: _submit,
+                            onPressed: state.isSaving ? null : _submit,
                           ),
                         ],
                       ),

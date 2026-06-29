@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'config/router/app_router.dart';
 import 'config/theme/app_theme.dart';
@@ -12,6 +13,7 @@ import 'features/presentarion/bloc/company_cubit.dart';
 import 'injection/injection_container.dart';
 
 void main() async {
+  usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
   runApp(const MatchIQApp());

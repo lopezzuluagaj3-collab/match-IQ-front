@@ -73,6 +73,15 @@ class TestCubit extends Cubit<TestState> {
     );
   }
 
+  Future<void> fetchResult(int testId) async {
+    emit(state.copyWith(isLoading: true));
+    final result = await _datasource.getTestResult(testId);
+    result.fold(
+      (f) => emit(state.copyWith(isLoading: false, error: f.message)),
+      (testResult) => emit(state.copyWith(isLoading: false, result: testResult)),
+    );
+  }
+
   Future<void> submitTest(int testId, Map<int, String> mcAnswers, Map<int, String> codeAnswers) async {
     emit(state.copyWith(isSubmitting: true));
     final answers = [

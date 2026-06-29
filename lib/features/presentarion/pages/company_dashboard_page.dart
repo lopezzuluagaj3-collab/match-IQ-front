@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/user.dart';
@@ -40,7 +41,7 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
           }
           final dash = state.dashboard;
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: Responsive.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -99,65 +100,86 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final isMobile = Responsive.isMobile(context);
+
+    final titleColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        Text(
+          'Bienvenida, ${profile?.name ?? 'Empresa'}',
+          style: AppTextStyles.headlineLg,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Aquí tienes el resumen de tu actividad en la plataforma.',
+          style: AppTextStyles.bodyLg
+              .copyWith(color: AppColors.onSurfaceVariant),
+        ),
+      ],
+    );
+
+    final downloadButton = BlocBuilder<CompanyCubit, CompanyState>(
+      buildWhen: (prev, cur) =>
+          prev.isDownloadingReport != cur.isDownloadingReport,
+      builder: (context, state) => OutlinedButton.icon(
+        onPressed: state.isDownloadingReport
+            ? null
+            : () => context.read<CompanyCubit>().downloadReport(),
+        icon: state.isDownloadingReport
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Symbols.download, size: 18),
+        label: const Text('Descargar reporte'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.secondary,
+          side: const BorderSide(color: AppColors.secondary),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
+    );
+
+    final newOfferButton = ElevatedButton.icon(
+      onPressed: () => context.go(AppRoutes.createOffer),
+      icon: const Icon(Symbols.add, size: 18),
+      label: const Text('Nueva Oferta'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.onTertiaryContainer,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleColumn,
+          const SizedBox(height: 16),
+          Row(
             children: [
-              Text(
-                'Bienvenida, ${profile?.name ?? 'Empresa'}',
-                style: AppTextStyles.headlineLg,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Aquí tienes el resumen de tu actividad en la plataforma.',
-                style: AppTextStyles.bodyLg
-                    .copyWith(color: AppColors.onSurfaceVariant),
-              ),
+              Expanded(child: downloadButton),
+              const SizedBox(width: 10),
+              Expanded(child: newOfferButton),
             ],
           ),
-        ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: titleColumn),
         const SizedBox(width: 12),
-        BlocBuilder<CompanyCubit, CompanyState>(
-          buildWhen: (prev, cur) =>
-              prev.isDownloadingReport != cur.isDownloadingReport,
-          builder: (context, state) => OutlinedButton.icon(
-            onPressed: state.isDownloadingReport
-                ? null
-                : () => context.read<CompanyCubit>().downloadReport(),
-            icon: state.isDownloadingReport
-                ? const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Symbols.download, size: 18),
-            label: const Text('Descargar reporte'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.secondary,
-              side: const BorderSide(color: AppColors.secondary),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
+        downloadButton,
         const SizedBox(width: 12),
-        ElevatedButton.icon(
-          onPressed: () => context.go(AppRoutes.createOffer),
-          icon: const Icon(Symbols.add, size: 18),
-          label: const Text('Nueva Oferta'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.onTertiaryContainer,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          ),
-        ),
+        newOfferButton,
       ],
     );
   }
@@ -199,60 +221,63 @@ class _OffersRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _StatCard(
-            value: '${offers.open}',
-            label: 'Activas',
-            icon: Symbols.circle,
-            color: AppColors.onTertiaryContainer,
-            note: 'Acumulando candidatos',
-          ),
+    final cards = <Widget>[
+      _StatCard(
+        value: '${offers.open}',
+        label: 'Activas',
+        icon: Symbols.circle,
+        color: AppColors.onTertiaryContainer,
+        note: 'Acumulando candidatos',
+      ),
+      _StatCard(
+        value: '${offers.testSent}',
+        label: 'Test enviado',
+        icon: Symbols.send,
+        color: AppColors.secondary,
+        note: 'En evaluación',
+      ),
+      _StatCard(
+        value: '${offers.completed}',
+        label: 'Completadas',
+        icon: Symbols.check_circle,
+        color: AppColors.primary,
+        note: 'Proceso finalizado',
+      ),
+      _StatCard(
+        value: '${offers.pendingPayment}',
+        label: 'Sin pagar',
+        icon: Symbols.payment,
+        color: const Color(0xFFF59E0B),
+        note: offers.pendingPayment > 0 ? 'Requieren pago' : 'Todo al día',
+      ),
+      if (offers.cancelled > 0 || offers.expired > 0)
+        _StatCard(
+          value: '${offers.cancelled + offers.expired}',
+          label: 'Canceladas/Expiradas',
+          icon: Symbols.cancel,
+          color: AppColors.error,
+          note: '${offers.cancelled} canceladas · ${offers.expired} expiradas',
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _StatCard(
-            value: '${offers.testSent}',
-            label: 'Test enviado',
-            icon: Symbols.send,
-            color: AppColors.secondary,
-            note: 'En evaluación',
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _StatCard(
-            value: '${offers.completed}',
-            label: 'Completadas',
-            icon: Symbols.check_circle,
-            color: AppColors.primary,
-            note: 'Proceso finalizado',
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _StatCard(
-            value: '${offers.pendingPayment}',
-            label: 'Sin pagar',
-            icon: Symbols.payment,
-            color: const Color(0xFFF59E0B),
-            note: offers.pendingPayment > 0 ? 'Requieren pago' : 'Todo al día',
-          ),
-        ),
-        if (offers.cancelled > 0 || offers.expired > 0) ...[
-          const SizedBox(width: 16),
-          Expanded(
-            child: _StatCard(
-              value: '${offers.cancelled + offers.expired}',
-              label: 'Canceladas/Expiradas',
-              icon: Symbols.cancel,
-              color: AppColors.error,
-              note: '${offers.cancelled} canceladas · ${offers.expired} expiradas',
-            ),
-          ),
-        ],
-      ],
+    ];
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        if (constraints.maxWidth < 520) {
+          final w = (constraints.maxWidth - 12) / 2;
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: cards.map((c) => SizedBox(width: w, child: c)).toList(),
+          );
+        }
+        return Row(
+          children: [
+            for (int i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: 16),
+              Expanded(child: cards[i]),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -270,38 +295,27 @@ class _MatchesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // KPI row
-          Row(
-            children: [
-              _InlineKpi(
-                value: '${matches.total}',
-                label: 'Total matches',
-                color: AppColors.primary,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${matches.testSent}',
-                label: 'Test enviado',
-                color: AppColors.secondary,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${matches.testCompleted}',
-                label: 'Test completado',
-                color: AppColors.onTertiaryContainer,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${matches.selected}',
-                label: 'Seleccionados',
-                color: AppColors.onTertiaryContainer,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${matches.rejected}',
-                label: 'Rechazados',
-                color: AppColors.error,
-              ),
-            ],
+          LayoutBuilder(
+            builder: (_, constraints) {
+              final kpis = [
+                _InlineKpi(value: '${matches.total}', label: 'Total matches', color: AppColors.primary),
+                _InlineKpi(value: '${matches.testSent}', label: 'Test enviado', color: AppColors.secondary),
+                _InlineKpi(value: '${matches.testCompleted}', label: 'Test completado', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${matches.selected}', label: 'Seleccionados', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${matches.rejected}', label: 'Rechazados', color: AppColors.error),
+              ];
+              if (constraints.maxWidth < 480) {
+                return Wrap(spacing: 20, runSpacing: 12, children: kpis);
+              }
+              return Row(
+                children: [
+                  for (int i = 0; i < kpis.length; i++) ...[
+                    if (i > 0) _Divider(),
+                    Expanded(child: kpis[i]),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 20),
 
@@ -346,32 +360,26 @@ class _TestsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // KPI row
-          Row(
-            children: [
-              _InlineKpi(
-                value: '${tests.sent}',
-                label: 'Enviados',
-                color: AppColors.secondary,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${tests.completed}',
-                label: 'Completados',
-                color: AppColors.onTertiaryContainer,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${tests.evaluated}',
-                label: 'Evaluados por IA',
-                color: AppColors.onTertiaryContainer,
-              ),
-              _Divider(),
-              _InlineKpi(
-                value: '${tests.expired}',
-                label: 'Expirados',
-                color: AppColors.error,
-              ),
-            ],
+          LayoutBuilder(
+            builder: (_, constraints) {
+              final kpis = [
+                _InlineKpi(value: '${tests.sent}', label: 'Enviados', color: AppColors.secondary),
+                _InlineKpi(value: '${tests.completed}', label: 'Completados', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${tests.evaluated}', label: 'Evaluados por IA', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${tests.expired}', label: 'Expirados', color: AppColors.error),
+              ];
+              if (constraints.maxWidth < 480) {
+                return Wrap(spacing: 20, runSpacing: 12, children: kpis);
+              }
+              return Row(
+                children: [
+                  for (int i = 0; i < kpis.length; i++) ...[
+                    if (i > 0) _Divider(),
+                    Expanded(child: kpis[i]),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 20),
 
@@ -590,19 +598,17 @@ class _InlineKpi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(value,
-              style: AppTextStyles.headlineMd
-                  .copyWith(color: color, fontSize: 26, height: 1.1)),
-          const SizedBox(height: 2),
-          Text(label,
-              style: AppTextStyles.labelSm.copyWith(
-                  color: AppColors.onSurfaceVariant, fontSize: 12)),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value,
+            style: AppTextStyles.headlineMd
+                .copyWith(color: color, fontSize: 26, height: 1.1)),
+        const SizedBox(height: 2),
+        Text(label,
+            style: AppTextStyles.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant, fontSize: 12)),
+      ],
     );
   }
 }

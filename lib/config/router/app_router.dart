@@ -11,6 +11,7 @@ import '../../features/presentarion/pages/admin_dashboard_page.dart';
 import '../../features/presentarion/pages/admin_users_page.dart';
 import '../../features/presentarion/pages/auth_utility_page.dart';
 import '../../features/presentarion/pages/candidate_dashboard_page.dart';
+import '../../features/presentarion/pages/candidate_test_result_page.dart';
 import '../../features/presentarion/pages/candidate_profile_page.dart';
 import '../../features/presentarion/pages/candidate_registration_page.dart';
 import '../../features/presentarion/pages/company_dashboard_page.dart';
@@ -119,6 +120,14 @@ class AppRouter {
                   offerId: state.pathParameters['id'] ?? ''),
             ),
           ),
+          GoRoute(
+            path: AppRoutes.candidateTestResult,
+            builder: (_, state) => BlocProvider(
+              create: (_) => sl<TestCubit>(),
+              child: CandidateTestResultPage(
+                  testId: state.pathParameters['id'] ?? ''),
+            ),
+          ),
 
           // Company
           GoRoute(
@@ -160,19 +169,14 @@ class AppRouter {
             },
           ),
 
-          // Payment return URLs
+          // Payment return URL (Stripe redirects both success and cancel here)
           GoRoute(
-            path: AppRoutes.paymentSuccess,
+            path: AppRoutes.paymentResult,
             builder: (_, state) {
-              final offerId = int.tryParse(state.uri.queryParameters['offerId'] ?? '');
-              return PaymentResultPage(success: true, offerId: offerId);
-            },
-          ),
-          GoRoute(
-            path: AppRoutes.paymentCancel,
-            builder: (_, state) {
-              final offerId = int.tryParse(state.uri.queryParameters['offerId'] ?? '');
-              return PaymentResultPage(success: false, offerId: offerId);
+              final params = state.uri.queryParameters;
+              final offerId = int.tryParse(params['offerId'] ?? '');
+              final sessionId = params['session_id'];
+              return PaymentResultPage(offerId: offerId, sessionId: sessionId);
             },
           ),
 

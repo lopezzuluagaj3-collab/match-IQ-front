@@ -10,6 +10,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
 
@@ -140,6 +141,16 @@ class MockDatasource implements AppDatasource {
     ));
   }
 
+  @override
+  ResultFuture<TestResult> getTestResult(int testId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return const Right(TestResult(
+      score: 85.0,
+      feedback: 'Good performance! You demonstrated solid understanding of the core concepts.',
+      status: 'Evaluated',
+    ));
+  }
+
   // --- Company Dashboard ---
 
   @override
@@ -255,9 +266,15 @@ class MockDatasource implements AppDatasource {
   }
 
   @override
-  ResultFuture<String> createCheckout(int offerId) async {
+  ResultFuture<CheckoutResult> createCheckout(int offerId) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return const Right('https://checkout.wompi.co/l/mock-checkout-link');
+    return const Right(CheckoutResult(url: 'https://checkout.stripe.com/c/pay/mock', activated: false));
+  }
+
+  @override
+  ResultFuture<bool> verifySession(String sessionId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return const Right(true);
   }
 
   // --- Company Matching ---

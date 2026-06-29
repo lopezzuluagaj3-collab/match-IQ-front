@@ -1,5 +1,5 @@
 abstract class ApiConstants {
-  static const baseUrl = 'http://localhost:5000';
+  static const baseUrl = 'https://bank-n8n.coderhivex.com';
 
   // Auth
   static const register = '/api/auth/register';
@@ -34,6 +34,7 @@ abstract class ApiConstants {
 
   // Payments
   static const createCheckout = '/api/payments/create-checkout';
+  static const verifySession = '/api/payments/verify-session';
 
   // Matching
   static String matchingByOffer(int offerId) => '/api/matching/$offerId';

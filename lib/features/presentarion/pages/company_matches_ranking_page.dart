@@ -8,6 +8,7 @@ import '../../../config/theme/app_text_styles.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/company_cubit.dart';
+import '../../../config/theme/responsive.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
 
@@ -35,41 +36,14 @@ class _CompanyMatchesRankingPageState
       child: BlocBuilder<CompanyCubit, CompanyState>(
         builder: (context, state) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: Responsive.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Mis Ofertas', style: AppTextStyles.headlineLg),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${state.offers.length} oferta${state.offers.length == 1 ? '' : 's'} creada${state.offers.length == 1 ? '' : 's'}',
-                            style: AppTextStyles.bodyMd.copyWith(
-                                color: AppColors.onSurfaceVariant),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => context.go(AppRoutes.createOffer),
-                      icon: const Icon(Symbols.add, size: 18),
-                      label: const Text('Nueva Oferta'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.onTertiaryContainer,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 14),
-                      ),
-                    ),
-                  ],
+                _PageHeader(
+                  offersCount: state.offers.length,
+                  isLoading: state.isLoading,
                 ),
                 const SizedBox(height: 24),
 
@@ -90,6 +64,88 @@ class _CompanyMatchesRankingPageState
           );
         },
       ),
+    );
+  }
+}
+
+// ─── Page Header ─────────────────────────────────────────────────────────────
+
+class _PageHeader extends StatelessWidget {
+  const _PageHeader({required this.offersCount, required this.isLoading});
+  final int offersCount;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
+    final titleColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Mis Ofertas', style: AppTextStyles.headlineLg),
+        const SizedBox(height: 4),
+        Text(
+          '$offersCount oferta${offersCount == 1 ? '' : 's'} creada${offersCount == 1 ? '' : 's'}',
+          style: AppTextStyles.bodyMd
+              .copyWith(color: AppColors.onSurfaceVariant),
+        ),
+      ],
+    );
+
+    final refreshBtn = IconButton(
+      tooltip: 'Refresh',
+      onPressed: isLoading
+          ? null
+          : () => context.read<CompanyCubit>().loadOffers(),
+      icon: isLoading
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.onSurfaceVariant,
+              ),
+            )
+          : const Icon(Symbols.refresh, color: AppColors.onSurfaceVariant),
+    );
+
+    final newOfferBtn = ElevatedButton.icon(
+      onPressed: () => context.go(AppRoutes.createOffer),
+      icon: const Icon(Symbols.add, size: 18),
+      label: const Text('Nueva Oferta'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.onTertiaryContainer,
+        foregroundColor: Colors.white,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleColumn,
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              refreshBtn,
+              const SizedBox(width: 8),
+              Expanded(child: newOfferBtn),
+            ],
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: titleColumn),
+        refreshBtn,
+        const SizedBox(width: 8),
+        newOfferBtn,
+      ],
     );
   }
 }

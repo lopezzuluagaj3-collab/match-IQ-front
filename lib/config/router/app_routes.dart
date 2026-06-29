@@ -10,6 +10,8 @@ abstract class AppRoutes {
   static const candidateProfile = '/candidate/profile';
   static const candidateAssessments = '/candidate/assessments';
   static const technicalTest = '/candidate/test/:id';
+  static const candidateTestResult = '/candidate/test/:id/result';
+  static String candidateTestResultPath(int testId) => '/candidate/test/$testId/result';
 
   static const companyDashboard = '/company/dashboard';
   static const companySettings = '/company/settings';
@@ -28,6 +30,5 @@ abstract class AppRoutes {
   static const adminDashboard = '/admin/dashboard';
   static const adminUsers = '/admin/users';
 
-  static const paymentSuccess = '/payment/success';
-  static const paymentCancel = '/payment/cancel';
+  static const paymentResult = '/payment-result';
 }

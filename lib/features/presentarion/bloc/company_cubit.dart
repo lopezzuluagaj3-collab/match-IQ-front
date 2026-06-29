@@ -5,6 +5,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 import '../../infrastructure/datasources/app_datasource.dart';
 
@@ -20,6 +21,8 @@ class CompanyState extends Equatable {
     this.aiParseResult,
     this.createdOffer,
     this.checkoutUrl,
+    this.offerActivated = false,
+    this.sessionActivated,
     this.selectedOfferId,
     this.testSession,
     this.testSubmission,
@@ -45,6 +48,8 @@ class CompanyState extends Equatable {
   final AiParseResult? aiParseResult;
   final JobOffer? createdOffer;
   final String? checkoutUrl;
+  final bool offerActivated;
+  final bool? sessionActivated;
   final int? selectedOfferId;
   final TestSession? testSession;
   final MatchTestSubmission? testSubmission;
@@ -73,6 +78,9 @@ class CompanyState extends Equatable {
     bool clearCreatedOffer = false,
     String? checkoutUrl,
     bool clearCheckoutUrl = false,
+    bool? offerActivated,
+    bool? sessionActivated,
+    bool clearSessionActivated = false,
     int? selectedOfferId,
     TestSession? testSession,
     bool clearTestSession = false,
@@ -103,6 +111,8 @@ class CompanyState extends Equatable {
         aiParseResult: clearAiParseResult ? null : (aiParseResult ?? this.aiParseResult),
         createdOffer: clearCreatedOffer ? null : (createdOffer ?? this.createdOffer),
         checkoutUrl: clearCheckoutUrl ? null : (checkoutUrl ?? this.checkoutUrl),
+        offerActivated: offerActivated ?? this.offerActivated,
+        sessionActivated: clearSessionActivated ? null : (sessionActivated ?? this.sessionActivated),
         selectedOfferId: selectedOfferId ?? this.selectedOfferId,
         testSession: clearTestSession ? null : (testSession ?? this.testSession),
         testSubmission: clearTestSubmission ? null : (testSubmission ?? this.testSubmission),
@@ -121,8 +131,8 @@ class CompanyState extends Equatable {
   @override
   List<Object?> get props => [
         dashboard, profile, matches, offers, tiers, categories, availableSkills,
-        aiParseResult, createdOffer, checkoutUrl, selectedOfferId,
-        testSession, testSubmission, lastChatMessage, proctoringReport,
+        aiParseResult, createdOffer, checkoutUrl, offerActivated, sessionActivated,
+        selectedOfferId, testSession, testSubmission, lastChatMessage, proctoringReport,
         isLoading, isLoadingMatches, isLoadingSubmission,
         isLoadingProctoring, isDownloadingReport, isSaving, isParsing, error,
       ];
@@ -419,11 +429,27 @@ class CompanyCubit extends Cubit<CompanyState> {
   }
 
   Future<void> createCheckout(int offerId) async {
-    emit(state.copyWith(isSaving: true, clearCheckoutUrl: true, clearError: true));
+    if (state.isSaving) return;
+    emit(state.copyWith(isSaving: true, clearCheckoutUrl: true, offerActivated: false, clearError: true));
     final result = await _datasource.createCheckout(offerId);
     result.fold(
       (f) => emit(state.copyWith(isSaving: false, error: f.message)),
-      (url) => emit(state.copyWith(isSaving: false, checkoutUrl: url)),
+      (checkout) {
+        if (checkout.activated) {
+          emit(state.copyWith(isSaving: false, offerActivated: true));
+        } else {
+          emit(state.copyWith(isSaving: false, checkoutUrl: checkout.url));
+        }
+      },
+    );
+  }
+
+  Future<void> verifySession(String sessionId) async {
+    emit(state.copyWith(isSaving: true, clearSessionActivated: true, clearError: true));
+    final result = await _datasource.verifySession(sessionId);
+    result.fold(
+      (f) => emit(state.copyWith(isSaving: false, error: f.message)),
+      (activated) => emit(state.copyWith(isSaving: false, sessionActivated: activated)),
     );
   }
 

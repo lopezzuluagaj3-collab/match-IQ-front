@@ -145,9 +145,23 @@ class _SideNavItem extends StatelessWidget {
   }
 }
 
-class _SidebarFooter extends StatelessWidget {
+class _SidebarFooter extends StatefulWidget {
   const _SidebarFooter({required this.role});
   final UserRole role;
+
+  @override
+  State<_SidebarFooter> createState() => _SidebarFooterState();
+}
+
+class _SidebarFooterState extends State<_SidebarFooter> {
+  bool _isLoggingOut = false;
+
+  Future<void> _handleLogout() async {
+    if (_isLoggingOut) return;
+    setState(() => _isLoggingOut = true);
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (mounted) context.read<AuthBloc>().add(const LogoutRequested());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +172,7 @@ class _SidebarFooter extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          if (role == UserRole.company)
+          if (widget.role == UserRole.company)
             Container(
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 8),
@@ -172,14 +186,45 @@ class _SidebarFooter extends StatelessWidget {
               ),
             ),
           GestureDetector(
-            onTap: () => context.read<AuthBloc>().add(const LogoutRequested()),
-            child: Padding(
+            onTap: _isLoggingOut ? null : _handleLogout,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: _isLoggingOut
+                    ? AppColors.error.withValues(alpha: 0.15)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Row(
                 children: [
-                  const Icon(Symbols.logout, color: AppColors.onPrimaryContainer, size: 22),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: _isLoggingOut
+                        ? const SizedBox(
+                            key: ValueKey('spinner'),
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.error,
+                            ),
+                          )
+                        : const Icon(
+                            key: ValueKey('icon'),
+                            Symbols.logout,
+                            color: AppColors.onPrimaryContainer,
+                            size: 22,
+                          ),
+                  ),
                   const SizedBox(width: 12),
-                  Text('Logout', style: AppTextStyles.labelBold.copyWith(color: AppColors.onPrimaryContainer)),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 250),
+                    style: AppTextStyles.labelBold.copyWith(
+                      color: _isLoggingOut ? AppColors.error : AppColors.onPrimaryContainer,
+                    ),
+                    child: const Text('Logout'),
+                  ),
                 ],
               ),
             ),

@@ -381,8 +381,8 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
                   Text(state.error!, style: AppTextStyles.bodyLg, textAlign: TextAlign.center),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () => context.go(AppRoutes.candidateDashboard),
-                    child: const Text('Back to Dashboard'),
+                    onPressed: () => context.go(AppRoutes.candidateAssessments),
+                    child: const Text('Back to Assessments'),
                   ),
                 ],
               ),
@@ -538,8 +538,8 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
                   Text(state.error!, style: AppTextStyles.bodyLg, textAlign: TextAlign.center),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () => context.go(AppRoutes.candidateDashboard),
-                    child: const Text('Back to Dashboard'),
+                    onPressed: () => context.go(AppRoutes.candidateAssessments),
+                    child: const Text('Back to Assessments'),
                   ),
                 ],
               ),
@@ -789,9 +789,9 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () => context.go(AppRoutes.candidateDashboard),
+              onPressed: () => context.go(AppRoutes.candidateAssessments),
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryContainer),
-              child: const Text('Back to Dashboard', style: TextStyle(color: Colors.white)),
+              child: const Text('Back to Assessments', style: TextStyle(color: Colors.white)),
             ),
           ],
         );

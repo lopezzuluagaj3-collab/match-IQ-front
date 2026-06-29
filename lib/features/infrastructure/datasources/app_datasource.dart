@@ -8,6 +8,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 
 abstract class AppDatasource {
@@ -36,6 +37,7 @@ abstract class AppDatasource {
   ResultFuture<TestPreview> getTestPreview(int offerId);
   ResultFuture<TestSession> startCandidateTest(int offerId);
   ResultFuture<TestResult> submitCandidateTest(int testId, List<AnswerItem> answers);
+  ResultFuture<TestResult> getTestResult(int testId);
 
   // Company profile
   ResultFuture<CompanyDashboardStats> getCompanyDashboard();
@@ -49,7 +51,8 @@ abstract class AppDatasource {
   ResultFuture<JobOffer> createOffer(CreateOfferInput input);
   ResultFuture<List<JobOffer>> getCompanyOffers();
   ResultFuture<JobOffer> getOfferById(int offerId);
-  ResultFuture<String> createCheckout(int offerId);
+  ResultFuture<CheckoutResult> createCheckout(int offerId);
+  ResultFuture<bool> verifySession(String sessionId);
 
   // Company matching
   ResultFuture<List<CandidateMatch>> getCompanyMatches();

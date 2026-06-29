@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/admin_stats.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/admin_cubit.dart';
@@ -39,7 +40,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           }
           final s = state.stats;
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: Responsive.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -49,108 +50,126 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 // ── Usuarios ─────────────────────────────────────────────
                 _SectionTitle(icon: Symbols.person, label: 'Usuarios'),
                 const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(
-                      child: _StatCard(
+                _ResponsiveStatRow(cards: [
+                  _StatCard(
                     icon: Symbols.person,
                     value: '${s?.totalCandidates ?? 0}',
                     label: 'Candidatos',
                     sub: '+${s?.usersRegisteredLast30Days ?? 0} últimos 30 días',
                     iconColor: AppColors.secondary,
                     bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                      child: _StatCard(
+                  ),
+                  _StatCard(
                     icon: Symbols.corporate_fare,
                     value: '${s?.totalCompanies ?? 0}',
                     label: 'Empresas',
                     iconColor: AppColors.primary,
                     bgColor: AppColors.primaryContainer.withValues(alpha: 0.15),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                      child: _StatCard(
+                  ),
+                  _StatCard(
                     icon: Symbols.group_add,
                     value: '${s?.usersRegisteredLast30Days ?? 0}',
                     label: 'Nuevos / 30 días',
                     iconColor: AppColors.onTertiaryContainer,
-                    bgColor:
-                        AppColors.onTertiaryContainer.withValues(alpha: 0.1),
-                  )),
+                    bgColor: AppColors.onTertiaryContainer.withValues(alpha: 0.1),
+                  ),
                 ]),
                 const SizedBox(height: 28),
 
                 // ── Ofertas ───────────────────────────────────────────────
                 _SectionTitle(icon: Symbols.work, label: 'Ofertas'),
                 const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(
-                      child: _StatCard(
+                _ResponsiveStatRow(cards: [
+                  _StatCard(
                     icon: Symbols.work,
                     value: '${s?.totalOffers ?? 0}',
                     label: 'Total ofertas',
                     sub: '+${s?.offersCreatedLast30Days ?? 0} últimos 30 días',
                     iconColor: AppColors.secondary,
                     bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                      child: _StatCard(
+                  ),
+                  _StatCard(
                     icon: Symbols.check_circle,
                     value: '${s?.offersActive ?? 0}',
                     label: 'Activas',
                     iconColor: AppColors.onTertiaryContainer,
-                    bgColor:
-                        AppColors.onTertiaryContainer.withValues(alpha: 0.1),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                      child: _StatCard(
+                    bgColor: AppColors.onTertiaryContainer.withValues(alpha: 0.1),
+                  ),
+                  _StatCard(
                     icon: Symbols.pending_actions,
                     value: '${s?.offersPendingPayment ?? 0}',
                     label: 'Pendiente pago',
                     iconColor: const Color(0xFFF59E0B),
                     bgColor: const Color(0xFFF59E0B0D),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                      child: _StatCard(
+                  ),
+                  _StatCard(
                     icon: Symbols.cancel,
-                    value:
-                        '${(s?.offersCancelled ?? 0) + (s?.offersExpired ?? 0)}',
+                    value: '${(s?.offersCancelled ?? 0) + (s?.offersExpired ?? 0)}',
                     label: 'Canceladas / Expiradas',
                     iconColor: AppColors.error,
                     bgColor: AppColors.error.withValues(alpha: 0.08),
-                  )),
+                  ),
                 ]),
                 const SizedBox(height: 28),
 
                 // ── Matching + Tests ──────────────────────────────────────
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _MatchingCard(s: s)),
-                    const SizedBox(width: 20),
-                    Expanded(child: _TestsCard(s: s)),
-                  ],
+                LayoutBuilder(
+                  builder: (_, c) => c.maxWidth < 600
+                      ? Column(children: [_MatchingCard(s: s), const SizedBox(height: 20), _TestsCard(s: s)])
+                      : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Expanded(child: _MatchingCard(s: s)),
+                          const SizedBox(width: 20),
+                          Expanded(child: _TestsCard(s: s)),
+                        ]),
                 ),
                 const SizedBox(height: 28),
 
                 // ── Ingresos + Tasas ──────────────────────────────────────
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _RevenueCard(s: s)),
-                    const SizedBox(width: 20),
-                    Expanded(child: _RatesCard(s: s)),
-                  ],
+                LayoutBuilder(
+                  builder: (_, c) => c.maxWidth < 600
+                      ? Column(children: [_RevenueCard(s: s), const SizedBox(height: 20), _RatesCard(s: s)])
+                      : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Expanded(child: _RevenueCard(s: s)),
+                          const SizedBox(width: 20),
+                          Expanded(child: _RatesCard(s: s)),
+                        ]),
                 ),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+// ─── Responsive stat row ─────────────────────────────────────────────────────
+
+class _ResponsiveStatRow extends StatelessWidget {
+  const _ResponsiveStatRow({required this.cards});
+  final List<Widget> cards;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        if (constraints.maxWidth < 520) {
+          final w = (constraints.maxWidth - 12) / 2;
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: cards.map((c) => SizedBox(width: w, child: c)).toList(),
+          );
+        }
+        return Row(
+          children: [
+            for (int i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: 16),
+              Expanded(child: cards[i]),
+            ],
+          ],
+        );
+      },
     );
   }
 }

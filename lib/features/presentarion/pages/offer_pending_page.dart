@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/technical_test.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/company_cubit.dart';
@@ -102,8 +103,22 @@ class _OfferPendingPageState extends State<OfferPendingPage> {
   Widget build(BuildContext context) {
     return BlocListener<CompanyCubit, CompanyState>(
       listenWhen: (prev, curr) =>
-          curr.checkoutUrl != prev.checkoutUrl && curr.checkoutUrl != null,
+          (curr.checkoutUrl != prev.checkoutUrl && curr.checkoutUrl != null) ||
+          (curr.offerActivated && !prev.offerActivated),
       listener: (context, state) {
+        if (state.offerActivated) {
+          _pollTimer?.cancel();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Payment already confirmed — your offer is now active!'),
+              backgroundColor: Color(0xFF16A34A),
+              duration: Duration(seconds: 4),
+            ),
+          );
+          context.read<CompanyCubit>().loadDashboard();
+          context.go(AppRoutes.companyDashboard);
+          return;
+        }
         if (state.checkoutUrl != null && !_waitingForPayment) {
           final uri = Uri.tryParse(state.checkoutUrl!);
           if (uri != null) {
@@ -126,7 +141,7 @@ class _OfferPendingPageState extends State<OfferPendingPage> {
             final offerStatus = offer?.statusLabel ?? 'Pending Payment';
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(32),
+              padding: Responsive.pagePadding(context),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 860),
                 child: Column(

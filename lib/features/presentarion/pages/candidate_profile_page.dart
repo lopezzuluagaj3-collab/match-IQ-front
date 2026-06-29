@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/candidate.dart';
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/user.dart';
@@ -56,7 +57,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(32, 32, 32, 48),
+            padding: Responsive.isMobile(context)
+                ? const EdgeInsets.fromLTRB(16, 20, 16, 32)
+                : const EdgeInsets.fromLTRB(32, 32, 32, 48),
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
@@ -66,18 +69,22 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   children: [
                     // ── Page header ──────────────────────────────────────
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('My Profile', style: AppTextStyles.headlineLg),
-                            const SizedBox(height: 2),
-                            Text('Manage your professional information',
-                                style: AppTextStyles.bodyMd
-                                    .copyWith(color: AppColors.onSurfaceVariant)),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('My Profile',
+                                  style: AppTextStyles.headlineLg),
+                              const SizedBox(height: 2),
+                              Text('Manage your professional information',
+                                  style: AppTextStyles.bodyMd.copyWith(
+                                      color: AppColors.onSurfaceVariant)),
+                            ],
+                          ),
                         ),
-                        const Spacer(),
+                        const SizedBox(width: 12),
                         FilledButton.icon(
                           onPressed: () => _openEditDialog(context, profile),
                           icon: const Icon(Symbols.edit, size: 18),
@@ -85,7 +92,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.onTertiaryContainer,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
+                                horizontal: 16, vertical: 12),
                           ),
                         ),
                       ],
@@ -97,16 +104,30 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                     const SizedBox(height: 20),
 
                     // ── Two-column body ───────────────────────────────────
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _SkillsCard(skills: profile.skills)),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 300,
-                          child: _ProfileCompletionCard(profile: profile),
-                        ),
-                      ],
+                    LayoutBuilder(
+                      builder: (_, constraints) {
+                        if (constraints.maxWidth < 600) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _SkillsCard(skills: profile.skills),
+                              const SizedBox(height: 20),
+                              _ProfileCompletionCard(profile: profile),
+                            ],
+                          );
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: _SkillsCard(skills: profile.skills)),
+                            const SizedBox(width: 20),
+                            SizedBox(
+                              width: 300,
+                              child: _ProfileCompletionCard(profile: profile),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1026,7 +1047,7 @@ class _CategoryChip extends StatelessWidget {
   }
 }
 
-class _SkillSelector extends StatelessWidget {
+class _SkillSelector extends StatefulWidget {
   const _SkillSelector({
     required this.skill,
     required this.level,
@@ -1039,20 +1060,44 @@ class _SkillSelector extends StatelessWidget {
   final ValueChanged<int> onLevelChanged;
 
   @override
+  State<_SkillSelector> createState() => _SkillSelectorState();
+}
+
+class _SkillSelectorState extends State<_SkillSelector> {
+  late int? _level;
+
+  @override
+  void initState() {
+    super.initState();
+    _level = widget.level;
+  }
+
+  @override
+  void didUpdateWidget(_SkillSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.level != widget.level) {
+      _level = widget.level;
+    }
+  }
+
+  void _handleLevelTap(int star) {
+    setState(() => _level = star);
+    widget.onLevelChanged(star);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final selected = level != null;
-    // Label and stars are SIBLING gesture zones (not nested) so tapping a star
-    // never triggers the toggle that would immediately deselect the skill.
+    final selected = _level != null;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       decoration: BoxDecoration(
         color: selected
             ? AppColors.primaryContainer.withValues(alpha: 0.4)
-            : AppColors.surfaceContainer,
+            : AppColors.secondaryContainer.withValues(alpha: 0.18),
         border: Border.all(
           color: selected
               ? AppColors.onTertiaryContainer
-              : AppColors.outlineVariant,
+              : AppColors.secondary.withValues(alpha: 0.35),
         ),
         borderRadius: BorderRadius.circular(999),
       ),
@@ -1061,7 +1106,8 @@ class _SkillSelector extends StatelessWidget {
         children: [
           // ── Label: tap to toggle selection ─────────────────────────
           GestureDetector(
-            onTap: onToggle,
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onToggle,
             child: Padding(
               padding: EdgeInsets.only(
                 left: 12,
@@ -1070,11 +1116,11 @@ class _SkillSelector extends StatelessWidget {
                 right: selected ? 6 : 12,
               ),
               child: Text(
-                skill.name,
+                widget.skill.name,
                 style: AppTextStyles.labelSm.copyWith(
                   color: selected
                       ? AppColors.onTertiaryContainer
-                      : AppColors.onSurface,
+                      : AppColors.secondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1084,17 +1130,19 @@ class _SkillSelector extends StatelessWidget {
           if (selected) ...[
             ...List.generate(5, (i) {
               final star = i + 1;
-              return GestureDetector(
-                onTap: () => onLevelChanged(star),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 2, vertical: 8),
-                  child: Icon(
-                    star <= (level ?? 0)
-                        ? Symbols.star
-                        : Symbols.star_outline,
-                    size: 15,
-                    color: AppColors.onTertiaryContainer,
+              final filled = star <= (_level ?? 0);
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _handleLevelTap(star),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    child: Icon(
+                      filled ? Symbols.star : Symbols.star_outline,
+                      size: 16,
+                      color: filled ? Colors.amber : AppColors.outlineVariant,
+                    ),
                   ),
                 ),
               );

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../../config/router/app_routes.dart';
 import '../../domain/entities/job_offer.dart';
 import '../../domain/entities/technical_test.dart';
@@ -118,7 +119,7 @@ class _OffersView extends StatelessWidget {
       ..sort((a, b) => (b.matchScore ?? 0).compareTo(a.matchScore ?? 0));
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(32),
+      padding: Responsive.pagePadding(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -140,52 +141,68 @@ class _OffersView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Search by role or company...',
-                    prefixIcon:
-                        const Icon(Symbols.search, color: AppColors.outline, size: 20),
-                    filled: true,
-                    fillColor: AppColors.surfaceContainerLowest,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.outlineVariant),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.outlineVariant),
-                    ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          LayoutBuilder(
+            builder: (_, constraints) {
+              final searchField = TextField(
+                onChanged: onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: 'Search by role or company...',
+                  prefixIcon:
+                      const Icon(Symbols.search, color: AppColors.outline, size: 20),
+                  filled: true,
+                  fillColor: AppColors.surfaceContainerLowest,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.outlineVariant),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.outlineVariant),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-              ),
-              const SizedBox(width: 12),
-              _FilterChip(
+              );
+              final chip1 = _FilterChip(
                 label: 'Remote',
                 isSelected: filterMode == OfferMode.remote,
                 onTap: () => onFilterChanged(
                     filterMode == OfferMode.remote ? null : OfferMode.remote),
-              ),
-              const SizedBox(width: 8),
-              _FilterChip(
+              );
+              final chip2 = _FilterChip(
                 label: 'Hybrid',
                 isSelected: filterMode == OfferMode.hybrid,
                 onTap: () => onFilterChanged(
                     filterMode == OfferMode.hybrid ? null : OfferMode.hybrid),
-              ),
-              const SizedBox(width: 8),
-              _FilterChip(
+              );
+              final chip3 = _FilterChip(
                 label: 'On-site',
                 isSelected: filterMode == OfferMode.onSite,
                 onTap: () => onFilterChanged(
                     filterMode == OfferMode.onSite ? null : OfferMode.onSite),
-              ),
-            ],
+              );
+              if (constraints.maxWidth < 500) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    searchField,
+                    const SizedBox(height: 12),
+                    Wrap(spacing: 8, children: [chip1, chip2, chip3]),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(child: searchField),
+                  const SizedBox(width: 12),
+                  chip1,
+                  const SizedBox(width: 8),
+                  chip2,
+                  const SizedBox(width: 8),
+                  chip3,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
           if (state.isLoading)
@@ -243,7 +260,7 @@ class _AssessmentsView extends StatelessWidget {
         tests.where((t) => t.status == TestStatus.expired).toList();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(32),
+      padding: Responsive.pagePadding(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -532,7 +549,7 @@ class _AssessmentCard extends StatelessWidget {
                 )
               else if (isCompleted)
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => context.go(AppRoutes.candidateTestResultPath(int.parse(test.id))),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                         color: AppColors.onTertiaryContainer.withOpacity(0.5)),

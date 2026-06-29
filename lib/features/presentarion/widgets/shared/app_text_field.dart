@@ -107,28 +107,31 @@ class AppButton extends StatelessWidget {
     }
 
     if (isEmerald) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.emeraldGradient,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ElevatedButton(
-          onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.emeraldGradient,
           ),
-          child: isLoading
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(label, style: AppTextStyles.labelBold.copyWith(color: Colors.white)),
-                    if (icon != null) ...[const SizedBox(width: 8), Icon(icon, size: 18, color: Colors.white)],
-                  ],
-                ),
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              overlayColor: Colors.white24,
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            ),
+            child: isLoading
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(label, style: AppTextStyles.labelBold.copyWith(color: Colors.white)),
+                      if (icon != null) ...[const SizedBox(width: 8), Icon(icon, size: 18, color: Colors.white)],
+                    ],
+                  ),
+          ),
         ),
       );
     }

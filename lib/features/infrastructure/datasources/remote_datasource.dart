@@ -13,6 +13,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
 
@@ -324,6 +325,28 @@ class RemoteDatasource implements AppDatasource {
     );
   }
 
+  @override
+  ResultFuture<TestResult> getTestResult(int testId) async {
+    final result = await _client.get(ApiConstants.testResult(testId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(ServerFailure(message: 'Resultado no disponible'));
+        }
+        final map = data as Map<String, dynamic>;
+        return Right(TestResult(
+          score: (map['score'] as num?)?.toDouble(),
+          feedback: map['feedback'] as String?,
+          status: map['status'] as String? ?? 'Evaluated',
+          submittedAt: map['submittedAt'] != null
+              ? DateTime.tryParse(map['submittedAt'] as String)
+              : null,
+        ));
+      },
+    );
+  }
+
   TestQuestion _parseQuestion(Map<String, dynamic> q) {
     Map<String, String>? options;
     final rawOptions = q['options'] as Map<String, dynamic>?;
@@ -547,7 +570,7 @@ class RemoteDatasource implements AppDatasource {
   }
 
   @override
-  ResultFuture<String> createCheckout(int offerId) async {
+  ResultFuture<CheckoutResult> createCheckout(int offerId) async {
     final result = await _client
         .post('${ApiConstants.createCheckout}?offerId=$offerId');
     return result.fold(
@@ -556,11 +579,27 @@ class RemoteDatasource implements AppDatasource {
         if (data == null) {
           return const Left(ServerFailure(message: 'No se pudo crear el link de pago'));
         }
-        final url = (data as Map<String, dynamic>)['url'] as String?;
-        if (url == null) {
-          return const Left(ServerFailure(message: 'URL de pago no disponible'));
-        }
-        return Right(url);
+        // ApiClient already extracts body['data'], so 'data' is { url, activated }
+        final map = data as Map<String, dynamic>;
+        final activated = map['activated'] as bool? ?? false;
+        final url = map['url'] as String?;
+        return Right(CheckoutResult(url: url, activated: activated));
+      },
+    );
+  }
+
+  @override
+  ResultFuture<bool> verifySession(String sessionId) async {
+    final result = await _client
+        .post('${ApiConstants.verifySession}?sessionId=$sessionId');
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) return const Right(false);
+        // ApiClient already extracts body['data'], so 'data' is { activated }
+        final map = data as Map<String, dynamic>;
+        final activated = map['activated'] as bool? ?? false;
+        return Right(activated);
       },
     );
   }

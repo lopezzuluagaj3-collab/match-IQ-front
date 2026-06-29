@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
+import '../../../config/theme/responsive.dart';
 import '../../domain/entities/admin_user.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/admin_cubit.dart';
@@ -77,7 +78,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         builder: (context, state) {
           final visible = _filtered(state.users);
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: Responsive.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

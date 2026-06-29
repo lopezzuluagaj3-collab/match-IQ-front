@@ -6,6 +6,7 @@ import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/company_cubit.dart';
+import '../../../config/theme/responsive.dart';
 import '../widgets/shared/app_card.dart';
 import '../widgets/shared/app_sidebar.dart';
 import '../widgets/shared/app_text_field.dart';
@@ -39,7 +40,7 @@ class _CompanyProfileSettingsPageState extends State<CompanyProfileSettingsPage>
       currentRoute: AppRoutes.companySettings,
       role: UserRole.company,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
+        padding: Responsive.pagePadding(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

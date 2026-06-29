@@ -102,7 +102,9 @@ class _HeroSection extends StatelessWidget {
         children: [
           // Main hero content
           Padding(
-            padding: const EdgeInsets.fromLTRB(40, 80, 40, 64),
+            padding: MediaQuery.sizeOf(context).width < 600
+                ? const EdgeInsets.fromLTRB(20, 48, 20, 40)
+                : const EdgeInsets.fromLTRB(40, 80, 40, 64),
             child: Column(
               children: [
                 // Badge
@@ -138,7 +140,7 @@ class _HeroSection extends StatelessWidget {
                     'Find Your Perfect\nMatch with AI',
                     style: AppTextStyles.display.copyWith(
                       color: Colors.white,
-                      fontSize: 58,
+                      fontSize: MediaQuery.sizeOf(context).width < 600 ? 36 : 58,
                       height: 1.05,
                       letterSpacing: -1.5,
                     ),
@@ -188,18 +190,26 @@ class _HeroSection extends StatelessWidget {
                 // Three quick features
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 760),
-                  child: Row(
-                    children: [
-                      _MiniFeature(Symbols.psychology,
-                          'AI Match Score', 'Precise compatibility analysis'),
-                      _MiniDivider(),
-                      _MiniFeature(Symbols.assignment,
-                          'Smart Tests', 'Role-specific assessments'),
-                      _MiniDivider(),
-                      _MiniFeature(Symbols.analytics,
-                          'Live Pipeline', 'Real-time hiring dashboard'),
-                    ],
-                  ),
+                  child: MediaQuery.sizeOf(context).width < 600
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _MiniFeature(Symbols.psychology, 'AI Match Score', 'Precise compatibility analysis'),
+                            const SizedBox(height: 12),
+                            _MiniFeature(Symbols.assignment, 'Smart Tests', 'Role-specific assessments'),
+                            const SizedBox(height: 12),
+                            _MiniFeature(Symbols.analytics, 'Live Pipeline', 'Real-time hiring dashboard'),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(child: _MiniFeature(Symbols.psychology, 'AI Match Score', 'Precise compatibility analysis')),
+                            _MiniDivider(),
+                            Expanded(child: _MiniFeature(Symbols.assignment, 'Smart Tests', 'Role-specific assessments')),
+                            _MiniDivider(),
+                            Expanded(child: _MiniFeature(Symbols.analytics, 'Live Pipeline', 'Real-time hiring dashboard')),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -275,34 +285,32 @@ class _MiniFeature extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.onTertiaryContainer.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(9),
-            ),
-            child: Icon(icon, size: 18, color: AppColors.onTertiaryContainer),
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.onTertiaryContainer.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(9),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: Colors.white, fontSize: 13)),
-                Text(subtitle,
-                    style: AppTextStyles.labelSm
-                        .copyWith(color: Colors.white38, fontSize: 11)),
-              ],
-            ),
+          child: Icon(icon, size: 18, color: AppColors.onTertiaryContainer),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title,
+                  style: AppTextStyles.labelBold
+                      .copyWith(color: Colors.white, fontSize: 13)),
+              Text(subtitle,
+                  style: AppTextStyles.labelSm
+                      .copyWith(color: Colors.white38, fontSize: 11)),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -328,18 +336,30 @@ class _StatsSection extends StatelessWidget {
       (Symbols.schedule, '48h', 'Avg. Hire Time'),
     ];
 
+    final isMobile = MediaQuery.sizeOf(context).width < 600;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 40),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1100),
-        child: Row(
-          children: stats.expand((s) sync* {
-            yield Expanded(child: _StatCard(s.$1, s.$2, s.$3));
-            if (s != stats.last)
-              yield Container(
-                  width: 1, height: 64, color: AppColors.outlineVariant,
-                  margin: const EdgeInsets.symmetric(horizontal: 12));
-          }).toList(),
+      padding: EdgeInsets.symmetric(vertical: 48, horizontal: isMobile ? 20 : 40),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: isMobile
+              ? Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 24,
+                  runSpacing: 24,
+                  children: stats
+                      .map((s) => SizedBox(width: 140, child: _StatCard(s.$1, s.$2, s.$3)))
+                      .toList(),
+                )
+              : Row(
+                  children: stats.expand((s) sync* {
+                    yield Expanded(child: _StatCard(s.$1, s.$2, s.$3));
+                    if (s != stats.last)
+                      yield Container(
+                          width: 1, height: 64, color: AppColors.outlineVariant,
+                          margin: const EdgeInsets.symmetric(horizontal: 12));
+                  }).toList(),
+                ),
         ),
       ),
     );
@@ -404,9 +424,10 @@ class _FeaturesSection extends StatelessWidget {
       ),
     ];
 
+    final isMobile = MediaQuery.sizeOf(context).width < 700;
     return Container(
       color: AppColors.surfaceContainerLow,
-      padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 40),
+      padding: EdgeInsets.symmetric(vertical: 72, horizontal: isMobile ? 20 : 40),
       child: Column(
         children: [
           _SectionHeader(
@@ -418,23 +439,36 @@ class _FeaturesSection extends StatelessWidget {
           const SizedBox(height: 52),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1100),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: features
-                  .map((f) => Expanded(
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 10),
-                          child: _FeatureCard(
-                            icon: f.$1,
-                            title: f.$2,
-                            description: f.$3,
-                            color: f.$4,
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            ),
+            child: isMobile
+                ? Column(
+                    children: features
+                        .map((f) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _FeatureCard(
+                                icon: f.$1,
+                                title: f.$2,
+                                description: f.$3,
+                                color: f.$4,
+                              ),
+                            ))
+                        .toList(),
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: features
+                        .map((f) => Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: _FeatureCard(
+                                  icon: f.$1,
+                                  title: f.$2,
+                                  description: f.$3,
+                                  color: f.$4,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
           ),
         ],
       ),
@@ -525,8 +559,9 @@ class _HowItWorksSection extends StatelessWidget {
       ),
     ];
 
+    final isMobile = MediaQuery.sizeOf(context).width < 700;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 40),
+      padding: EdgeInsets.symmetric(vertical: 72, horizontal: isMobile ? 20 : 40),
       child: Column(
         children: [
           _SectionHeader(
@@ -537,28 +572,42 @@ class _HowItWorksSection extends StatelessWidget {
           const SizedBox(height: 56),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1100),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: steps.expand((s) sync* {
-                yield Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: _StepCard(
-                      number: s.$1,
-                      icon: s.$2,
-                      title: s.$3,
-                      description: s.$4,
-                    ),
+            child: isMobile
+                ? Column(
+                    children: steps
+                        .map((s) => Padding(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: _StepCard(
+                                number: s.$1,
+                                icon: s.$2,
+                                title: s.$3,
+                                description: s.$4,
+                              ),
+                            ))
+                        .toList(),
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: steps.expand((s) sync* {
+                      yield Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: _StepCard(
+                            number: s.$1,
+                            icon: s.$2,
+                            title: s.$3,
+                            description: s.$4,
+                          ),
+                        ),
+                      );
+                      if (s != steps.last)
+                        yield Padding(
+                          padding: const EdgeInsets.only(top: 26),
+                          child: Icon(Symbols.arrow_forward,
+                              color: AppColors.outlineVariant, size: 20),
+                        );
+                    }).toList(),
                   ),
-                );
-                if (s != steps.last)
-                  yield Padding(
-                    padding: const EdgeInsets.only(top: 26),
-                    child: Icon(Symbols.arrow_forward,
-                        color: AppColors.outlineVariant, size: 20),
-                  );
-              }).toList(),
-            ),
           ),
         ],
       ),
@@ -635,9 +684,10 @@ class _StepCard extends StatelessWidget {
 class _RolesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.sizeOf(context).width < 700;
     return Container(
       color: AppColors.surfaceContainerLow,
-      padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 40),
+      padding: EdgeInsets.symmetric(vertical: 72, horizontal: isMobile ? 20 : 40),
       child: Column(
         children: [
           _SectionHeader(
@@ -648,42 +698,74 @@ class _RolesSection extends StatelessWidget {
           const SizedBox(height: 48),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 900),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _RoleCard(
-                    icon: Symbols.person,
-                    title: 'For Candidates',
-                    color: AppColors.onTertiaryContainer,
-                    features: const [
-                      'AI-generated match score per role',
-                      'Technical assessment platform',
-                      'Profile strength tracking',
-                      'Real-time application pipeline',
+            child: isMobile
+                ? Column(
+                    children: [
+                      _RoleCard(
+                        icon: Symbols.person,
+                        title: 'For Candidates',
+                        color: AppColors.onTertiaryContainer,
+                        features: const [
+                          'AI-generated match score per role',
+                          'Technical assessment platform',
+                          'Profile strength tracking',
+                          'Real-time application pipeline',
+                        ],
+                        ctaLabel: 'Get Started Free',
+                        onCta: () => context.go(AppRoutes.registerCandidate),
+                      ),
+                      const SizedBox(height: 20),
+                      _RoleCard(
+                        icon: Symbols.corporate_fare,
+                        title: 'For Companies',
+                        color: AppColors.secondary,
+                        features: const [
+                          'AI-ranked candidate pool',
+                          'Automated test dispatch',
+                          'Match score breakdown',
+                          'Configurable hiring pipeline',
+                        ],
+                        ctaLabel: 'Start Hiring',
+                        onCta: () => context.go(AppRoutes.registerCompany),
+                      ),
                     ],
-                    ctaLabel: 'Get Started Free',
-                    onCta: () => context.go(AppRoutes.registerCandidate),
-                  ),
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: _RoleCard(
-                    icon: Symbols.corporate_fare,
-                    title: 'For Companies',
-                    color: AppColors.secondary,
-                    features: const [
-                      'AI-ranked candidate pool',
-                      'Automated test dispatch',
-                      'Match score breakdown',
-                      'Configurable hiring pipeline',
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _RoleCard(
+                          icon: Symbols.person,
+                          title: 'For Candidates',
+                          color: AppColors.onTertiaryContainer,
+                          features: const [
+                            'AI-generated match score per role',
+                            'Technical assessment platform',
+                            'Profile strength tracking',
+                            'Real-time application pipeline',
+                          ],
+                          ctaLabel: 'Get Started Free',
+                          onCta: () => context.go(AppRoutes.registerCandidate),
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: _RoleCard(
+                          icon: Symbols.corporate_fare,
+                          title: 'For Companies',
+                          color: AppColors.secondary,
+                          features: const [
+                            'AI-ranked candidate pool',
+                            'Automated test dispatch',
+                            'Match score breakdown',
+                            'Configurable hiring pipeline',
+                          ],
+                          ctaLabel: 'Start Hiring',
+                          onCta: () => context.go(AppRoutes.registerCompany),
+                        ),
+                      ),
                     ],
-                    ctaLabel: 'Start Hiring',
-                    onCta: () => context.go(AppRoutes.registerCompany),
                   ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -779,10 +861,15 @@ class _RoleCard extends StatelessWidget {
 class _CtaSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.sizeOf(context).width < 600;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(40, 16, 40, 56),
+      padding: isMobile
+          ? const EdgeInsets.fromLTRB(16, 16, 16, 40)
+          : const EdgeInsets.fromLTRB(40, 16, 40, 56),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 56, vertical: 56),
+        padding: isMobile
+            ? const EdgeInsets.symmetric(horizontal: 24, vertical: 40)
+            : const EdgeInsets.symmetric(horizontal: 56, vertical: 56),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF000F1D), Color(0xFF0F2537)],
@@ -881,8 +968,14 @@ class _Footer extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Text('© 2025 MatchIQ AI Recruitment. All rights reserved.',
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.outline)),
+          Flexible(
+            child: Text(
+              '© 2025 MatchIQ AI Recruitment. All rights reserved.',
+              style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+              textAlign: TextAlign.right,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

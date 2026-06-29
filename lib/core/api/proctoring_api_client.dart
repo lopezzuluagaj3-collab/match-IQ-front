@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ProctoringApiClient {
   ProctoringApiClient() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'http://localhost:5000',
+      baseUrl: 'https://bank-user.coderhivex.com',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
