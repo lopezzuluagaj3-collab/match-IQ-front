@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'config/router/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'features/presentarion/bloc/admin_cubit.dart';
@@ -35,42 +36,43 @@ class MatchIQApp extends StatelessWidget {
   }
 }
 
-class _AppRoot extends StatelessWidget {
+class _AppRoot extends StatefulWidget {
   const _AppRoot();
 
   @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> {
+  final _authNotifier = _AuthNotifier();
+  GoRouter? _router;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _router ??= AppRouter.router(context, refreshListenable: _authNotifier);
+  }
+
+  @override
+  void dispose() {
+    _authNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        // Show a neutral splash while the session check runs
-        if (state is AuthInitial || state is AuthLoading) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: _SplashScreen(),
-          );
-        }
-        final router = AppRouter.router(context);
-        return MaterialApp.router(
-          title: 'MatchIQ',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          routerConfig: router,
-        );
-      },
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (_, __) => _authNotifier.notify(),
+      child: MaterialApp.router(
+        title: 'MatchIQ',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        routerConfig: _router!,
+      ),
     );
   }
 }
 
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFF0F2537),
-      body: Center(
-        child: CircularProgressIndicator(color: Color(0xFF4ADE80)),
-      ),
-    );
-  }
+class _AuthNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
 }

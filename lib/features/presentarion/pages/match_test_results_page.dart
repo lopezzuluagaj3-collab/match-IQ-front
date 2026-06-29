@@ -23,6 +23,7 @@ class _MatchTestResultsPageState extends State<MatchTestResultsPage> {
   void initState() {
     super.initState();
     context.read<CompanyCubit>().loadTestSubmission(widget.matchId);
+    context.read<CompanyCubit>().loadProctoringReport(widget.matchId);
   }
 
   @override
@@ -49,7 +50,10 @@ class _MatchTestResultsPageState extends State<MatchTestResultsPage> {
           if (submission == null) {
             return const _ErrorState(message: 'No se encontraron resultados.');
           }
-          return _SubmissionContent(submission: submission);
+          return _SubmissionContent(
+            submission: submission,
+            matchId: widget.matchId,
+          );
         },
       ),
     );
@@ -59,8 +63,9 @@ class _MatchTestResultsPageState extends State<MatchTestResultsPage> {
 // ─── Main content ─────────────────────────────────────────────────────────────
 
 class _SubmissionContent extends StatelessWidget {
-  const _SubmissionContent({required this.submission});
+  const _SubmissionContent({required this.submission, required this.matchId});
   final MatchTestSubmission submission;
+  final int matchId;
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +131,10 @@ class _SubmissionContent extends StatelessWidget {
                   question: e.value,
                 ),
               )),
+
+          // Proctoring report section
+          const SizedBox(height: 32),
+          _ProctoringSection(matchId: matchId),
         ],
       ),
     );
@@ -867,6 +876,334 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
+
+// ─── Proctoring section ───────────────────────────────────────────────────────
+
+class _ProctoringSection extends StatelessWidget {
+  const _ProctoringSection({required this.matchId});
+  final int matchId;
+
+  Color _scoreColor(double score) {
+    if (score >= 80) return const Color(0xFF2E7D32);
+    if (score >= 50) return const Color(0xFFF57F17);
+    return AppColors.error;
+  }
+
+  String _scoreLabel(double score) {
+    if (score >= 80) return 'Sin irregularidades significativas';
+    if (score >= 50) return 'Riesgo moderado';
+    return 'Riesgo alto';
+  }
+
+  String _tipoLabel(String tipo) => switch (tipo) {
+        'dispositivo_prohibido' => 'Dispositivo prohibido',
+        'segunda_persona' => 'Segunda persona',
+        'camara_cubierta' => 'Cámara cubierta',
+        'rostro_ausente' => 'Rostro ausente',
+        'distraccion' => 'Distracción',
+        _ => tipo,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CompanyCubit, CompanyState>(
+      buildWhen: (prev, cur) =>
+          prev.isLoadingProctoring != cur.isLoadingProctoring ||
+          prev.proctoringReport != cur.proctoringReport,
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Symbols.security, size: 20,
+                    color: AppColors.onTertiaryContainer),
+                const SizedBox(width: 8),
+                Text('Reporte de Proctoring', style: AppTextStyles.headlineMd),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text('Monitoreo de integridad durante el test',
+                style: AppTextStyles.bodyMd
+                    .copyWith(color: AppColors.onSurfaceVariant)),
+            const SizedBox(height: 16),
+            if (state.isLoadingProctoring)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: CircularProgressIndicator(
+                      color: AppColors.onTertiaryContainer),
+                ),
+              )
+            else if (state.proctoringReport == null)
+              AppCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      const Icon(Symbols.info,
+                          color: AppColors.outlineVariant),
+                      const SizedBox(width: 12),
+                      Text('No hay reporte de proctoring disponible.',
+                          style: AppTextStyles.bodyMd
+                              .copyWith(color: AppColors.onSurfaceVariant)),
+                    ],
+                  ),
+                ),
+              )
+            else
+              _ProctoringCard(
+                report: state.proctoringReport!,
+                scoreColor: _scoreColor(state.proctoringReport!.integrityScore),
+                scoreLabel: _scoreLabel(state.proctoringReport!.integrityScore),
+                tipoLabel: _tipoLabel,
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ProctoringCard extends StatelessWidget {
+  const _ProctoringCard({
+    required this.report,
+    required this.scoreColor,
+    required this.scoreLabel,
+    required this.tipoLabel,
+  });
+  final ProctoringReport report;
+  final Color scoreColor;
+  final String scoreLabel;
+  final String Function(String) tipoLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Score row
+            Row(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: scoreColor.withAlpha(26),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      report.integrityScore.toStringAsFixed(0),
+                      style: AppTextStyles.headlineLg.copyWith(
+                          color: scoreColor, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Score de Integridad',
+                          style: AppTextStyles.labelBold),
+                      const SizedBox(height: 2),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: scoreColor.withAlpha(26),
+                          borderRadius: BorderRadius.circular(9999),
+                        ),
+                        child: Text(scoreLabel,
+                            style: AppTextStyles.labelBold
+                                .copyWith(color: scoreColor, fontSize: 12)),
+                      ),
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: report.integrityScore / 100,
+                          backgroundColor: AppColors.outlineVariant.withAlpha(60),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(scoreColor),
+                          minHeight: 6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Stats row
+            Row(
+              children: [
+                _StatChip(
+                    icon: Symbols.videocam,
+                    label: '${report.totalFramesProcesados} frames'),
+                const SizedBox(width: 8),
+                _StatChip(
+                    icon: Symbols.warning_amber,
+                    label: '${report.totalEventos} evento${report.totalEventos == 1 ? '' : 's'}'),
+              ],
+            ),
+
+            // AI summary
+            if (report.integritySummary != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.outlineVariant.withAlpha(80)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Symbols.smart_toy, size: 16,
+                        color: AppColors.onTertiaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(report.integritySummary!,
+                          style: AppTextStyles.bodyMd
+                              .copyWith(color: AppColors.onSurface)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            // Events list
+            if (report.totalEventos == 0) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(9999),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Symbols.check_circle,
+                        size: 16, color: Color(0xFF2E7D32)),
+                    const SizedBox(width: 6),
+                    Text('Sin incidentes detectados',
+                        style: AppTextStyles.labelBold
+                            .copyWith(color: const Color(0xFF2E7D32))),
+                  ],
+                ),
+              ),
+            ] else ...[
+              const SizedBox(height: 20),
+              Text('Incidentes detectados (${report.totalEventos})',
+                  style: AppTextStyles.labelBold),
+              const SizedBox(height: 10),
+              ...report.eventos.map((ev) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _EventRow(event: ev, tipoLabel: tipoLabel),
+                  )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EventRow extends StatelessWidget {
+  const _EventRow({required this.event, required this.tipoLabel});
+  final ProctoringEvent event;
+  final String Function(String) tipoLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.error.withAlpha(10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.error.withAlpha(40)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Symbols.report_problem,
+              size: 16, color: AppColors.error),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(tipoLabel(event.tipo),
+                    style: AppTextStyles.labelBold
+                        .copyWith(color: AppColors.error)),
+                if (event.detalle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(event.detalle!,
+                      style: AppTextStyles.bodyMd
+                          .copyWith(color: AppColors.onSurface)),
+                ],
+                const SizedBox(height: 4),
+                Text(
+                  '${event.timestamp.hour.toString().padLeft(2, '0')}:'
+                  '${event.timestamp.minute.toString().padLeft(2, '0')}:'
+                  '${event.timestamp.second.toString().padLeft(2, '0')}',
+                  style: AppTextStyles.bodyMd
+                      .copyWith(color: AppColors.onSurfaceVariant, fontSize: 12),
+                ),
+                if (event.evidencia != null) ...[
+                  const SizedBox(height: 6),
+                  Text('Ver evidencia',
+                      style: AppTextStyles.labelBold.copyWith(
+                          color: AppColors.secondary,
+                          decoration: TextDecoration.underline)),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(9999),
+        border: Border.all(color: AppColors.outlineVariant.withAlpha(120)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Text(label,
+              style: AppTextStyles.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant, fontSize: 13)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Error state ──────────────────────────────────────────────────────────────
 
 class _ErrorState extends StatelessWidget {
   const _ErrorState({required this.message, this.onRetry});

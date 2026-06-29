@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import '../../../core/utils/typedef.dart';
 import '../../domain/entities/activity.dart';
 import '../../domain/entities/admin_stats.dart';
@@ -39,6 +40,7 @@ abstract class AppDatasource {
   // Company profile
   ResultFuture<CompanyDashboardStats> getCompanyDashboard();
   ResultVoid updateCompanyProfile(String companyName);
+  ResultFuture<Uint8List> downloadCompanyReport();
 
   // Company offers
   ResultFuture<CompanyProfile> getCompanyProfile();
@@ -60,6 +62,7 @@ abstract class AppDatasource {
 
   // Company tests
   ResultFuture<MatchTestSubmission> getTestSubmission(int matchId);
+  ResultFuture<ProctoringReport> getProctoringReport(int matchId);
   ResultFuture<TestSession> generateTest(int offerId, int timeLimitMinutes);
   ResultFuture<TestSession?> getTestByOffer(int offerId); // null if not yet generated
   ResultFuture<TestSession> regenerateTest(int offerId, int timeLimitMinutes);

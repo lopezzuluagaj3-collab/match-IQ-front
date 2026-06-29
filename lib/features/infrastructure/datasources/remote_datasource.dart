@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_constants.dart';
@@ -277,14 +278,18 @@ class RemoteDatasource implements AppDatasource {
           return const Left(ServerFailure(message: 'No se pudo iniciar el test'));
         }
         final map = data as Map<String, dynamic>;
-        final questions = (map['questions'] as List<dynamic>? ?? [])
+        // Response now wraps the test under 'test' and exposes 'submissionId' at root
+        final submissionId = map['submissionId'] as int? ?? 0;
+        final testMap = (map['test'] as Map<String, dynamic>?) ?? map;
+        final questions = (testMap['questions'] as List<dynamic>? ?? [])
             .map((q) => _parseQuestion(q as Map<String, dynamic>))
             .toList();
         return Right(TestSession(
-          testId: map['id'] as int,
-          offerId: map['offerId'] as int,
-          title: map['title'] as String,
-          timeLimitMinutes: map['timeLimitMinutes'] as int? ?? 60,
+          testId: testMap['id'] as int,
+          offerId: testMap['offerId'] as int,
+          title: testMap['title'] as String,
+          timeLimitMinutes: testMap['timeLimitMinutes'] as int? ?? 60,
+          submissionId: submissionId,
           questions: questions,
         ));
       },
@@ -817,6 +822,51 @@ class RemoteDatasource implements AppDatasource {
       codeSubmitted: q['codeSubmitted'] as String?,
       isCorrect: q['isCorrect'] as bool?,
       aiFeedback: q['aiFeedback'] as String?,
+    );
+  }
+
+  @override
+  ResultFuture<Uint8List> downloadCompanyReport() async {
+    final result = await _client.getBytes(ApiConstants.companyReport);
+    return result.fold((f) => Left(f), (bytes) => Right(bytes));
+  }
+
+  @override
+  ResultFuture<ProctoringReport> getProctoringReport(int matchId) async {
+    final result =
+        await _client.get(ApiConstants.proctoringReportByMatch(matchId));
+    return result.fold(
+      (f) => Left(f),
+      (data) {
+        if (data == null) {
+          return const Left(
+              ServerFailure(message: 'Reporte de proctoring no encontrado'));
+        }
+        final map = data as Map<String, dynamic>;
+        final eventos = (map['eventos'] as List<dynamic>? ?? [])
+            .map((e) {
+              final ev = e as Map<String, dynamic>;
+              return ProctoringEvent(
+                tipo: ev['tipo'] as String? ?? '',
+                detalle: ev['detalle'] as String?,
+                evidencia: ev['evidencia'] as String?,
+                timestamp: DateTime.tryParse(ev['timestamp'] as String? ?? '') ??
+                    DateTime.now(),
+              );
+            })
+            .toList();
+        return Right(ProctoringReport(
+          sessionId: map['sessionId'] as String? ?? '',
+          inicio: DateTime.tryParse(map['inicio'] as String? ?? '') ??
+              DateTime.now(),
+          fin: DateTime.tryParse(map['fin'] as String? ?? '') ?? DateTime.now(),
+          totalFramesProcesados: map['totalFramesProcesados'] as int? ?? 0,
+          totalEventos: map['totalEventos'] as int? ?? 0,
+          integrityScore: (map['integrityScore'] as num?)?.toDouble() ?? 100.0,
+          integritySummary: map['integritySummary'] as String?,
+          eventos: eventos,
+        ));
+      },
     );
   }
 

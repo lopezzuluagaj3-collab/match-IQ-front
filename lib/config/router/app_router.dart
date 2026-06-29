@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/domain/entities/user.dart';
 import '../../features/presentarion/bloc/auth_bloc.dart';
 import '../../features/presentarion/bloc/auth_state.dart';
+import '../../features/presentarion/bloc/proctor_cubit.dart';
 import '../../features/presentarion/bloc/test_cubit.dart';
 import '../../features/presentarion/pages/active_technical_test_page.dart';
 import '../../features/presentarion/pages/admin_dashboard_page.dart';
@@ -29,11 +30,16 @@ import '../../injection/injection_container.dart';
 import 'app_routes.dart';
 
 class AppRouter {
-  static GoRouter router(BuildContext context) => GoRouter(
+  static GoRouter router(BuildContext context, {Listenable? refreshListenable}) => GoRouter(
         initialLocation: AppRoutes.landing,
+        refreshListenable: refreshListenable,
         debugLogDiagnostics: true,
         redirect: (ctx, state) {
           final authState = ctx.read<AuthBloc>().state;
+
+          // Don't redirect while the initial session check is in flight
+          if (authState is AuthInitial || authState is AuthLoading) return null;
+
           final isAuth = authState is AuthAuthenticated;
           final path = state.uri.path;
 
@@ -50,7 +56,7 @@ class AppRouter {
 
           // Redirect authenticated users away from login/register
           if (isAuth && isPublic) {
-            final user = (authState as AuthAuthenticated).user; // isAuth guarantees this cast
+            final user = authState.user;
             return switch (user.role) {
               UserRole.candidate => AppRoutes.candidateAssessments,
               UserRole.company => AppRoutes.companyDashboard,
@@ -104,8 +110,11 @@ class AppRouter {
           ),
           GoRoute(
             path: AppRoutes.technicalTest,
-            builder: (_, state) => BlocProvider(
-              create: (_) => sl<TestCubit>(),
+            builder: (_, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<TestCubit>()),
+                BlocProvider(create: (_) => sl<ProctorCubit>()),
+              ],
               child: ActiveTechnicalTestPage(
                   offerId: state.pathParameters['id'] ?? ''),
             ),

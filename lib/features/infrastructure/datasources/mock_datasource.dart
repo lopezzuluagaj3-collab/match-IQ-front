@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import '../../../core/errors/failures.dart';
 import '../../../core/utils/typedef.dart';
@@ -450,6 +451,44 @@ class MockDatasource implements AppDatasource {
 }''',
           isCorrect: true,
           aiFeedback: 'Solución correcta: usa Set para eliminar duplicados y sort con comparador inverso.',
+        ),
+      ],
+    ));
+  }
+
+  @override
+  ResultFuture<Uint8List> downloadCompanyReport() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    // Return empty bytes in mock — real download only works against live backend
+    return Right(Uint8List(0));
+  }
+
+  @override
+  ResultFuture<ProctoringReport> getProctoringReport(int matchId) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    return Right(ProctoringReport(
+      sessionId: 'mock-session-001',
+      inicio: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)),
+      fin: DateTime.now().subtract(const Duration(minutes: 30)),
+      totalFramesProcesados: 7200,
+      totalEventos: 2,
+      integrityScore: 60.0,
+      integritySummary:
+          'Durante la sesión se detectaron dos incidentes: uso de dispositivo adicional '
+          'y presencia de una segunda persona. El score de integridad de 60/100 indica '
+          'riesgo moderado. Se recomienda revisar los eventos antes de tomar una decisión.',
+      eventos: [
+        ProctoringEvent(
+          tipo: 'dispositivo_prohibido',
+          detalle: 'Detectado: cell phone',
+          evidencia: null,
+          timestamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 20)),
+        ),
+        ProctoringEvent(
+          tipo: 'segunda_persona',
+          detalle: 'Rostro adicional detectado en frame',
+          evidencia: null,
+          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
         ),
       ],
     ));

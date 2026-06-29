@@ -1,16 +1,19 @@
 import 'package:get_it/get_it.dart';
 import '../core/api/api_client.dart';
+import '../core/api/proctoring_api_client.dart';
 import '../core/api/token_storage.dart';
 import '../features/domain/ports/input/auth_input_port.dart';
 import '../features/domain/ports/output/auth_output_port.dart';
 import '../features/domain/services/auth_domain_service.dart';
 import '../features/infrastructure/adapters/remote_auth_adapter.dart';
 import '../features/infrastructure/datasources/app_datasource.dart';
+import '../features/infrastructure/datasources/proctor_datasource.dart';
 import '../features/infrastructure/datasources/remote_datasource.dart';
 import '../features/presentarion/bloc/admin_cubit.dart';
 import '../features/presentarion/bloc/auth_bloc.dart';
 import '../features/presentarion/bloc/candidate_cubit.dart';
 import '../features/presentarion/bloc/company_cubit.dart';
+import '../features/presentarion/bloc/proctor_cubit.dart';
 import '../features/presentarion/bloc/test_cubit.dart';
 
 final sl = GetIt.instance;
@@ -41,4 +44,11 @@ Future<void> initDependencies() async {
   sl.registerFactory<CompanyCubit>(() => CompanyCubit(sl<AppDatasource>()));
   sl.registerFactory<AdminCubit>(() => AdminCubit(sl<AppDatasource>()));
   sl.registerFactory<TestCubit>(() => TestCubit(sl<AppDatasource>()));
+
+  // Proctoring — separate AI service at bank-user.coderhivex.com
+  sl.registerLazySingleton<ProctoringApiClient>(() => ProctoringApiClient());
+  sl.registerLazySingleton<ProctoringDatasource>(
+    () => RemoteProctoringDatasource(sl<ProctoringApiClient>()),
+  );
+  sl.registerFactory<ProctorCubit>(() => ProctorCubit(sl<ProctoringDatasource>()));
 }

@@ -122,7 +122,7 @@ class RemoteAuthAdapter implements AuthOutputPort {
         'cedula': cedula,
         'password': password,
         'confirmPassword': password,
-        'role': 1,
+        'role': 'Candidate',
       },
       skipAuth: true,
     );
@@ -144,7 +144,7 @@ class RemoteAuthAdapter implements AuthOutputPort {
         'cedula': cedula,
         'password': password,
         'confirmPassword': password,
-        'role': 2,
+        'role': 'Company',
       },
       skipAuth: true,
     );

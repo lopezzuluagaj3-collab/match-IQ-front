@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/web/download_helper.dart';
 import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
@@ -26,8 +27,11 @@ class CompanyState extends Equatable {
     this.isLoading = false,
     this.isLoadingMatches = false,
     this.isLoadingSubmission = false,
+    this.isLoadingProctoring = false,
+    this.isDownloadingReport = false,
     this.isSaving = false,
     this.isParsing = false,
+    this.proctoringReport,
     this.error,
   });
 
@@ -48,8 +52,11 @@ class CompanyState extends Equatable {
   final bool isLoading;
   final bool isLoadingMatches;
   final bool isLoadingSubmission;
+  final bool isLoadingProctoring;
+  final bool isDownloadingReport;
   final bool isSaving;
   final bool isParsing;
+  final ProctoringReport? proctoringReport;
   final String? error;
 
   CompanyState copyWith({
@@ -76,8 +83,12 @@ class CompanyState extends Equatable {
     bool? isLoading,
     bool? isLoadingMatches,
     bool? isLoadingSubmission,
+    bool? isLoadingProctoring,
+    bool? isDownloadingReport,
     bool? isSaving,
     bool? isParsing,
+    ProctoringReport? proctoringReport,
+    bool clearProctoringReport = false,
     String? error,
     bool clearError = false,
   }) =>
@@ -99,8 +110,11 @@ class CompanyState extends Equatable {
         isLoading: isLoading ?? this.isLoading,
         isLoadingMatches: isLoadingMatches ?? this.isLoadingMatches,
         isLoadingSubmission: isLoadingSubmission ?? this.isLoadingSubmission,
+        isLoadingProctoring: isLoadingProctoring ?? this.isLoadingProctoring,
+        isDownloadingReport: isDownloadingReport ?? this.isDownloadingReport,
         isSaving: isSaving ?? this.isSaving,
         isParsing: isParsing ?? this.isParsing,
+        proctoringReport: clearProctoringReport ? null : (proctoringReport ?? this.proctoringReport),
         error: clearError ? null : (error ?? this.error),
       );
 
@@ -108,8 +122,9 @@ class CompanyState extends Equatable {
   List<Object?> get props => [
         dashboard, profile, matches, offers, tiers, categories, availableSkills,
         aiParseResult, createdOffer, checkoutUrl, selectedOfferId,
-        testSession, testSubmission, lastChatMessage,
-        isLoading, isLoadingMatches, isLoadingSubmission, isSaving, isParsing, error,
+        testSession, testSubmission, lastChatMessage, proctoringReport,
+        isLoading, isLoadingMatches, isLoadingSubmission,
+        isLoadingProctoring, isDownloadingReport, isSaving, isParsing, error,
       ];
 }
 
@@ -409,6 +424,31 @@ class CompanyCubit extends Cubit<CompanyState> {
     result.fold(
       (f) => emit(state.copyWith(isSaving: false, error: f.message)),
       (url) => emit(state.copyWith(isSaving: false, checkoutUrl: url)),
+    );
+  }
+
+  Future<void> loadProctoringReport(int matchId) async {
+    emit(state.copyWith(
+        isLoadingProctoring: true, clearProctoringReport: true, clearError: true));
+    final result = await _datasource.getProctoringReport(matchId);
+    result.fold(
+      (f) => emit(state.copyWith(isLoadingProctoring: false, error: f.message)),
+      (report) =>
+          emit(state.copyWith(isLoadingProctoring: false, proctoringReport: report)),
+    );
+  }
+
+  Future<void> downloadReport() async {
+    emit(state.copyWith(isDownloadingReport: true, clearError: true));
+    final result = await _datasource.downloadCompanyReport();
+    result.fold(
+      (f) => emit(state.copyWith(isDownloadingReport: false, error: f.message)),
+      (bytes) {
+        if (bytes.isNotEmpty) {
+          triggerFileDownload(bytes, 'reporte-empresa.xlsx');
+        }
+        emit(state.copyWith(isDownloadingReport: false));
+      },
     );
   }
 }
