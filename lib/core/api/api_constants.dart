@@ -1,5 +1,5 @@
 abstract class ApiConstants {
-  static const baseUrl = 'http://10.0.2.253:5000';
+  static const baseUrl = 'https://bank-n8n.coderhivex.com';
 
   // Auth
   static const register = '/api/auth/register';
