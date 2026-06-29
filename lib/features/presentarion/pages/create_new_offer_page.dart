@@ -83,10 +83,43 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
   }
 
   void _submit() {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final valid = _formKey.currentState?.validate() ?? false;
+    if (!valid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Corrige los errores en el formulario antes de continuar.',
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      return;
+    }
     if (_selectedTierId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a plan tier')),
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 10),
+              Text('Selecciona un plan antes de continuar.'),
+            ],
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
       );
       return;
     }
@@ -260,12 +293,13 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                                 style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
                             const SizedBox(height: 20),
                             AppTextField(
-                              label: 'Job Title',
-                              hint: 'e.g. Senior React Developer',
+                              label: 'Título del cargo',
+                              hint: 'ej. Senior React Developer',
                               prefixIcon: Symbols.work,
                               controller: _titleCtrl,
-                              validator: (v) =>
-                                  v != null && v.isNotEmpty ? null : 'Required',
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'El título es obligatorio'
+                                  : null,
                             ),
                             const SizedBox(height: 16),
                             // Modality
@@ -423,10 +457,17 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                               controller: _descCtrl,
                               maxLines: 6,
                               decoration: const InputDecoration(
-                                hintText: 'Write a compelling job description...',
+                                hintText: 'Describe las responsabilidades, requisitos y lo que hace única esta posición...',
                               ),
-                              validator: (v) =>
-                                  v != null && v.length >= 20 ? null : 'Minimum 20 characters',
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'La descripción es obligatoria';
+                                }
+                                if (v.trim().length < 20) {
+                                  return 'Mínimo 20 caracteres (tienes ${v.trim().length})';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),

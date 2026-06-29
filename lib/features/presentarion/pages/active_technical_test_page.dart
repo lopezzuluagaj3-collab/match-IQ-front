@@ -91,6 +91,18 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
   }
 
   void _submit(TestSession session) {
+    // Validate before touching proctoring state — ending the session is irreversible
+    if (_totalAnswered == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes responder al menos una pregunta antes de enviar el test.'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16),
+        ),
+      );
+      return;
+    }
     if (_proctoringEnded) return;
     _proctoringEnded = true;
     _frameTimer?.cancel();
@@ -726,6 +738,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
                           onSubmit: state.isSubmitting ? null : () => _submit(session),
                           isLast: _currentQuestion == questions.length - 1,
                           isSubmitting: state.isSubmitting,
+                          totalAnswered: _totalAnswered,
                         )
                       : _CodeChallengeQuestion(
                           key: ValueKey(question.id),
@@ -744,6 +757,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
                           onSubmit: state.isSubmitting ? null : () => _submit(session),
                           isLast: _currentQuestion == questions.length - 1,
                           isSubmitting: state.isSubmitting,
+                          totalAnswered: _totalAnswered,
                         ),
                 ),
               ),
@@ -818,6 +832,7 @@ class _MultipleChoiceQuestion extends StatelessWidget {
     required this.onSubmit,
     required this.isLast,
     required this.isSubmitting,
+    required this.totalAnswered,
   });
 
   final int index;
@@ -830,6 +845,7 @@ class _MultipleChoiceQuestion extends StatelessWidget {
   final VoidCallback? onSubmit;
   final bool isLast;
   final bool isSubmitting;
+  final int totalAnswered;
 
   @override
   Widget build(BuildContext context) {
@@ -859,6 +875,7 @@ class _MultipleChoiceQuestion extends StatelessWidget {
           onSubmit: onSubmit,
           isLast: isLast,
           isSubmitting: isSubmitting,
+          totalAnswered: totalAnswered,
         ),
       ],
     );
@@ -880,6 +897,7 @@ class _CodeChallengeQuestion extends StatefulWidget {
     required this.onSubmit,
     required this.isLast,
     required this.isSubmitting,
+    required this.totalAnswered,
   });
 
   final int index;
@@ -892,6 +910,7 @@ class _CodeChallengeQuestion extends StatefulWidget {
   final VoidCallback? onSubmit;
   final bool isLast;
   final bool isSubmitting;
+  final int totalAnswered;
 
   @override
   State<_CodeChallengeQuestion> createState() => _CodeChallengeQuestionState();
@@ -1021,6 +1040,7 @@ class _CodeChallengeQuestionState extends State<_CodeChallengeQuestion> {
           onSubmit: widget.onSubmit,
           isLast: widget.isLast,
           isSubmitting: widget.isSubmitting,
+          totalAnswered: widget.totalAnswered,
         ),
       ],
     );
@@ -1036,6 +1056,7 @@ class _NavRow extends StatelessWidget {
     required this.onSubmit,
     required this.isLast,
     required this.isSubmitting,
+    required this.totalAnswered,
   });
 
   final VoidCallback? onPrevious;
@@ -1043,6 +1064,7 @@ class _NavRow extends StatelessWidget {
   final VoidCallback? onSubmit;
   final bool isLast;
   final bool isSubmitting;
+  final int totalAnswered;
 
   @override
   Widget build(BuildContext context) {
@@ -1076,21 +1098,30 @@ class _NavRow extends StatelessWidget {
             ),
           )
         else
-          ElevatedButton.icon(
-            onPressed: isSubmitting ? null : onSubmit,
-            icon: isSubmitting
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Symbols.send, size: 18),
-            label: Text(isSubmitting ? 'Submitting...' : 'Submit Test'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.onTertiaryContainer,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          Tooltip(
+            message: totalAnswered == 0
+                ? 'Responde al menos una pregunta para enviar'
+                : '',
+            child: ElevatedButton.icon(
+              onPressed: (isSubmitting || totalAnswered == 0) ? null : onSubmit,
+              icon: isSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Symbols.send, size: 18),
+              label: Text(isSubmitting ? 'Enviando...' : 'Enviar Test'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: totalAnswered == 0
+                    ? AppColors.surfaceContainer
+                    : AppColors.onTertiaryContainer,
+                foregroundColor: totalAnswered == 0
+                    ? AppColors.onSurfaceVariant
+                    : Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
           ),
       ],
