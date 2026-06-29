@@ -5,6 +5,13 @@ import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
 
+// Paleta de secciones — sólo dos zonas:
+// Oscura:  #000F1D → #0D1F35  (navbar, hero, stats, roles, footer)
+// Clara:   #F4F7FA              (features, how it works)
+const _darkBg = Color(0xFF000F1D);
+const _darkMid = Color(0xFF0D1F35);
+const _lightBg = Color(0xFFF4F7FA);
+const _emerald = Color(0xFF34D399);
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -12,32 +19,32 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: _lightBg,
       body: CustomScrollView(
         slivers: [
-          // ── Navbar ────────────────────────────────────────────────────
+          // ── Navbar ──────────────────────────────────────────────────
           SliverAppBar(
             pinned: true,
             elevation: 0,
-            backgroundColor: const Color(0xFF000F1D),
-            toolbarHeight: 68,
+            backgroundColor: _darkBg,
+            toolbarHeight: 64,
             title: Row(
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
                     gradient: AppColors.emeraldGradient,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(9),
                   ),
                   child: const Icon(Symbols.auto_awesome,
-                      color: Colors.white, size: 18),
+                      color: Colors.white, size: 17),
                 ),
                 const SizedBox(width: 10),
                 Text('MatchIQ',
                     style: AppTextStyles.headlineMd.copyWith(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 19,
                         letterSpacing: -0.5)),
               ],
             ),
@@ -45,22 +52,23 @@ class LandingPage extends StatelessWidget {
               TextButton(
                 onPressed: () => context.go(AppRoutes.login),
                 child: Text('Iniciar sesión',
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: Colors.white70)),
+                    style:
+                        AppTextStyles.labelBold.copyWith(color: Colors.white60)),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               Container(
                 margin: const EdgeInsets.only(right: 20),
                 child: ElevatedButton(
                   onPressed: () => context.go(AppRoutes.registerCandidate),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.onTertiaryContainer,
-                    foregroundColor: Colors.white,
+                    backgroundColor: _emerald,
+                    foregroundColor: _darkBg,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
+                        horizontal: 18, vertical: 10),
+                    textStyle: AppTextStyles.labelBold,
                   ),
                   child: const Text('Comenzar gratis'),
                 ),
@@ -70,14 +78,14 @@ class LandingPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: Column(
-              children: [
-                const _HeroSection(),
-                const _StatsBar(),
-                const _FeaturesSection(),
-                const _HowItWorksSection(),
-                const _RolesSection(),
-                const _CtaSection(),
-                const _Footer(),
+              children: const [
+                _HeroSection(),
+                _StatsBar(),
+                _FeaturesSection(),
+                _HowItWorksSection(),
+                _RolesSection(),
+                _CtaSection(),
+                _Footer(),
               ],
             ),
           ),
@@ -101,37 +109,33 @@ class _HeroSection extends StatelessWidget {
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF000F1D), Color(0xFF0B1E30), Color(0xFF112840)],
+          colors: [_darkBg, _darkMid],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Stack(
         children: [
-          // Background grid pattern
-          Positioned.fill(
-            child: CustomPaint(painter: _GridPainter()),
-          ),
+          Positioned.fill(child: CustomPaint(painter: _GridPainter())),
           Padding(
             padding: EdgeInsets.fromLTRB(
-                isMobile ? 20 : 40, isMobile ? 56 : 80, isMobile ? 20 : 40, 0),
+                isMobile ? 20 : 40, isMobile ? 52 : 76, isMobile ? 20 : 40, 0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Badge
                 _Badge(label: 'Plataforma de Reclutamiento con IA'),
-                SizedBox(height: isMobile ? 28 : 36),
+                SizedBox(height: isMobile ? 24 : 32),
 
-                // Headline
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 820),
+                  constraints: const BoxConstraints(maxWidth: 780),
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: isMobile ? 38 : 62,
+                        fontSize: isMobile ? 36 : 58,
                         fontWeight: FontWeight.w800,
-                        height: 1.05,
+                        height: 1.08,
                         letterSpacing: -2,
                         color: Colors.white,
                       ),
@@ -139,35 +143,31 @@ class _HeroSection extends StatelessWidget {
                         TextSpan(text: 'El candidato perfecto,\n'),
                         TextSpan(
                           text: 'encontrado por IA',
-                          style: TextStyle(
-                            color: Color(0xFF34D399),
-                          ),
+                          style: TextStyle(color: _emerald),
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: isMobile ? 16 : 24),
+                SizedBox(height: isMobile ? 16 : 20),
 
-                // Subtitle
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
+                  constraints: const BoxConstraints(maxWidth: 520),
                   child: Text(
-                    'MatchIQ conecta candidatos y empresas usando inteligencia artificial — generando scores de compatibilidad, assessments técnicos automáticos y rankings en tiempo real.',
+                    'MatchIQ conecta candidatos y empresas con inteligencia artificial — scores de compatibilidad, assessments técnicos automáticos y rankings en tiempo real.',
                     style: AppTextStyles.bodyLg.copyWith(
-                      color: Colors.white.withValues(alpha: 0.55),
+                      color: Colors.white.withValues(alpha: 0.5),
                       height: 1.65,
-                      fontSize: isMobile ? 15 : 17,
+                      fontSize: isMobile ? 15 : 16,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(height: isMobile ? 36 : 44),
+                SizedBox(height: isMobile ? 32 : 40),
 
-                // CTAs
                 Wrap(
-                  spacing: 14,
-                  runSpacing: 12,
+                  spacing: 12,
+                  runSpacing: 10,
                   alignment: WrapAlignment.center,
                   children: [
                     _PrimaryBtn(
@@ -182,11 +182,9 @@ class _HeroSection extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: isMobile ? 48 : 72),
+                SizedBox(height: isMobile ? 44 : 64),
 
-                // Floating dashboard preview
-                _DashboardPreview(isMobile: isMobile),
-                const SizedBox(height: 0),
+                Center(child: _DashboardPreview(isMobile: isMobile)),
               ],
             ),
           ),
@@ -224,19 +222,18 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xFF34D399).withValues(alpha: 0.1),
+        color: _emerald.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-            color: const Color(0xFF34D399).withValues(alpha: 0.35)),
+        border: Border.all(color: _emerald.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Symbols.auto_awesome, size: 14, color: Color(0xFF34D399)),
+          const Icon(Symbols.auto_awesome, size: 13, color: _emerald),
           const SizedBox(width: 7),
           Text(label,
-              style: AppTextStyles.labelBold.copyWith(
-                  color: const Color(0xFF34D399), fontSize: 12)),
+              style: AppTextStyles.labelBold
+                  .copyWith(color: _emerald, fontSize: 12)),
         ],
       ),
     );
@@ -256,15 +253,15 @@ class _PrimaryBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 18),
+      icon: Icon(icon, size: 17),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF34D399),
-        foregroundColor: const Color(0xFF000F1D),
+        backgroundColor: _emerald,
+        foregroundColor: _darkBg,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 15),
         textStyle: AppTextStyles.labelBold,
       ),
     );
@@ -284,13 +281,15 @@ class _SecondaryBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 18),
+      icon: Icon(icon, size: 17),
       label: Text(label),
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.white,
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.25)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 26, vertical: 15),
         textStyle: AppTextStyles.labelBold,
       ),
     );
@@ -304,36 +303,33 @@ class _DashboardPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 720),
+      constraints: const BoxConstraints(maxWidth: 700),
       child: Container(
-        margin: const EdgeInsets.only(bottom: -2),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: const Color(0xFF0D2035),
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
           ),
-          border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
-              blurRadius: 60,
-              offset: const Offset(0, -10),
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 48,
+              offset: const Offset(0, -8),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Window chrome
             Row(
               children: [
                 ...['FF5F57', 'FFBD2E', '28C840'].map((c) => Container(
-                      width: 11,
-                      height: 11,
-                      margin: const EdgeInsets.only(right: 6),
+                      width: 10,
+                      height: 10,
+                      margin: const EdgeInsets.only(right: 5),
                       decoration: BoxDecoration(
                         color: Color(int.parse('FF$c', radix: 16)),
                         shape: BoxShape.circle,
@@ -341,33 +337,51 @@ class _DashboardPreview extends StatelessWidget {
                     )),
                 const Spacer(),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text('matchiq.app/company/matches',
-                      style: AppTextStyles.labelSm.copyWith(
-                          color: Colors.white38, fontSize: 10)),
+                      style: AppTextStyles.labelSm
+                          .copyWith(color: Colors.white30, fontSize: 10)),
                 ),
                 const Spacer(),
               ],
             ),
-            const SizedBox(height: 16),
-            // Match cards
+            const SizedBox(height: 14),
             if (!isMobile)
               Row(
                 children: [
-                  Expanded(child: _MatchPreviewCard(name: 'Alejandro R.', score: 94, role: 'Senior Flutter Dev', tags: ['Flutter', 'Firebase', 'BLoC'])),
-                  const SizedBox(width: 12),
-                  Expanded(child: _MatchPreviewCard(name: 'Valentina M.', score: 88, role: 'Full Stack Engineer', tags: ['React', 'Node.js', 'AWS'])),
-                  const SizedBox(width: 12),
-                  Expanded(child: _MatchPreviewCard(name: 'Carlos P.', score: 81, role: 'Backend Developer', tags: ['Python', 'FastAPI', 'PostgreSQL'])),
+                  Expanded(
+                      child: _MatchPreviewCard(
+                          name: 'Alejandro R.',
+                          score: 94,
+                          role: 'Senior Flutter Dev',
+                          tags: ['Flutter', 'Firebase', 'BLoC'])),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: _MatchPreviewCard(
+                          name: 'Valentina M.',
+                          score: 88,
+                          role: 'Full Stack Engineer',
+                          tags: ['React', 'Node.js', 'AWS'])),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: _MatchPreviewCard(
+                          name: 'Carlos P.',
+                          score: 81,
+                          role: 'Backend Developer',
+                          tags: ['Python', 'FastAPI', 'PostgreSQL'])),
                 ],
               )
             else
-              _MatchPreviewCard(name: 'Alejandro R.', score: 94, role: 'Senior Flutter Dev', tags: ['Flutter', 'Firebase', 'BLoC']),
+              _MatchPreviewCard(
+                  name: 'Alejandro R.',
+                  score: 94,
+                  role: 'Senior Flutter Dev',
+                  tags: ['Flutter', 'Firebase', 'BLoC']),
           ],
         ),
       ),
@@ -388,7 +402,7 @@ class _MatchPreviewCard extends StatelessWidget {
   final List<String> tags;
 
   Color get _scoreColor {
-    if (score >= 90) return const Color(0xFF34D399);
+    if (score >= 90) return _emerald;
     if (score >= 75) return const Color(0xFFFBBF24);
     return const Color(0xFFF87171);
   }
@@ -396,11 +410,11 @@ class _MatchPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,15 +422,16 @@ class _MatchPreviewCard extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.secondary.withValues(alpha: 0.4),
+                radius: 17,
+                backgroundColor:
+                    AppColors.secondary.withValues(alpha: 0.35),
                 child: Text(name[0],
                     style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                        fontSize: 14)),
+                        fontSize: 13)),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 9),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,7 +443,7 @@ class _MatchPreviewCard extends StatelessWidget {
                             fontSize: 12)),
                     Text(role,
                         style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.45),
+                            color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 10),
                         overflow: TextOverflow.ellipsis),
                   ],
@@ -436,34 +451,34 @@ class _MatchPreviewCard extends StatelessWidget {
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
                   color: _scoreColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(7),
                 ),
                 child: Text('$score%',
                     style: TextStyle(
                         color: _scoreColor,
                         fontWeight: FontWeight.w800,
-                        fontSize: 13)),
+                        fontSize: 12)),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 9),
           Wrap(
             spacing: 4,
             runSpacing: 4,
             children: tags
                 .map((t) => Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 3),
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(t,
                           style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.5),
+                              color: Colors.white.withValues(alpha: 0.45),
                               fontSize: 9,
                               fontWeight: FontWeight.w500)),
                     ))
@@ -475,7 +490,7 @@ class _MatchPreviewCard extends StatelessWidget {
   }
 }
 
-// ─── Stats bar ────────────────────────────────────────────────────────────────
+// ─── Stats bar — misma zona oscura que el hero ────────────────────────────────
 
 class _StatsBar extends StatelessWidget {
   const _StatsBar();
@@ -487,24 +502,24 @@ class _StatsBar extends StatelessWidget {
       (Symbols.group, '10,000+', 'Candidatos'),
       (Symbols.business, '500+', 'Empresas'),
       (Symbols.auto_awesome, '94%', 'Precisión IA'),
-      (Symbols.schedule, '48h', 'Tiempo promedio de contratación'),
+      (Symbols.schedule, '48h', 'Tiempo promedio'),
     ];
 
     return Container(
-      color: const Color(0xFF0A1929),
+      color: _darkMid, // mismo que fondo final del hero
       padding: EdgeInsets.symmetric(
-          vertical: 36, horizontal: isMobile ? 20 : 40),
+          vertical: 32, horizontal: isMobile ? 24 : 40),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000),
+          constraints: const BoxConstraints(maxWidth: 900),
           child: isMobile
               ? Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 32,
-                  runSpacing: 28,
+                  runSpacing: 24,
                   children: items
                       .map((i) => SizedBox(
-                          width: 140,
+                          width: 130,
                           child: _StatItem(i.$1, i.$2, i.$3)))
                       .toList(),
                 )
@@ -514,8 +529,8 @@ class _StatsBar extends StatelessWidget {
                     if (i != items.last)
                       yield Container(
                           width: 1,
-                          height: 48,
-                          color: Colors.white.withValues(alpha: 0.08));
+                          height: 44,
+                          color: Colors.white.withValues(alpha: 0.07));
                   }).toList(),
                 ),
         ),
@@ -533,26 +548,27 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, color: const Color(0xFF34D399), size: 22),
-        const SizedBox(height: 10),
+        Icon(icon, color: _emerald, size: 20),
+        const SizedBox(height: 8),
         Text(value,
             style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
-                fontSize: 28,
+                fontSize: 26,
                 letterSpacing: -1)),
-        const SizedBox(height: 4),
+        const SizedBox(height: 3),
         Text(label,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.45), fontSize: 12),
+                color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
             textAlign: TextAlign.center),
       ],
     );
   }
 }
 
-// ─── Features ─────────────────────────────────────────────────────────────────
+// ─── Features — zona clara ────────────────────────────────────────────────────
 
 class _FeaturesSection extends StatelessWidget {
   const _FeaturesSection();
@@ -564,67 +580,71 @@ class _FeaturesSection extends StatelessWidget {
       (
         Symbols.psychology,
         'Motor de Matching IA',
-        'Nuestro algoritmo analiza cientos de variables — skills, experiencia, resultados de assessments — para generar un score de compatibilidad preciso entre candidato y rol.',
+        'Nuestro algoritmo analiza skills, experiencia y resultados de assessments para generar un score de compatibilidad preciso.',
         Color(0xFF34D399),
       ),
       (
         Symbols.assignment,
         'Assessments Técnicos',
-        'Pruebas técnicas y de comportamiento generadas por IA, específicas para cada rol. Los resultados impactan directamente el score de matching y el ranking de candidatos.',
+        'Pruebas técnicas generadas por IA, específicas para cada rol. Los resultados impactan el score de matching directamente.',
         Color(0xFF60A5FA),
       ),
       (
         Symbols.analytics,
         'Analytics en Tiempo Real',
-        'Dashboards en vivo para monitorear tu pipeline de contratación. Sigue la calidad del match, tasas de completitud de tests y velocidad de contratación desde un solo lugar.',
+        'Dashboards en vivo para monitorear tu pipeline: calidad del match, tasas de completitud y velocidad de contratación.',
         Color(0xFFA78BFA),
       ),
     ];
 
     return Container(
-      color: const Color(0xFFF7F9FB),
+      color: _lightBg,
       padding: EdgeInsets.symmetric(
           vertical: 80, horizontal: isMobile ? 20 : 40),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
             tag: 'POR QUÉ MATCHIQ',
             title: 'Contratación inteligente,\nmejores resultados',
             subtitle:
-                'Todo lo que necesitas para encontrar o cubrir el rol correcto — potenciado por IA.',
+                'Todo lo que necesitas para encontrar o cubrir el rol correcto.',
           ),
-          const SizedBox(height: 56),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
-            child: isMobile
-                ? Column(
-                    children: features
-                        .map((f) => Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: _FeatureCard(
-                                  icon: f.$1,
-                                  title: f.$2,
-                                  body: f.$3,
-                                  accent: f.$4),
-                            ))
-                        .toList(),
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: features
-                        .map((f) => Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+          const SizedBox(height: 52),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1060),
+              child: isMobile
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: features
+                          .map((f) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
                                 child: _FeatureCard(
                                     icon: f.$1,
                                     title: f.$2,
                                     body: f.$3,
                                     accent: f.$4),
-                              ),
-                            ))
-                        .toList(),
-                  ),
+                              ))
+                          .toList(),
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: features
+                          .map((f) => Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8),
+                                  child: _FeatureCard(
+                                      icon: f.$1,
+                                      title: f.$2,
+                                      body: f.$3,
+                                      accent: f.$4),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+            ),
           ),
         ],
       ),
@@ -649,47 +669,50 @@ class _FeatureCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: const [
           BoxShadow(
-              color: Color(0x0A0F2537), blurRadius: 24, offset: Offset(0, 8))
+              color: Color(0x090F2537),
+              blurRadius: 20,
+              offset: Offset(0, 6))
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Colored top accent bar
           Container(
-            height: 4,
+            height: 3,
             decoration: BoxDecoration(
               color: accent,
               borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(18)),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(28),
+            padding: const EdgeInsets.all(26),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
                     color: accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: accent, size: 24),
+                  child: Icon(icon, color: accent, size: 22),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
                 Text(title,
                     style: AppTextStyles.headlineMd
-                        .copyWith(fontSize: 17, letterSpacing: -0.3)),
-                const SizedBox(height: 12),
+                        .copyWith(fontSize: 16, letterSpacing: -0.2)),
+                const SizedBox(height: 10),
                 Text(body,
                     style: AppTextStyles.bodyMd.copyWith(
-                        color: AppColors.onSurfaceVariant, height: 1.65,
-                        fontSize: 14)),
+                        color: AppColors.onSurfaceVariant,
+                        height: 1.65,
+                        fontSize: 13.5)),
               ],
             ),
           ),
@@ -699,7 +722,7 @@ class _FeatureCard extends StatelessWidget {
   }
 }
 
-// ─── How It Works ─────────────────────────────────────────────────────────────
+// ─── How It Works — misma zona clara, sin cambio de color ─────────────────────
 
 class _HowItWorksSection extends StatelessWidget {
   const _HowItWorksSection();
@@ -709,58 +732,63 @@ class _HowItWorksSection extends StatelessWidget {
     final isMobile = MediaQuery.sizeOf(context).width < 700;
     const steps = [
       (Symbols.person_add, '1', 'Crea tu perfil',
-          'Regístrate y completa tu perfil profesional. La IA empieza a construir tu score de matching de inmediato.'),
+          'Regístrate y completa tu perfil. La IA construye tu score de matching de inmediato.'),
       (Symbols.auto_awesome, '2', 'Match con IA',
-          'Nuestro motor analiza cientos de variables para encontrar los roles o candidatos con mayor compatibilidad.'),
+          'Nuestro motor analiza cientos de variables para encontrar los roles con mayor compatibilidad.'),
       (Symbols.assignment_turned_in, '3', 'Completa Assessments',
-          'Valida tus habilidades con pruebas técnicas específicas al rol que potencian tu posición en el ranking.'),
+          'Valida tus habilidades con pruebas técnicas que potencian tu posición en el ranking.'),
       (Symbols.handshake, '4', 'Cierra el Deal',
-          'Conecta directamente con empresas o candidatos seleccionados y finaliza la contratación en tiempo récord.'),
+          'Conecta con empresas o candidatos seleccionados y finaliza la contratación en tiempo récord.'),
     ];
 
-    return Padding(
+    return Container(
+      color: Colors.white, // mismo tono que zona clara, suave contraste con _lightBg
       padding: EdgeInsets.symmetric(
           vertical: 80, horizontal: isMobile ? 20 : 40),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
             tag: 'CÓMO FUNCIONA',
             title: 'De perfil a contratación\nen 4 pasos',
             subtitle: 'Un proceso diseñado para velocidad y precisión.',
           ),
-          const SizedBox(height: 60),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1000),
-            child: isMobile
-                ? Column(
-                    children: steps
-                        .map((s) => Padding(
-                              padding: const EdgeInsets.only(bottom: 28),
-                              child: _StepTile(
-                                  icon: s.$1,
-                                  number: s.$2,
-                                  title: s.$3,
-                                  body: s.$4),
-                            ))
-                        .toList(),
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: steps.expand((s) sync* {
-                      yield Expanded(
-                          child: _StepCard(
-                              icon: s.$1,
-                              number: s.$2,
-                              title: s.$3,
-                              body: s.$4));
-                      if (s != steps.last)
-                        yield Padding(
-                          padding: const EdgeInsets.only(top: 30),
-                          child: Icon(Symbols.arrow_forward_ios,
-                              color: AppColors.outlineVariant, size: 16),
-                        );
-                    }).toList(),
-                  ),
+          const SizedBox(height: 56),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 960),
+              child: isMobile
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: steps
+                          .map((s) => Padding(
+                                padding: const EdgeInsets.only(bottom: 28),
+                                child: _StepTile(
+                                    icon: s.$1,
+                                    number: s.$2,
+                                    title: s.$3,
+                                    body: s.$4),
+                              ))
+                          .toList(),
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: steps.expand((s) sync* {
+                        yield Expanded(
+                            child: _StepCard(
+                                icon: s.$1,
+                                number: s.$2,
+                                title: s.$3,
+                                body: s.$4));
+                        if (s != steps.last)
+                          yield Padding(
+                            padding: const EdgeInsets.only(top: 28),
+                            child: Icon(Symbols.arrow_forward_ios,
+                                color: AppColors.outlineVariant, size: 14),
+                          );
+                      }).toList(),
+                    ),
+            ),
           ),
         ],
       ),
@@ -782,28 +810,29 @@ class _StepCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
             Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
+              width: 60,
+              height: 60,
+              decoration: const BoxDecoration(
                 color: AppColors.primaryContainer,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon,
-                  color: AppColors.onTertiaryContainer, size: 30),
+                  color: AppColors.onTertiaryContainer, size: 28),
             ),
             Positioned(
               top: 0,
               right: 0,
               child: Container(
-                width: 22,
-                height: 22,
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF34D399),
+                  color: _emerald,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
@@ -812,19 +841,20 @@ class _StepCard extends StatelessWidget {
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
-                          fontSize: 10)),
+                          fontSize: 9)),
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
         Text(title,
-            style: AppTextStyles.labelBold.copyWith(fontSize: 14),
+            style:
+                AppTextStyles.labelBold.copyWith(fontSize: 14),
             textAlign: TextAlign.center),
         const SizedBox(height: 8),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Text(body,
               style: AppTextStyles.labelSm
                   .copyWith(color: AppColors.onSurfaceVariant, height: 1.55),
@@ -855,20 +885,22 @@ class _StepTile extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 50,
+              height: 50,
               decoration: const BoxDecoration(
-                  color: AppColors.primaryContainer, shape: BoxShape.circle),
-              child: Icon(icon, color: AppColors.onTertiaryContainer, size: 24),
+                  color: AppColors.primaryContainer,
+                  shape: BoxShape.circle),
+              child: Icon(icon,
+                  color: AppColors.onTertiaryContainer, size: 22),
             ),
             Positioned(
               top: 0,
               right: 0,
               child: Container(
-                width: 18,
-                height: 18,
+                width: 17,
+                height: 17,
                 decoration: BoxDecoration(
-                    color: const Color(0xFF34D399),
+                    color: _emerald,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2)),
                 child: Center(
@@ -881,17 +913,18 @@ class _StepTile extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title,
-                  style: AppTextStyles.labelBold.copyWith(fontSize: 14)),
+                  style:
+                      AppTextStyles.labelBold.copyWith(fontSize: 14)),
               const SizedBox(height: 4),
               Text(body,
-                  style: AppTextStyles.labelSm
-                      .copyWith(color: AppColors.onSurfaceVariant, height: 1.55)),
+                  style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.onSurfaceVariant, height: 1.55)),
             ],
           ),
         ),
@@ -900,7 +933,7 @@ class _StepTile extends StatelessWidget {
   }
 }
 
-// ─── Roles ────────────────────────────────────────────────────────────────────
+// ─── Roles — vuelta a zona oscura ─────────────────────────────────────────────
 
 class _RolesSection extends StatelessWidget {
   const _RolesSection();
@@ -909,10 +942,11 @@ class _RolesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 700;
     return Container(
-      color: const Color(0xFF0A1929),
+      color: _darkMid,
       padding: EdgeInsets.symmetric(
           vertical: 80, horizontal: isMobile ? 20 : 40),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
             tag: 'PARA TODOS',
@@ -920,76 +954,81 @@ class _RolesSection extends StatelessWidget {
             subtitle: 'Dos portales. Una plataforma poderosa.',
             dark: true,
           ),
-          const SizedBox(height: 48),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 900),
-            child: isMobile
-                ? Column(children: [
-                    _RoleCard(
-                      icon: Symbols.person,
-                      title: 'Para Candidatos',
-                      accent: const Color(0xFF34D399),
-                      features: const [
-                        'Score de compatibilidad IA por oferta',
-                        'Plataforma de assessments técnicos',
-                        'Seguimiento de fortaleza de perfil',
-                        'Pipeline de aplicaciones en tiempo real',
-                      ],
-                      ctaLabel: 'Crear perfil gratis',
-                      onCta: () => context.go(AppRoutes.registerCandidate),
-                    ),
-                    const SizedBox(height: 20),
-                    _RoleCard(
-                      icon: Symbols.corporate_fare,
-                      title: 'Para Empresas',
-                      accent: const Color(0xFF60A5FA),
-                      features: const [
-                        'Pool de candidatos rankeados por IA',
-                        'Dispatch automático de tests',
-                        'Desglose del score de matching',
-                        'Pipeline de contratación configurable',
-                      ],
-                      ctaLabel: 'Empezar a contratar',
-                      onCta: () => context.go(AppRoutes.registerCompany),
-                    ),
-                  ])
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _RoleCard(
-                          icon: Symbols.person,
-                          title: 'Para Candidatos',
-                          accent: const Color(0xFF34D399),
-                          features: const [
-                            'Score de compatibilidad IA por oferta',
-                            'Plataforma de assessments técnicos',
-                            'Seguimiento de fortaleza de perfil',
-                            'Pipeline de aplicaciones en tiempo real',
-                          ],
-                          ctaLabel: 'Crear perfil gratis',
-                          onCta: () =>
-                              context.go(AppRoutes.registerCandidate),
-                        ),
+          const SizedBox(height: 44),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 860),
+              child: isMobile
+                  ? Column(children: [
+                      _RoleCard(
+                        icon: Symbols.person,
+                        title: 'Para Candidatos',
+                        accent: _emerald,
+                        features: const [
+                          'Score de compatibilidad IA por oferta',
+                          'Plataforma de assessments técnicos',
+                          'Seguimiento de fortaleza de perfil',
+                          'Pipeline de aplicaciones en tiempo real',
+                        ],
+                        ctaLabel: 'Crear perfil gratis',
+                        onCta: () =>
+                            context.go(AppRoutes.registerCandidate),
                       ),
-                      const SizedBox(width: 24),
-                      Expanded(
-                        child: _RoleCard(
-                          icon: Symbols.corporate_fare,
-                          title: 'Para Empresas',
-                          accent: const Color(0xFF60A5FA),
-                          features: const [
-                            'Pool de candidatos rankeados por IA',
-                            'Dispatch automático de tests',
-                            'Desglose del score de matching',
-                            'Pipeline de contratación configurable',
-                          ],
-                          ctaLabel: 'Empezar a contratar',
-                          onCta: () => context.go(AppRoutes.registerCompany),
-                        ),
+                      const SizedBox(height: 16),
+                      _RoleCard(
+                        icon: Symbols.corporate_fare,
+                        title: 'Para Empresas',
+                        accent: const Color(0xFF60A5FA),
+                        features: const [
+                          'Pool de candidatos rankeados por IA',
+                          'Dispatch automático de tests',
+                          'Desglose del score de matching',
+                          'Pipeline de contratación configurable',
+                        ],
+                        ctaLabel: 'Empezar a contratar',
+                        onCta: () =>
+                            context.go(AppRoutes.registerCompany),
                       ),
-                    ],
-                  ),
+                    ])
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _RoleCard(
+                            icon: Symbols.person,
+                            title: 'Para Candidatos',
+                            accent: _emerald,
+                            features: const [
+                              'Score de compatibilidad IA por oferta',
+                              'Plataforma de assessments técnicos',
+                              'Seguimiento de fortaleza de perfil',
+                              'Pipeline de aplicaciones en tiempo real',
+                            ],
+                            ctaLabel: 'Crear perfil gratis',
+                            onCta: () =>
+                                context.go(AppRoutes.registerCandidate),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: _RoleCard(
+                            icon: Symbols.corporate_fare,
+                            title: 'Para Empresas',
+                            accent: const Color(0xFF60A5FA),
+                            features: const [
+                              'Pool de candidatos rankeados por IA',
+                              'Dispatch automático de tests',
+                              'Desglose del score de matching',
+                              'Pipeline de contratación configurable',
+                            ],
+                            ctaLabel: 'Empezar a contratar',
+                            onCta: () =>
+                                context.go(AppRoutes.registerCompany),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
           ),
         ],
       ),
@@ -1016,57 +1055,63 @@ class _RoleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: accent.withValues(alpha: 0.25)),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
+              color: accent.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: accent, size: 24),
+            child: Icon(icon, color: accent, size: 22),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(title,
               style: AppTextStyles.headlineMd
-                  .copyWith(color: Colors.white, fontSize: 20)),
-          const SizedBox(height: 20),
+                  .copyWith(color: Colors.white, fontSize: 18)),
+          const SizedBox(height: 16),
           ...features.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Symbols.check_circle, size: 16, color: accent),
-                    const SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: Icon(Symbols.check_circle,
+                          size: 15, color: accent),
+                    ),
+                    const SizedBox(width: 9),
                     Expanded(
                       child: Text(f,
                           style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
+                              color: Colors.white.withValues(alpha: 0.65),
                               fontSize: 13,
-                              height: 1.4)),
+                              height: 1.45)),
                     ),
                   ],
                 ),
               )),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: onCta,
               style: ElevatedButton.styleFrom(
                 backgroundColor: accent,
-                foregroundColor: const Color(0xFF000F1D),
+                foregroundColor: _darkBg,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                    borderRadius: BorderRadius.circular(9)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 13),
                 textStyle: AppTextStyles.labelBold,
               ),
               child: Text(ctaLabel),
@@ -1078,7 +1123,7 @@ class _RoleCard extends StatelessWidget {
   }
 }
 
-// ─── CTA ─────────────────────────────────────────────────────────────────────
+// ─── CTA — misma zona oscura, sin salto de color ──────────────────────────────
 
 class _CtaSection extends StatelessWidget {
   const _CtaSection();
@@ -1086,102 +1131,106 @@ class _CtaSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 600;
-    return Padding(
+    return Container(
+      color: _darkMid,
       padding: EdgeInsets.fromLTRB(
-          isMobile ? 16 : 40, 0, isMobile ? 16 : 40, isMobile ? 40 : 56),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 24 : 64,
-            vertical: isMobile ? 44 : 64),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF064E3B), Color(0xFF065F46)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: const [
-            BoxShadow(
-                color: Color(0x3034D399), blurRadius: 40, offset: Offset(0, 16))
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(Symbols.auto_awesome,
-                  color: Color(0xFF6EE7B7), size: 30),
+          isMobile ? 20 : 40, 0, isMobile ? 20 : 40, isMobile ? 48 : 64),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 24 : 52,
+                vertical: isMobile ? 40 : 56),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _emerald.withValues(alpha: 0.2)),
             ),
-            const SizedBox(height: 20),
-            Text(
-              '¿Listo para encontrar tu match perfecto?',
-              style: AppTextStyles.headlineLg
-                  .copyWith(color: Colors.white, letterSpacing: -0.5),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: Text(
-                'Únete a más de 10,000 profesionales y 500+ empresas que ya usan MatchIQ para contratar con inteligencia.',
-                style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
-                    height: 1.65,
-                    fontSize: 15),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 36),
-            Wrap(
-              spacing: 14,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => context.go(AppRoutes.registerCandidate),
-                  icon: const Icon(Symbols.person, size: 18),
-                  label: const Text('Soy candidato'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF064E3B),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 14),
-                    textStyle: AppTextStyles.labelBold,
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: _emerald.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border:
+                        Border.all(color: _emerald.withValues(alpha: 0.3)),
+                  ),
+                  child: const Icon(Symbols.auto_awesome,
+                      color: _emerald, size: 26),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  '¿Listo para encontrar tu match perfecto?',
+                  style: AppTextStyles.headlineLg.copyWith(
+                      color: Colors.white, letterSpacing: -0.5, fontSize: 26),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Text(
+                    'Únete a más de 10,000 profesionales y 500+ empresas que ya usan MatchIQ para contratar con inteligencia.',
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        height: 1.65,
+                        fontSize: 14.5),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: () => context.go(AppRoutes.registerCompany),
-                  icon: const Icon(Symbols.corporate_fare, size: 18),
-                  label: const Text('Soy empresa'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.35)),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 14),
-                    textStyle: AppTextStyles.labelBold,
-                  ),
+                const SizedBox(height: 32),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 10,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () =>
+                          context.go(AppRoutes.registerCandidate),
+                      icon: const Icon(Symbols.person, size: 17),
+                      label: const Text('Soy candidato'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _emerald,
+                        foregroundColor: _darkBg,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 22, vertical: 13),
+                        textStyle: AppTextStyles.labelBold,
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () =>
+                          context.go(AppRoutes.registerCompany),
+                      icon: const Icon(Symbols.corporate_fare, size: 17),
+                      label: const Text('Soy empresa'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.25)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 22, vertical: 13),
+                        textStyle: AppTextStyles.labelBold,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ─── Footer ──────────────────────────────────────────────────────────────────
+// ─── Footer — continua en zona oscura ────────────────────────────────────────
 
 class _Footer extends StatelessWidget {
   const _Footer();
@@ -1190,46 +1239,50 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 600;
     return Container(
+      color: _darkBg,
       padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 20 : 40, vertical: 28),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.outlineVariant)),
-      ),
-      child: Row(
-        children: [
-          Row(
+          horizontal: isMobile ? 20 : 40, vertical: 24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: Row(
             children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                    gradient: AppColors.emeraldGradient,
-                    borderRadius: BorderRadius.circular(8)),
-                child: const Icon(Symbols.auto_awesome,
-                    color: Colors.white, size: 15),
+              Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                        gradient: AppColors.emeraldGradient,
+                        borderRadius: BorderRadius.circular(7)),
+                    child: const Icon(Symbols.auto_awesome,
+                        color: Colors.white, size: 14),
+                  ),
+                  const SizedBox(width: 8),
+                  Text('MatchIQ',
+                      style: AppTextStyles.labelBold
+                          .copyWith(color: Colors.white60)),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text('MatchIQ',
-                  style: AppTextStyles.labelBold
-                      .copyWith(color: AppColors.primary)),
+              const Spacer(),
+              Flexible(
+                child: Text(
+                  '© 2025 MatchIQ · Reclutamiento con IA',
+                  style: AppTextStyles.labelSm
+                      .copyWith(color: Colors.white30),
+                  textAlign: TextAlign.right,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
-          const Spacer(),
-          Flexible(
-            child: Text(
-              '© 2025 MatchIQ · Reclutamiento con IA',
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
-              textAlign: TextAlign.right,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-// ─── Section header ──────────────────────────────────────────────────────────
+// ─── Section header ───────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({
@@ -1246,21 +1299,22 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            color: const Color(0xFF34D399).withValues(alpha: 0.12),
+            color: _emerald.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-                color: const Color(0xFF34D399).withValues(alpha: 0.3)),
+            border: Border.all(color: _emerald.withValues(alpha: 0.25)),
           ),
           child: Text(tag,
               style: AppTextStyles.labelSm.copyWith(
-                  color: const Color(0xFF34D399),
+                  color: _emerald,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                  fontSize: 11)),
+                  letterSpacing: 1.1,
+                  fontSize: 10.5)),
         ),
         const SizedBox(height: 14),
         Text(
@@ -1272,13 +1326,14 @@ class _SectionHeader extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
+          constraints: const BoxConstraints(maxWidth: 480),
           child: Text(
             subtitle,
             style: AppTextStyles.bodyMd.copyWith(
                 color: dark
                     ? Colors.white.withValues(alpha: 0.45)
-                    : AppColors.onSurfaceVariant),
+                    : AppColors.onSurfaceVariant,
+                fontSize: 14.5),
             textAlign: TextAlign.center,
           ),
         ),
