@@ -49,3 +49,8 @@ class AuthPendingVerification extends AuthState {
 class AuthEmailVerified extends AuthState {
   const AuthEmailVerified();
 }
+
+// Emitted after successful password reset
+class AuthPasswordResetSuccess extends AuthState {
+  const AuthPasswordResetSuccess();
+}

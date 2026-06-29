@@ -20,6 +20,7 @@ import '../../features/presentarion/pages/company_profile_settings_page.dart';
 import '../../features/presentarion/pages/company_registration_page.dart';
 import '../../features/presentarion/pages/create_new_offer_page.dart';
 import '../../features/presentarion/pages/forgot_password_page.dart';
+import '../../features/presentarion/pages/reset_password_page.dart';
 import '../../features/presentarion/pages/match_test_results_page.dart';
 import '../../features/presentarion/pages/offer_matches_page.dart';
 import '../../features/presentarion/pages/offer_pending_page.dart';
@@ -48,6 +49,7 @@ class AppRouter {
             AppRoutes.landing,
             AppRoutes.login,
             AppRoutes.forgotPassword,
+            AppRoutes.resetPassword,
             AppRoutes.authUtility,
             AppRoutes.registerCandidate,
             AppRoutes.registerCompany,
@@ -76,6 +78,12 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.forgotPassword,
             builder: (_, __) => const ForgotPasswordPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.resetPassword,
+            builder: (_, state) => ResetPasswordPage(
+              token: state.uri.queryParameters['token'] ?? '',
+            ),
           ),
           GoRoute(
             path: AppRoutes.authUtility,

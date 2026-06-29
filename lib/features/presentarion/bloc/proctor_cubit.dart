@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../infrastructure/datasources/proctor_datasource.dart';
 
@@ -84,16 +85,19 @@ class ProctorCubit extends Cubit<ProctorState> {
   final ProctoringDatasource _datasource;
 
   Future<void> startSession(String userId, int submissionId) async {
+    debugPrint('[ProctorCubit] startSession called — userId=$userId, submissionId=$submissionId');
     emit(state.copyWith(status: ProctorStatus.starting));
     final sessionId = await _datasource.startSession(userId, submissionId);
     if (isClosed) return;
     if (sessionId == null) {
+      debugPrint('[ProctorCubit] startSession failed — no sessionId returned');
       emit(state.copyWith(
         status: ProctorStatus.error,
         error: 'Proctoring session could not be started',
       ));
       return;
     }
+    debugPrint('[ProctorCubit] Session started — sessionId=$sessionId');
     emit(state.copyWith(status: ProctorStatus.monitoring, sessionId: sessionId));
   }
 

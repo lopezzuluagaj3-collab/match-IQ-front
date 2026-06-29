@@ -10,6 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterCandidateRequested>(_onRegisterCandidate);
     on<RegisterCompanyRequested>(_onRegisterCompany);
     on<ForgotPasswordRequested>(_onForgotPassword);
+    on<ResetPasswordRequested>(_onResetPassword);
     on<VerifyEmailRequested>(_onVerifyEmail);
     on<ResendVerificationRequested>(_onResendVerification);
     on<LogoutRequested>(_onLogout);
@@ -104,6 +105,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(AuthFailureState(failure.message)),
       (_) => emit(const AuthPasswordResetSent()),
+    );
+  }
+
+  Future<void> _onResetPassword(
+    ResetPasswordRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _authPort.resetPassword(
+      token: event.token,
+      newPassword: event.newPassword,
+      confirmPassword: event.confirmPassword,
+    );
+    result.fold(
+      (failure) => emit(AuthFailureState(failure.message)),
+      (_) => emit(const AuthPasswordResetSuccess()),
     );
   }
 

@@ -51,6 +51,19 @@ class ForgotPasswordRequested extends AuthEvent {
   List<Object?> get props => [email];
 }
 
+class ResetPasswordRequested extends AuthEvent {
+  const ResetPasswordRequested({
+    required this.token,
+    required this.newPassword,
+    required this.confirmPassword,
+  });
+  final String token;
+  final String newPassword;
+  final String confirmPassword;
+  @override
+  List<Object?> get props => [token, newPassword, confirmPassword];
+}
+
 class VerifyEmailRequested extends AuthEvent {
   const VerifyEmailRequested({required this.email, required this.code});
   final String email;

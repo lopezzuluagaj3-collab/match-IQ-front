@@ -3,6 +3,7 @@ abstract class AppRoutes {
   static const login = '/login';
   static const forgotPassword = '/forgot-password';
   static const authUtility = '/auth/verify';
+  static const resetPassword = '/auth/reset-password';
   static const registerCandidate = '/register/candidate';
   static const registerCompany = '/register/company';
 

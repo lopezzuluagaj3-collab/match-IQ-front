@@ -149,13 +149,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
 
   // ─── Proctoring ────────────────────────────────────────────────────────────
 
-  Future<void> _startProctoringCapture(int submissionId) async {
-    _proctoringStarted = true;
-    // Start proctoring session now that we have submissionId from the test response
-    final authState = context.read<AuthBloc>().state;
-    if (authState is AuthAuthenticated) {
-      _proctoringCubit.startSession(authState.user.id, submissionId);
-    }
+  Future<void> _startCameraCapture() async {
     await _camera.initialize();
     if (!mounted) return;
     _fullscreen.enter();
@@ -349,7 +343,17 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
       listener: (context, state) {
         if (state.session != null && _timer == null && !state.isLoading) {
           _startTimer(state.session!.timeLimitMinutes);
-          if (!_proctoringStarted) _startProctoringCapture(state.session!.submissionId);
+          if (!_proctoringStarted) {
+            _proctoringStarted = true;
+            final authState = context.read<AuthBloc>().state;
+            if (authState is AuthAuthenticated) {
+              debugPrint('[Proctoring] Starting session — user=${authState.user.id}, submission=${state.session!.submissionId}');
+              _proctoringCubit.startSession(authState.user.id, state.session!.submissionId);
+            } else {
+              debugPrint('[Proctoring] Cannot start: authState=${authState.runtimeType}');
+            }
+            _startCameraCapture();
+          }
         }
         if (state.isSubmitted) {
           _timer?.cancel();

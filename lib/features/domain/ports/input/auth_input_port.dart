@@ -16,6 +16,11 @@ abstract class AuthInputPort {
     required String password,
   });
   ResultVoid forgotPassword({required String email});
+  ResultVoid resetPassword({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  });
   ResultVoid verifyEmail({required String email, required String code});
   ResultVoid resendVerification({required String email});
   ResultVoid logout();

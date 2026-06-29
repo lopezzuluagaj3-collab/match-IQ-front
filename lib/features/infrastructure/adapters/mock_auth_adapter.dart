@@ -80,6 +80,16 @@ class MockAuthAdapter implements AuthOutputPort {
   }
 
   @override
+  ResultVoid resetPassword({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    return const Right(null);
+  }
+
+  @override
   ResultVoid verifyEmail({required String email, required String code}) async {
     await Future.delayed(const Duration(milliseconds: 600));
     return const Right(null);

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class ProctoringApiClient {
   ProctoringApiClient() {
@@ -19,7 +20,8 @@ class ProctoringApiClient {
     try {
       final res = await _dio.post<Map<String, dynamic>>(path, data: body);
       return res.data;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[ProctoringAPI] POST $path failed: $e');
       return null;
     }
   }
