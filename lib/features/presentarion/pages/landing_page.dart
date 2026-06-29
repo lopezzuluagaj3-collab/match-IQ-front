@@ -28,25 +28,17 @@ class LandingPage extends StatelessWidget {
             elevation: 0,
             backgroundColor: _darkBg,
             toolbarHeight: 64,
-            title: Row(
-              children: [
-                Container(
-                  width: 34,
+            title: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Image.asset(
+                  'assets/images/logo.jpeg',
                   height: 34,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.emeraldGradient,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: const Icon(Symbols.auto_awesome,
-                      color: Colors.white, size: 17),
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(width: 10),
-                Text('MatchIQ',
-                    style: AppTextStyles.headlineMd.copyWith(
-                        color: Colors.white,
-                        fontSize: 19,
-                        letterSpacing: -0.5)),
-              ],
+              ),
             ),
             actions: [
               TextButton(
@@ -123,6 +115,13 @@ class _HeroSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Logo principal
+                Image.asset(
+                  'assets/images/logo.jpeg',
+                  height: isMobile ? 64 : 80,
+                  fit: BoxFit.contain,
+                ),
+                SizedBox(height: isMobile ? 20 : 28),
                 _Badge(label: 'Plataforma de Reclutamiento con IA'),
                 SizedBox(height: isMobile ? 24 : 32),
 
@@ -1247,22 +1246,18 @@ class _Footer extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1100),
           child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                        gradient: AppColors.emeraldGradient,
-                        borderRadius: BorderRadius.circular(7)),
-                    child: const Icon(Symbols.auto_awesome,
-                        color: Colors.white, size: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  child: Image.asset(
+                    'assets/images/logo.jpeg',
+                    height: 26,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(width: 8),
-                  Text('MatchIQ',
-                      style: AppTextStyles.labelBold
-                          .copyWith(color: Colors.white60)),
-                ],
+                ),
               ),
               const Spacer(),
               Flexible(
