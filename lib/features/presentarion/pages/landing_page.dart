@@ -28,17 +28,10 @@ class LandingPage extends StatelessWidget {
             elevation: 0,
             backgroundColor: _darkBg,
             toolbarHeight: 64,
-            title: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Image.asset(
-                  'assets/images/logo.jpeg',
-                  height: 34,
-                  fit: BoxFit.contain,
-                ),
-              ),
+            title: Image.asset(
+              'assets/images/logo.jpeg',
+              height: 40,
+              fit: BoxFit.contain,
             ),
             actions: [
               TextButton(
@@ -118,10 +111,10 @@ class _HeroSection extends StatelessWidget {
                 // Logo principal
                 Image.asset(
                   'assets/images/logo.jpeg',
-                  height: isMobile ? 64 : 80,
+                  height: isMobile ? 100 : 130,
                   fit: BoxFit.contain,
                 ),
-                SizedBox(height: isMobile ? 20 : 28),
+                SizedBox(height: isMobile ? 16 : 20),
                 _Badge(label: 'Plataforma de Reclutamiento con IA'),
                 SizedBox(height: isMobile ? 24 : 32),
 
@@ -1246,18 +1239,10 @@ class _Footer extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1100),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  color: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                  child: Image.asset(
-                    'assets/images/logo.jpeg',
-                    height: 26,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+              Image.asset(
+                'assets/images/logo.jpeg',
+                height: 32,
+                fit: BoxFit.contain,
               ),
               const Spacer(),
               Flexible(
