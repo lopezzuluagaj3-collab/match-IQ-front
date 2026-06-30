@@ -77,21 +77,12 @@ class _SidebarHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Symbols.auto_awesome, color: AppColors.onTertiaryContainer, size: 22),
-          ),
+          Image.asset('assets/images/logo.jpeg', height: 36, fit: BoxFit.contain),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('MatchIQ', style: AppTextStyles.headlineLgMobile.copyWith(color: AppColors.onPrimary, fontSize: 18)),
                 Text(subtitle, style: AppTextStyles.labelSm.copyWith(color: AppColors.onPrimaryContainer, fontSize: 11)),
               ],
             ),
