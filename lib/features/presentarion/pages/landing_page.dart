@@ -491,8 +491,6 @@ class _StatsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 600;
     const items = [
-      (Symbols.group, '10,000+', 'Candidatos'),
-      (Symbols.business, '500+', 'Empresas'),
       (Symbols.auto_awesome, '94%', 'Precisión IA'),
       (Symbols.schedule, '48h', 'Tiempo promedio'),
     ];
@@ -1165,7 +1163,7 @@ class _CtaSection extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
                   child: Text(
-                    'Únete a más de 10,000 profesionales y 500+ empresas que ya usan MatchIQ para contratar con inteligencia.',
+                    'Empieza hoy y conecta candidatos con empresas usando inteligencia artificial.',
                     style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         height: 1.65,
