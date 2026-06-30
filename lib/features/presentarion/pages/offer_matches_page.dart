@@ -140,6 +140,7 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
                               match: e.value,
                               isSelected: _selectedMatchIds
                                   .contains(e.value.matchId),
+                              actingMatchId: state.isActingOnMatchId,
                               onToggleSelect: (id) => setState(() {
                                 _selectedMatchIds.contains(id)
                                     ? _selectedMatchIds.remove(id)
@@ -159,12 +160,8 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
                                       context, 'Test enviado correctamente.');
                                 }
                               },
-                              onSelect: (id) => context
-                                  .read<CompanyCubit>()
-                                  .selectCandidate(id),
-                              onReject: (id) => context
-                                  .read<CompanyCubit>()
-                                  .rejectCandidate(id),
+                              onSelect: (id) => _handleSelect(id),
+                              onReject: (id) => _handleReject(id),
                               onViewResults: (id) => context.push(
                                   AppRoutes.matchTestResultsPath(id)),
                             ),
@@ -176,6 +173,80 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
         },
       ),
     );
+  }
+
+  Future<void> _handleSelect(int matchId) async {
+    final match = context.read<CompanyCubit>().state.matches
+        .firstWhere((m) => m.matchId == matchId);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Confirmar selección'),
+        content: Text(
+          '¿Confirmas la selección de ${match.candidateName}?\nSe le notificará por correo.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.onTertiaryContainer,
+            ),
+            child: const Text('Seleccionar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await context.read<CompanyCubit>().selectCandidate(matchId);
+    if (!mounted) return;
+    final error = context.read<CompanyCubit>().state.error;
+    if (error != null) {
+      _showErrorSnackbar(context, error);
+    } else {
+      _showSuccessSnackbar(context, 'Candidato seleccionado correctamente.');
+    }
+  }
+
+  Future<void> _handleReject(int matchId) async {
+    final match = context.read<CompanyCubit>().state.matches
+        .firstWhere((m) => m.matchId == matchId);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Confirmar rechazo'),
+        content: Text(
+          '¿Confirmas el rechazo de ${match.candidateName}?\nEsta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: const Text('Rechazar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await context.read<CompanyCubit>().rejectCandidate(matchId);
+    if (!mounted) return;
+    final error = context.read<CompanyCubit>().state.error;
+    if (error != null) {
+      _showErrorSnackbar(context, error);
+    } else {
+      _showSuccessSnackbar(context, 'Candidato rechazado.');
+    }
   }
 
   List<CandidateMatch> _sortedMatches(List<CandidateMatch> matches) {
@@ -445,6 +516,7 @@ class _CandidateMatchCard extends StatelessWidget {
     required this.rank,
     required this.match,
     required this.isSelected,
+    required this.actingMatchId,
     required this.onToggleSelect,
     required this.onSendTest,
     required this.onSelect,
@@ -455,6 +527,7 @@ class _CandidateMatchCard extends StatelessWidget {
   final int rank;
   final CandidateMatch match;
   final bool isSelected;
+  final int? actingMatchId;
   final ValueChanged<int> onToggleSelect;
   final ValueChanged<int> onSendTest;
   final ValueChanged<int> onSelect;
@@ -566,6 +639,7 @@ class _CandidateMatchCard extends StatelessWidget {
         if (!isRejected)
           _ActionButtons(
             match: match,
+            isActing: actingMatchId == match.matchId,
             onSendTest: () => onSendTest(match.matchId),
             onSelect: () => onSelect(match.matchId),
             onReject: () => onReject(match.matchId),
@@ -880,12 +954,14 @@ class _StatusPill extends StatelessWidget {
 class _ActionButtons extends StatelessWidget {
   const _ActionButtons({
     required this.match,
+    required this.isActing,
     required this.onSendTest,
     required this.onSelect,
     required this.onReject,
     required this.onViewResults,
   });
   final CandidateMatch match;
+  final bool isActing;
   final VoidCallback onSendTest;
   final VoidCallback onSelect;
   final VoidCallback onReject;
@@ -897,6 +973,18 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isActing) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+              strokeWidth: 2, color: AppColors.onTertiaryContainer),
+        ),
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -916,14 +1004,14 @@ class _ActionButtons extends StatelessWidget {
         else if (match.canSelect)
           _PrimaryBtn(
             icon: Symbols.how_to_reg,
-            label: 'Select',
+            label: 'Seleccionar',
             color: AppColors.onTertiaryContainer,
             onTap: onSelect,
           )
         else if (match.status == MatchStatus.shortlisted)
           _StatusTag(
               icon: Symbols.verified,
-              label: 'Selected',
+              label: 'Seleccionado',
               color: AppColors.onTertiaryContainer),
 
         // View test results

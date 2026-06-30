@@ -35,6 +35,7 @@ class CompanyState extends Equatable {
     this.isSaving = false,
     this.isParsing = false,
     this.proctoringReport,
+    this.isActingOnMatchId,
     this.error,
   });
 
@@ -62,6 +63,7 @@ class CompanyState extends Equatable {
   final bool isSaving;
   final bool isParsing;
   final ProctoringReport? proctoringReport;
+  final int? isActingOnMatchId;
   final String? error;
 
   CompanyState copyWith({
@@ -97,6 +99,8 @@ class CompanyState extends Equatable {
     bool? isParsing,
     ProctoringReport? proctoringReport,
     bool clearProctoringReport = false,
+    int? isActingOnMatchId,
+    bool clearActingMatchId = false,
     String? error,
     bool clearError = false,
   }) =>
@@ -125,6 +129,7 @@ class CompanyState extends Equatable {
         isSaving: isSaving ?? this.isSaving,
         isParsing: isParsing ?? this.isParsing,
         proctoringReport: clearProctoringReport ? null : (proctoringReport ?? this.proctoringReport),
+        isActingOnMatchId: clearActingMatchId ? null : (isActingOnMatchId ?? this.isActingOnMatchId),
         error: clearError ? null : (error ?? this.error),
       );
 
@@ -134,7 +139,8 @@ class CompanyState extends Equatable {
         aiParseResult, createdOffer, checkoutUrl, offerActivated, sessionActivated,
         selectedOfferId, testSession, testSubmission, lastChatMessage, proctoringReport,
         isLoading, isLoadingMatches, isLoadingSubmission,
-        isLoadingProctoring, isDownloadingReport, isSaving, isParsing, error,
+        isLoadingProctoring, isDownloadingReport, isSaving, isParsing,
+        isActingOnMatchId, error,
       ];
 }
 
@@ -300,22 +306,25 @@ class CompanyCubit extends Cubit<CompanyState> {
   }
 
   Future<void> selectCandidate(int matchId) async {
-    emit(state.copyWith(isSaving: true, clearError: true));
+    emit(state.copyWith(isActingOnMatchId: matchId, clearError: true));
     final result = await _datasource.selectCandidate(matchId);
     result.fold(
-      (f) => emit(state.copyWith(isSaving: false, error: f.message)),
-      (updated) {
+      (f) => emit(state.copyWith(clearActingMatchId: true, error: f.message)),
+      (updated) async {
         final newMatches = state.matches.map((m) => m.matchId == matchId ? updated : m).toList();
-        emit(state.copyWith(isSaving: false, matches: newMatches));
+        emit(state.copyWith(clearActingMatchId: true, matches: newMatches));
+        if (state.selectedOfferId != null && state.selectedOfferId! > 0) {
+          await refreshOffer(state.selectedOfferId!);
+        }
       },
     );
   }
 
   Future<void> rejectCandidate(int matchId) async {
-    emit(state.copyWith(isSaving: true, clearError: true));
+    emit(state.copyWith(isActingOnMatchId: matchId, clearError: true));
     final result = await _datasource.rejectCandidate(matchId);
     result.fold(
-      (f) => emit(state.copyWith(isSaving: false, error: f.message)),
+      (f) => emit(state.copyWith(clearActingMatchId: true, error: f.message)),
       (_) {
         final newMatches = state.matches.map((m) {
           if (m.matchId == matchId) {
@@ -329,6 +338,7 @@ class CompanyCubit extends Cubit<CompanyState> {
               skills: m.skills,
               offerId: m.offerId,
               offerTitle: m.offerTitle,
+              email: m.email,
               testScore: m.testScore,
               testFeedback: m.testFeedback,
               aiInsight: m.aiInsight,
@@ -340,7 +350,7 @@ class CompanyCubit extends Cubit<CompanyState> {
           }
           return m;
         }).toList();
-        emit(state.copyWith(isSaving: false, matches: newMatches));
+        emit(state.copyWith(clearActingMatchId: true, matches: newMatches));
       },
     );
   }

@@ -15,6 +15,8 @@ import '../widgets/shared/app_sidebar.dart';
 
 enum JobOffersMode { jobBoard, matches, assessments }
 
+enum _AssessmentFilter { all, pending, completed, expired }
+
 class JobOffersListPage extends StatefulWidget {
   const JobOffersListPage({super.key, this.mode = JobOffersMode.jobBoard});
   final JobOffersMode mode;
@@ -26,6 +28,7 @@ class JobOffersListPage extends StatefulWidget {
 class _JobOffersListPageState extends State<JobOffersListPage> {
   String _search = '';
   OfferMode? _filterMode;
+  _AssessmentFilter _assessmentFilter = _AssessmentFilter.all;
 
   bool get _isAssessments => widget.mode == JobOffersMode.assessments;
 
@@ -63,6 +66,8 @@ class _JobOffersListPageState extends State<JobOffersListPage> {
             ? _AssessmentsView(
                 search: _search,
                 onSearchChanged: (v) => setState(() => _search = v),
+                filter: _assessmentFilter,
+                onFilterChanged: (f) => setState(() => _assessmentFilter = f),
                 state: state,
                 pageTitle: _pageTitle,
                 pageSubtitle: _pageSubtitle,
@@ -229,6 +234,8 @@ class _AssessmentsView extends StatelessWidget {
   const _AssessmentsView({
     required this.search,
     required this.onSearchChanged,
+    required this.filter,
+    required this.onFilterChanged,
     required this.state,
     required this.pageTitle,
     required this.pageSubtitle,
@@ -236,6 +243,8 @@ class _AssessmentsView extends StatelessWidget {
 
   final String search;
   final ValueChanged<String> onSearchChanged;
+  final _AssessmentFilter filter;
+  final ValueChanged<_AssessmentFilter> onFilterChanged;
   final CandidateState state;
   final String pageTitle;
   final String pageSubtitle;
@@ -252,12 +261,18 @@ class _AssessmentsView extends StatelessWidget {
           .toList();
     }
 
-    final pending =
+    final allPending =
         tests.where((t) => t.status == TestStatus.pending || t.status == TestStatus.inProgress).toList();
-    final completed =
+    final allCompleted =
         tests.where((t) => t.status == TestStatus.completed).toList();
-    final expired =
+    final allExpired =
         tests.where((t) => t.status == TestStatus.expired).toList();
+
+    final pending   = filter == _AssessmentFilter.all || filter == _AssessmentFilter.pending   ? allPending   : <TechnicalTest>[];
+    final completed = filter == _AssessmentFilter.all || filter == _AssessmentFilter.completed ? allCompleted : <TechnicalTest>[];
+    final expired   = filter == _AssessmentFilter.all || filter == _AssessmentFilter.expired   ? allExpired   : <TechnicalTest>[];
+
+    final totalFiltered = pending.length + completed.length + expired.length;
 
     return SingleChildScrollView(
       padding: Responsive.pagePadding(context),
@@ -335,7 +350,47 @@ class _AssessmentsView extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 16),
+
+          // Filter chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _StatusFilterChip(
+                  label: 'All',
+                  count: tests.length,
+                  isSelected: filter == _AssessmentFilter.all,
+                  onTap: () => onFilterChanged(_AssessmentFilter.all),
+                ),
+                const SizedBox(width: 8),
+                _StatusFilterChip(
+                  label: 'Pending',
+                  count: allPending.length,
+                  isSelected: filter == _AssessmentFilter.pending,
+                  color: AppColors.error,
+                  onTap: () => onFilterChanged(_AssessmentFilter.pending),
+                ),
+                const SizedBox(width: 8),
+                _StatusFilterChip(
+                  label: 'Completed',
+                  count: allCompleted.length,
+                  isSelected: filter == _AssessmentFilter.completed,
+                  color: AppColors.onTertiaryContainer,
+                  onTap: () => onFilterChanged(_AssessmentFilter.completed),
+                ),
+                const SizedBox(width: 8),
+                _StatusFilterChip(
+                  label: 'Expired',
+                  count: allExpired.length,
+                  isSelected: filter == _AssessmentFilter.expired,
+                  color: AppColors.outline,
+                  onTap: () => onFilterChanged(_AssessmentFilter.expired),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
 
           // Content
           if (state.isLoading)
@@ -348,7 +403,7 @@ class _AssessmentsView extends StatelessWidget {
             )
           else if (tests.isEmpty && search.isEmpty)
             const _EmptyAssessments()
-          else if (tests.isEmpty)
+          else if (totalFiltered == 0)
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(top: 60),
@@ -358,7 +413,9 @@ class _AssessmentsView extends StatelessWidget {
                         size: 52, color: AppColors.outline),
                     const SizedBox(height: 14),
                     Text(
-                      'No assessments match your search',
+                      search.isNotEmpty
+                          ? 'No assessments match your search'
+                          : 'No assessments in this category',
                       style: AppTextStyles.bodyLg
                           .copyWith(color: AppColors.onSurfaceVariant),
                     ),
@@ -659,6 +716,75 @@ class _EmptyAssessments extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMd
                   .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Status filter chip (assessments) ────────────────────────────────────────
+
+class _StatusFilterChip extends StatelessWidget {
+  const _StatusFilterChip({
+    required this.label,
+    required this.count,
+    required this.isSelected,
+    required this.onTap,
+    this.color,
+  });
+
+  final String label;
+  final int count;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final activeColor = color ?? AppColors.onTertiaryContainer;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor : AppColors.surfaceContainerLowest,
+          border: Border.all(
+            color: isSelected ? activeColor : AppColors.outlineVariant,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.labelBold.copyWith(
+                color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Colors.white.withOpacity(0.25)
+                    : (color ?? AppColors.onTertiaryContainer).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                '$count',
+                style: AppTextStyles.labelSm.copyWith(
+                  color: isSelected
+                      ? Colors.white
+                      : (color ?? AppColors.onTertiaryContainer),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                ),
+              ),
             ),
           ],
         ),
