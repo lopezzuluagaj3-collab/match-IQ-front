@@ -29,6 +29,15 @@
   - [State Management](#state-management)
 - [Routing](#routing)
 - [API Reference](#api-reference)
+  - [Authentication](#authentication)
+  - [Catalog](#catalog)
+  - [Candidate](#candidate)
+  - [Company](#company)
+  - [Job Offers](#job-offers)
+  - [Payments](#payments)
+  - [Matching & Tests](#matching--tests)
+  - [Analytics](#analytics)
+  - [Admin](#admin)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Scripts](#scripts)
@@ -58,6 +67,7 @@ The platform serves **three distinct user roles**:
 - Camera-based AI proctoring during test sessions
 - Real-time profile strength tracking
 - Test result history with per-question feedback
+- **Market insights dashboard** — see which skills the market demands, identify personal gaps vs. top-demand skills, and track skill level alignment (1–5 scale) against live offer data
 
 ### For Companies
 - AI-ranked candidate pipeline per offer
@@ -555,6 +565,80 @@ Incoming route
 | `POST` | `/api/tests/questions/:id/chat` | Request AI hint for a question |
 | `GET` | `/api/tests/submissions/:matchId` | All submissions for a match |
 | `GET` | `/api/tests/submissions/:matchId/proctoring` | Proctoring report for a submission |
+
+### Analytics
+
+Two endpoints that expose demand/supply intelligence derived from real platform data.
+
+#### Market Overview (public)
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/analytics/market` | — | Top skills in demand, top candidate skills, top skill pairs |
+
+**Response shape:**
+
+| Field | Type | Description |
+|---|---|---|
+| `topDemand[]` | array | Top skills required by offers: `skillName`, `categoryName`, `offerCount` |
+| `topSupply[]` | array | Top skills declared by candidates: `skillName`, `categoryName`, `candidateCount` |
+| `topCombinations[]` | array | Most-requested skill pairs: `skillA`, `skillB`, `offerCount` |
+
+No token required. Safe to call on mount from any public or pre-login screen (landing, onboarding, admin dashboard).
+
+#### Candidate Insights (authenticated)
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/analytics/market/my-insights` | ✓ Candidate | Same market data, cross-referenced against the candidate's own profile |
+
+**Additional fields returned:**
+
+`topDemand` items gain:
+
+| Field | Type | Description |
+|---|---|---|
+| `candidateHasSkill` | `bool` | Candidate has this skill in their profile |
+| `candidateLevel` | `int?` | Proficiency level 1–5 (`null` if skill absent) |
+
+`topCombinations` items gain:
+
+| Field | Type | Description |
+|---|---|---|
+| `candidateHasA` | `bool` | Candidate has `skillA` |
+| `candidateHasB` | `bool` | Candidate has `skillB` |
+| `candidateHasBoth` | `bool` | Candidate satisfies the full pair |
+
+Two summary arrays:
+
+| Field | Type | Description |
+|---|---|---|
+| `skillsInDemand` | `string[]` | Skills the candidate **has** that appear in `topDemand` — their strengths |
+| `skillGaps` | `string[]` | `topDemand` skills the candidate **lacks** — ordered most-urgent first |
+
+**Proficiency scale:**
+
+| Value | Meaning |
+|---|---|
+| 1 | Básico / learning |
+| 2 | Limited practice |
+| 3 | Works independently |
+| 4 | Solid, real projects |
+| 5 | Expert / reference |
+
+**Errors:**
+
+| HTTP | Cause |
+|---|---|
+| `401` | Missing / expired token, or not a Candidate role |
+| `404` `"Perfil de candidato no encontrado."` | Candidate has never set up any profile data |
+
+**UI pattern for `topCombinations`:**
+- `candidateHasBoth: true` → ✅ "You have this full combination"
+- Only one of the two → ⚠️ "You have X, still need Y"
+- Neither → ❌
+
+---
 
 ### Admin
 
