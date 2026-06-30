@@ -345,8 +345,8 @@ class _PendingCard extends StatelessWidget {
           Expanded(
             child: Text(
               isFailed
-                  ? 'La evaluación de la IA falló y será reintentada automáticamente.'
-                  : 'El candidato completó el test. La IA está procesando la evaluación.',
+                  ? 'The AI evaluation failed and will be retried automatically.'
+                  : 'The candidate completed the test. AI is processing the evaluation.',
               style: AppTextStyles.bodyMd.copyWith(
                   color: isFailed ? AppColors.error : const Color(0xFF92400E)),
             ),
@@ -408,7 +408,7 @@ class _FeedbackCard extends StatelessWidget {
                     size: 18, color: AppColors.onTertiaryContainer),
               ),
               const SizedBox(width: 12),
-              Text('Evaluación de IA', style: AppTextStyles.headlineMd),
+              Text('AI Evaluation', style: AppTextStyles.headlineMd),
             ],
           ),
           const SizedBox(height: 16),
@@ -673,8 +673,8 @@ class _CodeDetail extends StatelessWidget {
         ],
         Text(
           question.codeSubmitted != null
-              ? 'Código enviado'
-              : 'Sin respuesta enviada',
+              ? 'Submitted code'
+              : 'No answer submitted',
           style: AppTextStyles.labelBold
               .copyWith(color: AppColors.onSurfaceVariant, fontSize: 12),
         ),
@@ -698,7 +698,7 @@ class _CodeDetail extends StatelessWidget {
                 const Icon(Symbols.code_off,
                     size: 16, color: AppColors.outline),
                 const SizedBox(width: 8),
-                Text('El candidato no envió código.',
+                Text('The candidate did not submit code.',
                     style: AppTextStyles.bodyMd
                         .copyWith(color: AppColors.onSurfaceVariant)),
               ],
@@ -748,7 +748,7 @@ class _CodeBlock extends StatelessWidget {
               children: [
                 Icon(Symbols.code, size: 13, color: Color(0xFF8B949E)),
                 SizedBox(width: 6),
-                Text('Código enviado',
+                Text('Submitted code',
                     style: TextStyle(
                         fontSize: 11,
                         color: Color(0xFF8B949E),
@@ -840,7 +840,7 @@ class _TypeChip extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            isCode ? 'Código' : 'Opción múltiple',
+            isCode ? 'Code' : 'Multiple choice',
             style: AppTextStyles.labelSm.copyWith(
                 fontSize: 10,
                 color: isCode ? AppColors.secondary : AppColors.outline,
@@ -891,17 +891,17 @@ class _ProctoringSection extends StatelessWidget {
   }
 
   String _scoreLabel(double score) {
-    if (score >= 80) return 'Sin irregularidades significativas';
-    if (score >= 50) return 'Riesgo moderado';
-    return 'Riesgo alto';
+    if (score >= 80) return 'No significant irregularities';
+    if (score >= 50) return 'Moderate risk';
+    return 'High risk';
   }
 
   String _tipoLabel(String tipo) => switch (tipo) {
-        'dispositivo_prohibido' => 'Dispositivo prohibido',
-        'segunda_persona' => 'Segunda persona',
-        'camara_cubierta' => 'Cámara cubierta',
-        'rostro_ausente' => 'Rostro ausente',
-        'distraccion' => 'Distracción',
+        'dispositivo_prohibido' => 'Prohibited device',
+        'segunda_persona' => 'Second person',
+        'camara_cubierta' => 'Camera covered',
+        'rostro_ausente' => 'Face absent',
+        'distraccion' => 'Distraction',
         _ => tipo,
       };
 

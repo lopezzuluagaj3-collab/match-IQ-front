@@ -53,7 +53,7 @@ class AppSidebar extends StatelessWidget {
         ],
       UserRole.admin => [
           _NavItem(icon: Symbols.dashboard, label: 'Overview', route: AppRoutes.adminDashboard),
-          _NavItem(icon: Symbols.group, label: 'Usuarios', route: AppRoutes.adminUsers),
+          _NavItem(icon: Symbols.group, label: 'Users', route: AppRoutes.adminUsers),
         ],
     };
 

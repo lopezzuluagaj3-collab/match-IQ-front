@@ -108,7 +108,7 @@ class ApiClient {
 
     final success = body['success'];
     if (success == false) {
-      final message = body['message'] as String? ?? 'Error desconocido';
+      final message = body['message'] as String? ?? 'Unknown error';
       return Left(ServerFailure(message: message, statusCode: res.statusCode ?? 400));
     }
     return Right(body['data']);
@@ -154,14 +154,14 @@ class ApiClient {
 
     // Fallback messages by status code
     return switch (statusCode) {
-      400 => 'Datos inválidos. Revisa los campos del formulario.',
-      401 => 'Tu sesión expiró. Inicia sesión nuevamente.',
-      403 => 'No tienes permiso para realizar esta acción.',
-      404 => 'El recurso solicitado no fue encontrado.',
-      409 => 'Ya existe un registro con esos datos.',
-      429 => 'Demasiadas solicitudes. Espera al menos 60 segundos.',
-      500 => 'Error interno del servidor. Intenta más tarde.',
-      _ => e.message ?? 'Error inesperado. Intenta de nuevo.',
+      400 => 'Invalid data. Please check the form fields.',
+      401 => 'Your session has expired. Please sign in again.',
+      403 => 'You do not have permission to perform this action.',
+      404 => 'The requested resource was not found.',
+      409 => 'A record with that data already exists.',
+      429 => 'Too many requests. Please wait at least 60 seconds.',
+      500 => 'Internal server error. Please try again later.',
+      _ => e.message ?? 'Unexpected error. Please try again.',
     };
   }
 }

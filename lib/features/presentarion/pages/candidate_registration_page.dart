@@ -39,13 +39,13 @@ class _CandidateRegistrationPageState
   }
 
   String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Ingresa una contraseña';
-    if (v.length < 8) return 'Mínimo 8 caracteres';
-    if (!v.contains(RegExp(r'[A-Z]'))) return 'Debe tener al menos una mayúscula';
-    if (!v.contains(RegExp(r'[a-z]'))) return 'Debe tener al menos una minúscula';
-    if (!v.contains(RegExp(r'[0-9]'))) return 'Debe tener al menos un número';
+    if (v == null || v.isEmpty) return 'Enter a password';
+    if (v.length < 8) return 'At least 8 characters';
+    if (!v.contains(RegExp(r'[A-Z]'))) return 'Must have at least one uppercase letter';
+    if (!v.contains(RegExp(r'[a-z]'))) return 'Must have at least one lowercase letter';
+    if (!v.contains(RegExp(r'[0-9]'))) return 'Must have at least one number';
     if (!v.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-]'))) {
-      return 'Debe tener al menos un carácter especial (!@#\$%...)';
+      return 'Must have at least one special character (!@#\$%...)';
     }
     return null;
   }
@@ -160,13 +160,13 @@ class _CandidateRegistrationPageState
             ),
             const SizedBox(height: 20),
             AppTextField(
-              label: 'Cédula',
+              label: 'National ID',
               hint: '1234567890',
               prefixIcon: Symbols.badge,
               controller: _cedulaCtrl,
               keyboardType: TextInputType.number,
               validator: (v) =>
-                  v != null && v.length >= 5 ? null : 'Enter your cédula',
+                  v != null && v.length >= 5 ? null : 'Enter your national ID',
             ),
             const SizedBox(height: 20),
             AppTextField(
@@ -185,7 +185,7 @@ class _CandidateRegistrationPageState
               isPassword: true,
               controller: _confirmCtrl,
               validator: (v) =>
-                  v == _passwordCtrl.text ? null : 'Las contraseñas no coinciden',
+                  v == _passwordCtrl.text ? null : 'Passwords do not match',
             ),
             const SizedBox(height: 28),
             BlocBuilder<AuthBloc, AuthState>(

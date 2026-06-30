@@ -123,10 +123,10 @@ class _LoginPageState extends State<LoginPage> {
           fit: BoxFit.contain,
         ),
         const SizedBox(height: 20),
-        Text('Bienvenido de nuevo', style: AppTextStyles.headlineLg),
+        Text('Welcome back', style: AppTextStyles.headlineLg),
         const SizedBox(height: 6),
         Text(
-          'Inicia sesión para acceder a tu cuenta',
+          'Sign in to access your account',
           style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),

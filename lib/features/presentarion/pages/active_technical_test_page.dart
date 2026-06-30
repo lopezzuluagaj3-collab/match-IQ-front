@@ -207,12 +207,12 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
               child: const Icon(Symbols.warning_amber, color: AppColors.error, size: 22),
             ),
             const SizedBox(width: 12),
-            Text('¡Advertencia!',
+            Text('Warning!',
                 style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
           ],
         ),
         content: Text(
-          'Has salido de pantalla completa. Salir durante el examen puede ser considerado una infracción y podría resultar en tu descalificación.',
+          'You have exited full screen. Leaving during the exam may be considered a violation and could result in your disqualification.',
           style: AppTextStyles.bodyMd
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
@@ -222,7 +222,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
               Navigator.pop(context);
               _showingFullscreenWarning = false;
             },
-            child: Text('Continuar sin pantalla completa',
+            child: Text('Continue without full screen',
                 style: AppTextStyles.labelBold
                     .copyWith(color: AppColors.onSurfaceVariant)),
           ),
@@ -233,7 +233,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
               _fullscreen.enter();
             },
             icon: const Icon(Symbols.fullscreen, size: 18),
-            label: const Text('Volver a pantalla completa'),
+            label: const Text('Return to full screen'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryContainer,
               foregroundColor: Colors.white,
@@ -267,14 +267,14 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
               ),
             ),
             const SizedBox(width: 12),
-            Text('Violación detectada',
+            Text('Violation detected',
                 style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
           ],
         ),
         content: Text(
           isDevice
-              ? 'Se detectó un dispositivo no permitido en la cámara. Esta infracción ha sido registrada.'
-              : 'Se detectó otra persona en el encuadre de la cámara. Esta infracción ha sido registrada.',
+              ? 'A prohibited device was detected on camera. This violation has been recorded.'
+              : 'Another person was detected in the camera frame. This violation has been recorded.',
           style: AppTextStyles.bodyMd
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
@@ -287,7 +287,7 @@ class _ActiveTechnicalTestPageState extends State<ActiveTechnicalTestPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Entendido'),
+            child: const Text('Got it'),
           ),
         ],
       ),

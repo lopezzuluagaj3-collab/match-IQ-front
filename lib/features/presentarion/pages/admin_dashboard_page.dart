@@ -55,22 +55,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   _StatCard(
                     icon: Symbols.person,
                     value: '${s?.totalCandidates ?? 0}',
-                    label: 'Candidatos',
-                    sub: '+${s?.usersRegisteredLast30Days ?? 0} últimos 30 días',
+                    label: 'Candidates',
+                    sub: '+${s?.usersRegisteredLast30Days ?? 0} last 30 days',
                     iconColor: AppColors.secondary,
                     bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
                   ),
                   _StatCard(
                     icon: Symbols.corporate_fare,
                     value: '${s?.totalCompanies ?? 0}',
-                    label: 'Empresas',
+                    label: 'Companies',
                     iconColor: AppColors.primary,
                     bgColor: AppColors.primaryContainer.withValues(alpha: 0.15),
                   ),
                   _StatCard(
                     icon: Symbols.group_add,
                     value: '${s?.usersRegisteredLast30Days ?? 0}',
-                    label: 'Nuevos / 30 días',
+                    label: 'New / 30 days',
                     iconColor: AppColors.onTertiaryContainer,
                     bgColor: AppColors.onTertiaryContainer.withValues(alpha: 0.1),
                   ),
@@ -78,35 +78,35 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 const SizedBox(height: 28),
 
                 // ── Ofertas ───────────────────────────────────────────────
-                _SectionTitle(icon: Symbols.work, label: 'Ofertas'),
+                _SectionTitle(icon: Symbols.work, label: 'Offers'),
                 const SizedBox(height: 12),
                 _ResponsiveStatRow(cards: [
                   _StatCard(
                     icon: Symbols.work,
                     value: '${s?.totalOffers ?? 0}',
-                    label: 'Total ofertas',
-                    sub: '+${s?.offersCreatedLast30Days ?? 0} últimos 30 días',
+                    label: 'Total offers',
+                    sub: '+${s?.offersCreatedLast30Days ?? 0} last 30 days',
                     iconColor: AppColors.secondary,
                     bgColor: AppColors.secondaryContainer.withValues(alpha: 0.2),
                   ),
                   _StatCard(
                     icon: Symbols.check_circle,
                     value: '${s?.offersActive ?? 0}',
-                    label: 'Activas',
+                    label: 'Active',
                     iconColor: AppColors.onTertiaryContainer,
                     bgColor: AppColors.onTertiaryContainer.withValues(alpha: 0.1),
                   ),
                   _StatCard(
                     icon: Symbols.pending_actions,
                     value: '${s?.offersPendingPayment ?? 0}',
-                    label: 'Pendiente pago',
+                    label: 'Pending payment',
                     iconColor: const Color(0xFFF59E0B),
                     bgColor: const Color(0xFFF59E0B0D),
                   ),
                   _StatCard(
                     icon: Symbols.cancel,
                     value: '${(s?.offersCancelled ?? 0) + (s?.offersExpired ?? 0)}',
-                    label: 'Canceladas / Expiradas',
+                    label: 'Cancelled / Expired',
                     iconColor: AppColors.error,
                     bgColor: AppColors.error.withValues(alpha: 0.08),
                   ),
@@ -138,7 +138,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 const SizedBox(height: 28),
 
                 // ── Cuenta ────────────────────────────────────────────────
-                _SectionTitle(icon: Symbols.manage_accounts, label: 'Cuenta'),
+                _SectionTitle(icon: Symbols.manage_accounts, label: 'Account'),
                 const SizedBox(height: 12),
                 const ChangePasswordCard(),
               ],
@@ -196,7 +196,7 @@ class _Header extends StatelessWidget {
       children: [
         Text('Admin Overview', style: AppTextStyles.headlineLg),
         const SizedBox(height: 4),
-        Text('Estadísticas de la plataforma en tiempo real',
+        Text('Real-time platform statistics',
             style: AppTextStyles.bodyLg
                 .copyWith(color: AppColors.onSurfaceVariant)),
       ],
@@ -214,7 +214,7 @@ class _Header extends StatelessWidget {
                 height: 14,
                 child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Symbols.download, size: 18),
-        label: const Text('Reporte'),
+        label: const Text('Report'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.secondary,
           side: const BorderSide(color: AppColors.secondary),
@@ -228,7 +228,7 @@ class _Header extends StatelessWidget {
     final usersBtn = ElevatedButton.icon(
       onPressed: onViewUsers,
       icon: const Icon(Symbols.group, size: 18),
-      label: const Text('Gestionar Usuarios'),
+      label: const Text('Manage Users'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.onTertiaryContainer,
         foregroundColor: Colors.white,
@@ -361,15 +361,15 @@ class _MatchingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardHeader(icon: Symbols.auto_awesome, label: 'Matching IA'),
+          _CardHeader(icon: Symbols.auto_awesome, label: 'AI Matching'),
           const SizedBox(height: 16),
           _RowStat('Total matches', '${s?.totalMatches ?? 0}'),
-          _RowStat('Test enviados', '${s?.matchesTestSent ?? 0}'),
-          _RowStat('Test completados', '${s?.matchesTestCompleted ?? 0}',
+          _RowStat('Tests sent', '${s?.matchesTestSent ?? 0}'),
+          _RowStat('Tests completed', '${s?.matchesTestCompleted ?? 0}',
               color: AppColors.onTertiaryContainer),
-          _RowStat('Seleccionados', '${s?.matchesSelected ?? 0}',
+          _RowStat('Selected', '${s?.matchesSelected ?? 0}',
               color: AppColors.onTertiaryContainer),
-          _RowStat('Rechazados', '${s?.matchesRejected ?? 0}',
+          _RowStat('Rejected', '${s?.matchesRejected ?? 0}',
               color: AppColors.error),
         ],
       ),
@@ -389,14 +389,14 @@ class _TestsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardHeader(icon: Symbols.assignment, label: 'Tests Técnicos'),
+          _CardHeader(icon: Symbols.assignment, label: 'Technical Tests'),
           const SizedBox(height: 16),
-          _RowStat('Tests activos', '${s?.activeTests ?? 0}'),
-          _RowStat('Pendientes evaluación', '${s?.pendingSubmissions ?? 0}',
+          _RowStat('Active tests', '${s?.activeTests ?? 0}'),
+          _RowStat('Pending evaluation', '${s?.pendingSubmissions ?? 0}',
               color: const Color(0xFFF59E0B)),
-          _RowStat('Evaluados', '${s?.submissionsEvaluated ?? 0}',
+          _RowStat('Evaluated', '${s?.submissionsEvaluated ?? 0}',
               color: AppColors.onTertiaryContainer),
-          _RowStat('Expirados', '${s?.submissionsExpired ?? 0}',
+          _RowStat('Expired', '${s?.submissionsExpired ?? 0}',
               color: AppColors.error),
           const SizedBox(height: 8),
           _ScoreBar(score: s?.averageTestScore ?? 0),
@@ -418,7 +418,7 @@ class _ScoreBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Score promedio',
+            Text('Average score',
                 style: AppTextStyles.labelSm
                     .copyWith(color: AppColors.onSurfaceVariant)),
             Text('${score.toStringAsFixed(1)}%',
@@ -459,20 +459,20 @@ class _RevenueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardHeader(icon: Symbols.payments, label: 'Ingresos'),
+          _CardHeader(icon: Symbols.payments, label: 'Revenue'),
           const SizedBox(height: 16),
           Text(
             _formatCop(s?.totalRevenueCop ?? 0),
             style: AppTextStyles.headlineLg
                 .copyWith(color: AppColors.onTertiaryContainer, fontSize: 28),
           ),
-          Text('ingresos totales',
+          Text('total revenue',
               style: AppTextStyles.labelSm
                   .copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 12),
-          _RowStat('Pagos completados', '${s?.paymentsCompleted ?? 0}',
+          _RowStat('Completed payments', '${s?.paymentsCompleted ?? 0}',
               color: AppColors.onTertiaryContainer),
-          _RowStat('Pagos pendientes', '${s?.paymentsPending ?? 0}',
+          _RowStat('Pending payments', '${s?.paymentsPending ?? 0}',
               color: const Color(0xFFF59E0B)),
         ],
       ),
@@ -492,21 +492,21 @@ class _RatesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardHeader(icon: Symbols.analytics, label: 'Tasas de Rendimiento'),
+          _CardHeader(icon: Symbols.analytics, label: 'Performance Rates'),
           const SizedBox(height: 16),
           _RateBar(
-            label: 'Tasa completitud de tests',
+            label: 'Test completion rate',
             tooltip:
-                'Submissions evaluadas vs (evaluadas + expiradas)',
+                'Evaluated submissions vs (evaluated + expired)',
             value: (s?.testCompletionRate ?? 0) / 100,
             percent: s?.testCompletionRate ?? 0,
             color: AppColors.onTertiaryContainer,
           ),
           const SizedBox(height: 16),
           _RateBar(
-            label: 'Tasa de selección',
+            label: 'Selection rate',
             tooltip:
-                'Seleccionados vs (testCompleted + selected + rejected)',
+                'Selected vs (testCompleted + selected + rejected)',
             value: (s?.selectionRate ?? 0) / 100,
             percent: s?.selectionRate ?? 0,
             color: AppColors.secondary,

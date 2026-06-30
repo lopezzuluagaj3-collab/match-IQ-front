@@ -82,10 +82,10 @@ class _PageHeader extends StatelessWidget {
     final titleColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Mis Ofertas', style: AppTextStyles.headlineLg),
+        Text('My Offers', style: AppTextStyles.headlineLg),
         const SizedBox(height: 4),
         Text(
-          '$offersCount oferta${offersCount == 1 ? '' : 's'} creada${offersCount == 1 ? '' : 's'}',
+          '$offersCount offer${offersCount == 1 ? '' : 's'} created',
           style: AppTextStyles.bodyMd
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
@@ -112,7 +112,7 @@ class _PageHeader extends StatelessWidget {
     final newOfferBtn = ElevatedButton.icon(
       onPressed: () => context.go(AppRoutes.createOffer),
       icon: const Icon(Symbols.add, size: 18),
-      label: const Text('Nueva Oferta'),
+      label: const Text('New Offer'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.onTertiaryContainer,
         foregroundColor: Colors.white,
@@ -270,18 +270,18 @@ class _EmptyOffersState extends StatelessWidget {
             const Icon(Symbols.work_outline,
                 size: 56, color: AppColors.outlineVariant),
             const SizedBox(height: 16),
-            Text('No tienes ofertas aún.',
+            Text('You have no offers yet.',
                 style: AppTextStyles.bodyLg
                     .copyWith(color: AppColors.onSurfaceVariant)),
             const SizedBox(height: 8),
-            Text('Crea tu primera oferta para empezar a recibir candidatos.',
+            Text('Create your first offer to start receiving candidates.',
                 style: AppTextStyles.bodyMd
                     .copyWith(color: AppColors.outline)),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => context.go(AppRoutes.createOffer),
               icon: const Icon(Symbols.add, size: 16),
-              label: const Text('Nueva Oferta'),
+              label: const Text('New Offer'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.onTertiaryContainer,
                 foregroundColor: Colors.white,

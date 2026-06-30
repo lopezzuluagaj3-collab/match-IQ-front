@@ -247,7 +247,7 @@ class _NotFoundPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Página no encontrada',
+                'Page not found',
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -255,7 +255,7 @@ class _NotFoundPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'La ruta "$uri" no existe en la aplicación.',
+                'The route "$uri" does not exist in this application.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 15, color: Color(0xFF5A7187)),
               ),

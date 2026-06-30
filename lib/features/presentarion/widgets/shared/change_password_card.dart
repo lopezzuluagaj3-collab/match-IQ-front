@@ -90,7 +90,7 @@ class _ChangePasswordCardState extends State<ChangePasswordCard> {
                     color: AppColors.secondary, size: 20),
               ),
               const SizedBox(width: 12),
-              Text('Cambiar contraseña',
+              Text('Change password',
                   style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
             ],
           ),
@@ -105,39 +105,39 @@ class _ChangePasswordCardState extends State<ChangePasswordCard> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 AppTextField(
-                  label: 'Contraseña actual',
+                  label: 'Current password',
                   hint: '••••••••',
                   prefixIcon: Symbols.lock,
                   controller: _currentCtrl,
                   isPassword: true,
                   validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Ingresa tu contraseña actual' : null,
+                      (v == null || v.isEmpty) ? 'Enter your current password' : null,
                 ),
                 const SizedBox(height: 16),
                 AppTextField(
-                  label: 'Nueva contraseña',
+                  label: 'New password',
                   hint: '••••••••',
                   prefixIcon: Symbols.lock_open,
                   controller: _newCtrl,
                   isPassword: true,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Ingresa la nueva contraseña';
+                    if (v == null || v.isEmpty) return 'Enter new password';
                     if (!_passwordRegex.hasMatch(v)) {
-                      return 'Mín. 8 caracteres, mayúscula, minúscula, número y símbolo';
+                      return 'Min. 8 chars, uppercase, lowercase, number and symbol';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 AppTextField(
-                  label: 'Confirmar nueva contraseña',
+                  label: 'Confirm new password',
                   hint: '••••••••',
                   prefixIcon: Symbols.lock_clock,
                   controller: _confirmCtrl,
                   isPassword: true,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Confirma la nueva contraseña';
-                    if (v != _newCtrl.text) return 'Las contraseñas no coinciden';
+                    if (v == null || v.isEmpty) return 'Confirm new password';
+                    if (v != _newCtrl.text) return 'Passwords do not match';
                     return null;
                   },
                 ),
@@ -162,8 +162,8 @@ class _ChangePasswordCardState extends State<ChangePasswordCard> {
                               )
                             : const Icon(Symbols.check_circle, size: 18),
                         label: Text(_isLoading
-                            ? 'Guardando...'
-                            : 'Actualizar contraseña'),
+                            ? 'Saving...'
+                            : 'Update password'),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.secondary,
                           foregroundColor: Colors.white,
@@ -203,7 +203,7 @@ class _SuccessBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Contraseña actualizada correctamente.',
+              'Password updated successfully.',
               style: AppTextStyles.labelBold
                   .copyWith(color: AppColors.onTertiaryContainer),
             ),

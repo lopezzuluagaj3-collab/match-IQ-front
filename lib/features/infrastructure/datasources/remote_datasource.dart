@@ -492,7 +492,7 @@ class RemoteDatasource implements AppDatasource {
       (data) {
         if (data == null) {
           return const Left(
-              ServerFailure(message: 'No se pudo analizar la descripción'));
+              ServerFailure(message: 'Could not parse the description'));
         }
         final map = data as Map<String, dynamic>;
         return Right(AiParseResult(
@@ -1001,7 +1001,7 @@ class RemoteDatasource implements AppDatasource {
       (f) => Left(f),
       (data) {
         if (data == null) {
-          return const Left(ServerFailure(message: 'Respuesta vacía'));
+          return const Left(ServerFailure(message: 'Empty response'));
         }
         final map = data as Map<String, dynamic>;
         final updatedQ =
@@ -1040,7 +1040,7 @@ class RemoteDatasource implements AppDatasource {
       (f) => Left(f),
       (data) {
         if (data == null) {
-          return const Left(ServerFailure(message: 'Estadísticas no disponibles'));
+          return const Left(ServerFailure(message: 'Statistics not available'));
         }
         final m = data as Map<String, dynamic>;
         final byStatus =

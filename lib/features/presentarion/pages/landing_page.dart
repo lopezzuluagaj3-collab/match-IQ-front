@@ -5,9 +5,6 @@ import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
 
-// Paleta de secciones — sólo dos zonas:
-// Oscura:  #000F1D → #0D1F35  (navbar, hero, stats, roles, footer)
-// Clara:   #F4F7FA              (features, how it works)
 const _darkBg = Color(0xFF000F1D);
 const _darkMid = Color(0xFF0D1F35);
 const _lightBg = Color(0xFFF4F7FA);
@@ -36,7 +33,7 @@ class LandingPage extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => context.go(AppRoutes.login),
-                child: Text('Iniciar sesión',
+                child: Text('Log in',
                     style:
                         AppTextStyles.labelBold.copyWith(color: Colors.white60)),
               ),
@@ -55,7 +52,7 @@ class LandingPage extends StatelessWidget {
                         horizontal: 18, vertical: 10),
                     textStyle: AppTextStyles.labelBold,
                   ),
-                  child: const Text('Comenzar gratis'),
+                  child: const Text('Get started free'),
                 ),
               ),
             ],
@@ -108,14 +105,13 @@ class _HeroSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Logo principal
                 Image.asset(
                   'assets/images/logo.jpeg',
                   height: isMobile ? 100 : 130,
                   fit: BoxFit.contain,
                 ),
                 SizedBox(height: isMobile ? 16 : 20),
-                _Badge(label: 'Plataforma de Reclutamiento con IA'),
+                _Badge(label: 'AI-Powered Recruitment Platform'),
                 SizedBox(height: isMobile ? 24 : 32),
 
                 ConstrainedBox(
@@ -132,9 +128,9 @@ class _HeroSection extends StatelessWidget {
                         color: Colors.white,
                       ),
                       children: const [
-                        TextSpan(text: 'El candidato perfecto,\n'),
+                        TextSpan(text: 'The perfect candidate,\n'),
                         TextSpan(
-                          text: 'encontrado por IA',
+                          text: 'found by AI',
                           style: TextStyle(color: _emerald),
                         ),
                       ],
@@ -146,7 +142,7 @@ class _HeroSection extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: Text(
-                    'MatchIQ conecta candidatos y empresas con inteligencia artificial — scores de compatibilidad, assessments técnicos automáticos y rankings en tiempo real.',
+                    'MatchIQ connects candidates and companies with artificial intelligence — compatibility scores, automated technical assessments and real-time rankings.',
                     style: AppTextStyles.bodyLg.copyWith(
                       color: Colors.white.withValues(alpha: 0.5),
                       height: 1.65,
@@ -163,12 +159,12 @@ class _HeroSection extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     _PrimaryBtn(
-                      label: 'Buscar trabajo',
+                      label: 'Find a job',
                       icon: Symbols.search,
                       onPressed: () => context.go(AppRoutes.registerCandidate),
                     ),
                     _SecondaryBtn(
-                      label: 'Contratar talento',
+                      label: 'Hire talent',
                       icon: Symbols.corporate_fare,
                       onPressed: () => context.go(AppRoutes.registerCompany),
                     ),
@@ -482,7 +478,7 @@ class _MatchPreviewCard extends StatelessWidget {
   }
 }
 
-// ─── Stats bar — misma zona oscura que el hero ────────────────────────────────
+// ─── Stats bar ────────────────────────────────────────────────────────────────
 
 class _StatsBar extends StatelessWidget {
   const _StatsBar();
@@ -491,12 +487,12 @@ class _StatsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 600;
     const items = [
-      (Symbols.auto_awesome, '94%', 'Precisión IA'),
-      (Symbols.schedule, '48h', 'Tiempo promedio'),
+      (Symbols.auto_awesome, '94%', 'AI Accuracy'),
+      (Symbols.schedule, '48h', 'Average time to hire'),
     ];
 
     return Container(
-      color: _darkMid, // mismo que fondo final del hero
+      color: _darkMid,
       padding: EdgeInsets.symmetric(
           vertical: 32, horizontal: isMobile ? 24 : 40),
       child: Center(
@@ -558,7 +554,7 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-// ─── Features — zona clara ────────────────────────────────────────────────────
+// ─── Features ─────────────────────────────────────────────────────────────────
 
 class _FeaturesSection extends StatelessWidget {
   const _FeaturesSection();
@@ -569,20 +565,20 @@ class _FeaturesSection extends StatelessWidget {
     const features = [
       (
         Symbols.psychology,
-        'Motor de Matching IA',
-        'Nuestro algoritmo analiza skills, experiencia y resultados de assessments para generar un score de compatibilidad preciso.',
+        'AI Matching Engine',
+        'Our algorithm analyzes skills, experience and assessment results to generate a precise compatibility score.',
         Color(0xFF34D399),
       ),
       (
         Symbols.assignment,
-        'Assessments Técnicos',
-        'Pruebas técnicas generadas por IA, específicas para cada rol. Los resultados impactan el score de matching directamente.',
+        'Technical Assessments',
+        'AI-generated technical tests, specific to each role. Results directly impact the matching score.',
         Color(0xFF60A5FA),
       ),
       (
         Symbols.analytics,
-        'Analytics en Tiempo Real',
-        'Dashboards en vivo para monitorear tu pipeline: calidad del match, tasas de completitud y velocidad de contratación.',
+        'Real-Time Analytics',
+        'Live dashboards to monitor your pipeline: match quality, completion rates and hiring velocity.',
         Color(0xFFA78BFA),
       ),
     ];
@@ -595,10 +591,9 @@ class _FeaturesSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
-            tag: 'POR QUÉ MATCHIQ',
-            title: 'Contratación inteligente,\nmejores resultados',
-            subtitle:
-                'Todo lo que necesitas para encontrar o cubrir el rol correcto.',
+            tag: 'WHY MATCHIQ',
+            title: 'Smart hiring,\nbetter results',
+            subtitle: 'Everything you need to find or fill the right role.',
           ),
           const SizedBox(height: 52),
           Center(
@@ -712,7 +707,7 @@ class _FeatureCard extends StatelessWidget {
   }
 }
 
-// ─── How It Works — misma zona clara, sin cambio de color ─────────────────────
+// ─── How It Works ─────────────────────────────────────────────────────────────
 
 class _HowItWorksSection extends StatelessWidget {
   const _HowItWorksSection();
@@ -721,27 +716,27 @@ class _HowItWorksSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.sizeOf(context).width < 700;
     const steps = [
-      (Symbols.person_add, '1', 'Crea tu perfil',
-          'Regístrate y completa tu perfil. La IA construye tu score de matching de inmediato.'),
-      (Symbols.auto_awesome, '2', 'Match con IA',
-          'Nuestro motor analiza cientos de variables para encontrar los roles con mayor compatibilidad.'),
-      (Symbols.assignment_turned_in, '3', 'Completa Assessments',
-          'Valida tus habilidades con pruebas técnicas que potencian tu posición en el ranking.'),
-      (Symbols.handshake, '4', 'Cierra el Deal',
-          'Conecta con empresas o candidatos seleccionados y finaliza la contratación en tiempo récord.'),
+      (Symbols.person_add, '1', 'Create your profile',
+          'Sign up and complete your profile. The AI builds your matching score right away.'),
+      (Symbols.auto_awesome, '2', 'AI Match',
+          'Our engine analyzes hundreds of variables to find the roles with the highest compatibility.'),
+      (Symbols.assignment_turned_in, '3', 'Complete Assessments',
+          'Validate your skills with technical tests that boost your position in the ranking.'),
+      (Symbols.handshake, '4', 'Close the Deal',
+          'Connect with selected companies or candidates and close the hire in record time.'),
     ];
 
     return Container(
-      color: Colors.white, // mismo tono que zona clara, suave contraste con _lightBg
+      color: Colors.white,
       padding: EdgeInsets.symmetric(
           vertical: 80, horizontal: isMobile ? 20 : 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
-            tag: 'CÓMO FUNCIONA',
-            title: 'De perfil a contratación\nen 4 pasos',
-            subtitle: 'Un proceso diseñado para velocidad y precisión.',
+            tag: 'HOW IT WORKS',
+            title: 'From profile to hire\nin 4 steps',
+            subtitle: 'A process designed for speed and precision.',
           ),
           const SizedBox(height: 56),
           Center(
@@ -923,7 +918,7 @@ class _StepTile extends StatelessWidget {
   }
 }
 
-// ─── Roles — vuelta a zona oscura ─────────────────────────────────────────────
+// ─── Roles ────────────────────────────────────────────────────────────────────
 
 class _RolesSection extends StatelessWidget {
   const _RolesSection();
@@ -939,9 +934,9 @@ class _RolesSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _SectionHeader(
-            tag: 'PARA TODOS',
-            title: 'Hecho para Candidatos\ny Empresas',
-            subtitle: 'Dos portales. Una plataforma poderosa.',
+            tag: 'FOR EVERYONE',
+            title: 'Built for Candidates\nand Companies',
+            subtitle: 'Two portals. One powerful platform.',
             dark: true,
           ),
           const SizedBox(height: 44),
@@ -952,30 +947,30 @@ class _RolesSection extends StatelessWidget {
                   ? Column(children: [
                       _RoleCard(
                         icon: Symbols.person,
-                        title: 'Para Candidatos',
+                        title: 'For Candidates',
                         accent: _emerald,
                         features: const [
-                          'Score de compatibilidad IA por oferta',
-                          'Plataforma de assessments técnicos',
-                          'Seguimiento de fortaleza de perfil',
-                          'Pipeline de aplicaciones en tiempo real',
+                          'AI compatibility score per offer',
+                          'Technical assessments platform',
+                          'Profile strength tracking',
+                          'Real-time application pipeline',
                         ],
-                        ctaLabel: 'Crear perfil gratis',
+                        ctaLabel: 'Create free profile',
                         onCta: () =>
                             context.go(AppRoutes.registerCandidate),
                       ),
                       const SizedBox(height: 16),
                       _RoleCard(
                         icon: Symbols.corporate_fare,
-                        title: 'Para Empresas',
+                        title: 'For Companies',
                         accent: const Color(0xFF60A5FA),
                         features: const [
-                          'Pool de candidatos rankeados por IA',
-                          'Dispatch automático de tests',
-                          'Desglose del score de matching',
-                          'Pipeline de contratación configurable',
+                          'AI-ranked candidate pool',
+                          'Automatic test dispatch',
+                          'Matching score breakdown',
+                          'Configurable hiring pipeline',
                         ],
-                        ctaLabel: 'Empezar a contratar',
+                        ctaLabel: 'Start hiring',
                         onCta: () =>
                             context.go(AppRoutes.registerCompany),
                       ),
@@ -986,15 +981,15 @@ class _RolesSection extends StatelessWidget {
                         Expanded(
                           child: _RoleCard(
                             icon: Symbols.person,
-                            title: 'Para Candidatos',
+                            title: 'For Candidates',
                             accent: _emerald,
                             features: const [
-                              'Score de compatibilidad IA por oferta',
-                              'Plataforma de assessments técnicos',
-                              'Seguimiento de fortaleza de perfil',
-                              'Pipeline de aplicaciones en tiempo real',
+                              'AI compatibility score per offer',
+                              'Technical assessments platform',
+                              'Profile strength tracking',
+                              'Real-time application pipeline',
                             ],
-                            ctaLabel: 'Crear perfil gratis',
+                            ctaLabel: 'Create free profile',
                             onCta: () =>
                                 context.go(AppRoutes.registerCandidate),
                           ),
@@ -1003,15 +998,15 @@ class _RolesSection extends StatelessWidget {
                         Expanded(
                           child: _RoleCard(
                             icon: Symbols.corporate_fare,
-                            title: 'Para Empresas',
+                            title: 'For Companies',
                             accent: const Color(0xFF60A5FA),
                             features: const [
-                              'Pool de candidatos rankeados por IA',
-                              'Dispatch automático de tests',
-                              'Desglose del score de matching',
-                              'Pipeline de contratación configurable',
+                              'AI-ranked candidate pool',
+                              'Automatic test dispatch',
+                              'Matching score breakdown',
+                              'Configurable hiring pipeline',
                             ],
-                            ctaLabel: 'Empezar a contratar',
+                            ctaLabel: 'Start hiring',
                             onCta: () =>
                                 context.go(AppRoutes.registerCompany),
                           ),
@@ -1113,7 +1108,7 @@ class _RoleCard extends StatelessWidget {
   }
 }
 
-// ─── CTA — misma zona oscura, sin salto de color ──────────────────────────────
+// ─── CTA ──────────────────────────────────────────────────────────────────────
 
 class _CtaSection extends StatelessWidget {
   const _CtaSection();
@@ -1154,7 +1149,7 @@ class _CtaSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  '¿Listo para encontrar tu match perfecto?',
+                  'Ready to find your perfect match?',
                   style: AppTextStyles.headlineLg.copyWith(
                       color: Colors.white, letterSpacing: -0.5, fontSize: 26),
                   textAlign: TextAlign.center,
@@ -1163,7 +1158,7 @@ class _CtaSection extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
                   child: Text(
-                    'Empieza hoy y conecta candidatos con empresas usando inteligencia artificial.',
+                    'Start today and connect candidates with companies using artificial intelligence.',
                     style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         height: 1.65,
@@ -1181,7 +1176,7 @@ class _CtaSection extends StatelessWidget {
                       onPressed: () =>
                           context.go(AppRoutes.registerCandidate),
                       icon: const Icon(Symbols.person, size: 17),
-                      label: const Text('Soy candidato'),
+                      label: const Text("I'm a candidate"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _emerald,
                         foregroundColor: _darkBg,
@@ -1197,7 +1192,7 @@ class _CtaSection extends StatelessWidget {
                       onPressed: () =>
                           context.go(AppRoutes.registerCompany),
                       icon: const Icon(Symbols.corporate_fare, size: 17),
-                      label: const Text('Soy empresa'),
+                      label: const Text("I'm a company"),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: BorderSide(
@@ -1220,7 +1215,7 @@ class _CtaSection extends StatelessWidget {
   }
 }
 
-// ─── Footer — continua en zona oscura ────────────────────────────────────────
+// ─── Footer ───────────────────────────────────────────────────────────────────
 
 class _Footer extends StatelessWidget {
   const _Footer();
@@ -1245,7 +1240,7 @@ class _Footer extends StatelessWidget {
               const Spacer(),
               Flexible(
                 child: Text(
-                  '© 2025 MatchIQ · Reclutamiento con IA',
+                  '© 2025 MatchIQ · AI-Powered Recruitment',
                   style: AppTextStyles.labelSm
                       .copyWith(color: Colors.white30),
                   textAlign: TextAlign.right,

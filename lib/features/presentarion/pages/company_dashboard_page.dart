@@ -106,12 +106,12 @@ class _Header extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bienvenida, ${profile?.name ?? 'Empresa'}',
+          'Welcome, ${profile?.name ?? 'Company'}',
           style: AppTextStyles.headlineLg,
         ),
         const SizedBox(height: 4),
         Text(
-          'Aquí tienes el resumen de tu actividad en la plataforma.',
+          'Here is a summary of your activity on the platform.',
           style: AppTextStyles.bodyLg
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
@@ -132,7 +132,7 @@ class _Header extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Symbols.download, size: 18),
-        label: const Text('Descargar reporte'),
+        label: const Text('Download report'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.secondary,
           side: const BorderSide(color: AppColors.secondary),
@@ -146,7 +146,7 @@ class _Header extends StatelessWidget {
     final newOfferButton = ElevatedButton.icon(
       onPressed: () => context.go(AppRoutes.createOffer),
       icon: const Icon(Symbols.add, size: 18),
-      label: const Text('Nueva Oferta'),
+      label: const Text('New Offer'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.onTertiaryContainer,
         foregroundColor: Colors.white,
@@ -224,39 +224,39 @@ class _OffersRow extends StatelessWidget {
     final cards = <Widget>[
       _StatCard(
         value: '${offers.open}',
-        label: 'Activas',
+        label: 'Active',
         icon: Symbols.circle,
         color: AppColors.onTertiaryContainer,
-        note: 'Acumulando candidatos',
+        note: 'Accumulating candidates',
       ),
       _StatCard(
         value: '${offers.testSent}',
-        label: 'Test enviado',
+        label: 'Test sent',
         icon: Symbols.send,
         color: AppColors.secondary,
-        note: 'En evaluación',
+        note: 'Under evaluation',
       ),
       _StatCard(
         value: '${offers.completed}',
-        label: 'Completadas',
+        label: 'Completed',
         icon: Symbols.check_circle,
         color: AppColors.primary,
-        note: 'Proceso finalizado',
+        note: 'Process finished',
       ),
       _StatCard(
         value: '${offers.pendingPayment}',
-        label: 'Sin pagar',
+        label: 'Unpaid',
         icon: Symbols.payment,
         color: const Color(0xFFF59E0B),
-        note: offers.pendingPayment > 0 ? 'Requieren pago' : 'Todo al día',
+        note: offers.pendingPayment > 0 ? 'Payment required' : 'All up to date',
       ),
       if (offers.cancelled > 0 || offers.expired > 0)
         _StatCard(
           value: '${offers.cancelled + offers.expired}',
-          label: 'Canceladas/Expiradas',
+          label: 'Cancelled/Expired',
           icon: Symbols.cancel,
           color: AppColors.error,
-          note: '${offers.cancelled} canceladas · ${offers.expired} expiradas',
+          note: '${offers.cancelled} cancelled · ${offers.expired} expired',
         ),
     ];
     return LayoutBuilder(
@@ -299,10 +299,10 @@ class _MatchesCard extends StatelessWidget {
             builder: (_, constraints) {
               final kpis = [
                 _InlineKpi(value: '${matches.total}', label: 'Total matches', color: AppColors.primary),
-                _InlineKpi(value: '${matches.testSent}', label: 'Test enviado', color: AppColors.secondary),
+                _InlineKpi(value: '${matches.testSent}', label: 'Test sent', color: AppColors.secondary),
                 _InlineKpi(value: '${matches.testCompleted}', label: 'Test completado', color: AppColors.onTertiaryContainer),
-                _InlineKpi(value: '${matches.selected}', label: 'Seleccionados', color: AppColors.onTertiaryContainer),
-                _InlineKpi(value: '${matches.rejected}', label: 'Rechazados', color: AppColors.error),
+                _InlineKpi(value: '${matches.selected}', label: 'Selected', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${matches.rejected}', label: 'Rejected', color: AppColors.error),
               ];
               if (constraints.maxWidth < 480) {
                 return Wrap(spacing: 20, runSpacing: 12, children: kpis);
@@ -321,12 +321,12 @@ class _MatchesCard extends StatelessWidget {
 
           // Selection rate bar
           _RateBar(
-            label: 'Tasa de selección',
+            label: 'Selection rate',
             value: matches.selectionRate / 100,
             formatted: '${matches.selectionRate.toStringAsFixed(1)}%',
             color: AppColors.onTertiaryContainer,
             tooltip:
-                '${matches.selected} seleccionados de ${matches.testSent} que recibieron el test',
+                '${matches.selected} selected out of ${matches.testSent} who received the test',
           ),
 
           const SizedBox(height: 12),
@@ -336,7 +336,7 @@ class _MatchesCard extends StatelessWidget {
               onPressed: () => context.go(AppRoutes.companyMatches),
               icon: const Icon(Symbols.arrow_forward,
                   size: 15, color: AppColors.secondary),
-              label: Text('Ver todas las ofertas',
+              label: Text('View all offers',
                   style: AppTextStyles.labelBold
                       .copyWith(color: AppColors.secondary)),
             ),
@@ -363,10 +363,10 @@ class _TestsCard extends StatelessWidget {
           LayoutBuilder(
             builder: (_, constraints) {
               final kpis = [
-                _InlineKpi(value: '${tests.sent}', label: 'Enviados', color: AppColors.secondary),
-                _InlineKpi(value: '${tests.completed}', label: 'Completados', color: AppColors.onTertiaryContainer),
-                _InlineKpi(value: '${tests.evaluated}', label: 'Evaluados por IA', color: AppColors.onTertiaryContainer),
-                _InlineKpi(value: '${tests.expired}', label: 'Expirados', color: AppColors.error),
+                _InlineKpi(value: '${tests.sent}', label: 'Sent', color: AppColors.secondary),
+                _InlineKpi(value: '${tests.completed}', label: 'Completed', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${tests.evaluated}', label: 'AI evaluated', color: AppColors.onTertiaryContainer),
+                _InlineKpi(value: '${tests.expired}', label: 'Expired', color: AppColors.error),
               ];
               if (constraints.maxWidth < 480) {
                 return Wrap(spacing: 20, runSpacing: 12, children: kpis);
@@ -385,12 +385,12 @@ class _TestsCard extends StatelessWidget {
 
           // Completion rate
           _RateBar(
-            label: 'Tasa de completación',
+            label: 'Completion rate',
             value: tests.completionRate / 100,
             formatted: '${tests.completionRate.toStringAsFixed(1)}%',
             color: AppColors.secondary,
             tooltip:
-                '${tests.completed} completados de ${tests.sent} enviados',
+                '${tests.completed} completed out of ${tests.sent} sent',
           ),
           const SizedBox(height: 12),
 
@@ -425,7 +425,7 @@ class _AverageScoreBar extends StatelessWidget {
             const Icon(Symbols.auto_awesome,
                 size: 14, color: AppColors.onTertiaryContainer),
             const SizedBox(width: 6),
-            Text('Puntaje promedio IA',
+            Text('Average AI score',
                 style: AppTextStyles.labelBold
                     .copyWith(color: AppColors.onSurfaceVariant, fontSize: 12)),
             const Spacer(),
@@ -470,7 +470,7 @@ class _EmptyScore extends StatelessWidget {
               size: 16, color: AppColors.outline),
           const SizedBox(width: 10),
           Text(
-            'Aún no hay tests evaluados por la IA.',
+            'No tests evaluated by AI yet.',
             style: AppTextStyles.bodyMd
                 .copyWith(color: AppColors.onSurfaceVariant),
           ),

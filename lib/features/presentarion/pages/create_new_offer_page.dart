@@ -293,12 +293,12 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                                 style: AppTextStyles.headlineMd.copyWith(fontSize: 18)),
                             const SizedBox(height: 20),
                             AppTextField(
-                              label: 'Título del cargo',
+                              label: 'Job title',
                               hint: 'ej. Senior React Developer',
                               prefixIcon: Symbols.work,
                               controller: _titleCtrl,
                               validator: (v) => (v == null || v.trim().isEmpty)
-                                  ? 'El título es obligatorio'
+                                  ? 'Title is required'
                                   : null,
                             ),
                             const SizedBox(height: 16),
@@ -457,14 +457,14 @@ class _CreateNewOfferPageState extends State<CreateNewOfferPage> {
                               controller: _descCtrl,
                               maxLines: 6,
                               decoration: const InputDecoration(
-                                hintText: 'Describe las responsabilidades, requisitos y lo que hace única esta posición...',
+                                hintText: 'Describe the responsibilities, requirements and what makes this position unique...',
                               ),
                               validator: (v) {
                                 if (v == null || v.trim().isEmpty) {
-                                  return 'La descripción es obligatoria';
+                                  return 'Description is required';
                                 }
                                 if (v.trim().length < 20) {
-                                  return 'Mínimo 20 caracteres (tienes ${v.trim().length})';
+                                  return 'Minimum 20 characters (you have ${v.trim().length})';
                                 }
                                 return null;
                               },

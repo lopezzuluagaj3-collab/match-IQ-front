@@ -36,22 +36,22 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   );
 
   String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'La contraseña es requerida';
+    if (v == null || v.isEmpty) return 'Password is required';
     if (!_passwordRegex.hasMatch(v)) {
-      return 'Mínimo 8 caracteres, una mayúscula, una minúscula,\nun número y un carácter especial';
+      return 'At least 8 chars, one uppercase, one lowercase,\none number and one special character';
     }
     return null;
   }
 
   String? _validateConfirm(String? v) {
-    if (v == null || v.isEmpty) return 'Confirma tu contraseña';
-    if (v != _newPassCtrl.text) return 'Las contraseñas no coinciden';
+    if (v == null || v.isEmpty) return 'Please confirm your password';
+    if (v != _newPassCtrl.text) return 'Passwords do not match';
     return null;
   }
 
   void _submit(BuildContext context) {
     if (widget.token.isEmpty) {
-      showErrorSnackBar(context, 'El enlace de recuperación es inválido o ya expiró.');
+      showErrorSnackBar(context, 'The recovery link is invalid or has already expired.');
       return;
     }
     if (_formKey.currentState?.validate() ?? false) {
@@ -68,7 +68,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthPasswordResetSuccess) {
-          showSuccessSnackBar(context, 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
+          showSuccessSnackBar(context, 'Password updated successfully. You can now sign in.');
           context.go(AppRoutes.login);
         }
         if (state is AuthFailureState) {
@@ -95,10 +95,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         color: AppColors.secondary, size: 28),
                   ),
                   const SizedBox(height: 16),
-                  Text('Nueva contraseña', style: AppTextStyles.headlineLg),
+                  Text('New password', style: AppTextStyles.headlineLg),
                   const SizedBox(height: 6),
                   Text(
-                    'Elige una contraseña segura para tu cuenta.',
+                    'Choose a strong password for your account.',
                     style: AppTextStyles.bodyMd
                         .copyWith(color: AppColors.onSurfaceVariant),
                     textAlign: TextAlign.center,
@@ -110,7 +110,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     SizedBox(
                       width: double.infinity,
                       child: AppButton(
-                        label: 'Volver al inicio de sesión',
+                        label: 'Back to sign in',
                         onPressed: () => context.go(AppRoutes.login),
                         icon: Symbols.arrow_forward,
                       ),
@@ -136,7 +136,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             AppTextField(
-                              label: 'Nueva contraseña',
+                              label: 'New password',
                               hint: '••••••••',
                               prefixIcon: Symbols.lock,
                               controller: _newPassCtrl,
@@ -145,7 +145,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                             const SizedBox(height: 16),
                             AppTextField(
-                              label: 'Confirmar contraseña',
+                              label: 'Confirm password',
                               hint: '••••••••',
                               prefixIcon: Symbols.lock_clock,
                               controller: _confirmPassCtrl,
@@ -159,7 +159,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               builder: (context, state) => SizedBox(
                                 width: double.infinity,
                                 child: AppButton(
-                                  label: 'Restablecer contraseña',
+                                  label: 'Reset password',
                                   isLoading: state is AuthLoading,
                                   icon: Symbols.check_circle,
                                   onPressed: () => _submit(context),
@@ -171,7 +171,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               onPressed: () => context.go(AppRoutes.login),
                               icon: const Icon(Symbols.arrow_back,
                                   size: 18, color: AppColors.secondary),
-                              label: Text('Volver al inicio de sesión',
+                              label: Text('Back to sign in',
                                   style: AppTextStyles.labelBold
                                       .copyWith(color: AppColors.secondary)),
                             ),
@@ -207,12 +207,12 @@ class _InvalidTokenBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Enlace inválido o expirado',
+                Text('Invalid or expired link',
                     style: AppTextStyles.labelBold
                         .copyWith(color: AppColors.error)),
                 const SizedBox(height: 2),
                 Text(
-                  'Este enlace de recuperación no es válido o ya expiró. Solicita uno nuevo desde la página de inicio de sesión.',
+                  'This recovery link is invalid or has already expired. Request a new one from the sign in page.',
                   style: AppTextStyles.labelSm
                       .copyWith(color: AppColors.onSurfaceVariant),
                 ),
@@ -233,16 +233,16 @@ class _PasswordHints extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('La contraseña debe tener:',
+          Text('Password must have:',
               style: AppTextStyles.labelSm
                   .copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 4),
           ...[
-            'Al menos 8 caracteres',
-            'Una letra mayúscula (A–Z)',
-            'Una letra minúscula (a–z)',
-            'Un número (0–9)',
-            'Un carácter especial (!@#\$%...)',
+            'At least 8 characters',
+            'One uppercase letter (A–Z)',
+            'One lowercase letter (a–z)',
+            'One number (0–9)',
+            'One special character (!@#\$%...)',
           ].map((hint) => Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Row(

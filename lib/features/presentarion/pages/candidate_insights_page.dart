@@ -119,7 +119,7 @@ class _PageHeader extends StatelessWidget {
         Text('Market Insights', style: AppTextStyles.headlineLg),
         const SizedBox(height: 4),
         Text(
-          'Cómo se compara tu perfil con lo que el mercado demanda ahora mismo.',
+          'How your profile compares to what the market demands right now.',
           style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
         ),
       ],
@@ -145,8 +145,8 @@ class _SummaryRow extends StatelessWidget {
                 icon: Symbols.check_circle,
                 iconColor: const Color(0xFF059669),
                 bgColor: const Color(0xFFD1FAE5),
-                title: 'Tus fortalezas',
-                subtitle: 'Skills que el mercado busca y ya tienes',
+                title: 'Your strengths',
+                subtitle: 'Skills the market is looking for that you already have',
                 chips: strengths,
                 chipColor: const Color(0xFF059669),
                 chipBg: const Color(0xFFD1FAE5),
@@ -156,8 +156,8 @@ class _SummaryRow extends StatelessWidget {
                 icon: Symbols.trending_up,
                 iconColor: const Color(0xFFD97706),
                 bgColor: const Color(0xFFFEF3C7),
-                title: 'Brechas de mercado',
-                subtitle: 'Skills más demandados que podrías agregar',
+                title: 'Market gaps',
+                subtitle: 'Top demanded skills you could add',
                 chips: gaps,
                 chipColor: const Color(0xFFD97706),
                 chipBg: const Color(0xFFFEF3C7),
@@ -188,8 +188,8 @@ class _SummaryRow extends StatelessWidget {
                   icon: Symbols.trending_up,
                   iconColor: const Color(0xFFD97706),
                   bgColor: const Color(0xFFFEF3C7),
-                  title: 'Brechas de mercado',
-                  subtitle: 'Skills más demandados que podrías agregar',
+                  title: 'Market gaps',
+                  subtitle: 'Top demanded skills you could add',
                   chips: gaps,
                   chipColor: const Color(0xFFD97706),
                   chipBg: const Color(0xFFFEF3C7),
@@ -285,9 +285,9 @@ class _DemandSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Skills más demandados', style: AppTextStyles.headlineMd),
+        Text('Top demanded skills', style: AppTextStyles.headlineMd),
         const SizedBox(height: 4),
-        Text('Basado en ofertas activas y completadas en la plataforma',
+        Text('Based on active and completed offers on the platform',
             style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
         const SizedBox(height: 16),
         ...items.asMap().entries.map((entry) {
@@ -370,7 +370,7 @@ class _DemandItem extends StatelessWidget {
                                 size: 13, color: Color(0xFF059669)),
                             const SizedBox(width: 4),
                             Text(
-                              level != null ? 'Nivel $level/5' : 'Tienes',
+                              level != null ? 'Level $level/5' : 'You have it',
                               style: AppTextStyles.labelSm.copyWith(
                                   color: const Color(0xFF059669),
                                   fontWeight: FontWeight.w600),
@@ -392,7 +392,7 @@ class _DemandItem extends StatelessWidget {
                                 size: 13, color: Color(0xFFD97706)),
                             const SizedBox(width: 4),
                             Text(
-                              'Te falta',
+                              'Missing',
                               style: AppTextStyles.labelSm.copyWith(
                                   color: const Color(0xFFD97706),
                                   fontWeight: FontWeight.w600),
@@ -403,7 +403,7 @@ class _DemandItem extends StatelessWidget {
                     ],
                     const SizedBox(width: 8),
                     Text(
-                      '${item.offerCount} ofertas',
+                      '${item.offerCount} offers',
                       style: AppTextStyles.labelSm
                           .copyWith(color: AppColors.onSurfaceVariant),
                     ),
@@ -427,7 +427,7 @@ class _DemandItem extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Text('Tu nivel: ',
+                      Text('Your level: ',
                           style: AppTextStyles.labelSm
                               .copyWith(color: AppColors.onSurfaceVariant)),
                       ...List.generate(
@@ -470,9 +470,9 @@ class _CombinationsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Combinaciones de skills más pedidas', style: AppTextStyles.headlineMd),
+        Text('Most requested skill combinations', style: AppTextStyles.headlineMd),
         const SizedBox(height: 4),
-        Text('Pares de skills que las empresas suelen pedir juntos',
+        Text('Skill pairs that companies usually require together',
             style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
         const SizedBox(height: 16),
         ...items.map((item) => Padding(
@@ -503,23 +503,23 @@ class _CombinationItem extends StatelessWidget {
       statusIcon = Symbols.check_circle;
       statusColor = const Color(0xFF059669);
       statusBg = const Color(0xFFD1FAE5);
-      statusLabel = 'Completo';
+      statusLabel = 'Complete';
     } else if (hasA == true || hasB == true) {
       statusIcon = Symbols.warning;
       statusColor = const Color(0xFFD97706);
       statusBg = const Color(0xFFFEF3C7);
       final missing = hasA == true ? item.skillB : item.skillA;
-      statusLabel = 'Falta $missing';
+      statusLabel = 'Missing $missing';
     } else if (hasBoth != null) {
       statusIcon = Symbols.cancel;
       statusColor = AppColors.error;
       statusBg = AppColors.errorContainer.withOpacity(0.3);
-      statusLabel = 'No tienes ninguno';
+      statusLabel = 'You have neither';
     } else {
       statusIcon = Symbols.info;
       statusColor = AppColors.outline;
       statusBg = AppColors.surfaceVariant;
-      statusLabel = '${item.offerCount} ofertas';
+      statusLabel = '${item.offerCount} offers';
     }
 
     return AppCard(
@@ -560,7 +560,7 @@ class _CombinationItem extends StatelessWidget {
                 color: AppColors.onSurfaceVariant, fontSize: 18),
           ),
           const SizedBox(width: 2),
-          Text('ofertas',
+          Text('offers',
               style: AppTextStyles.labelSm.copyWith(color: AppColors.outline)),
         ],
       ),
@@ -612,9 +612,9 @@ class _SupplySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Oferta de candidatos', style: AppTextStyles.headlineMd),
+        Text('Candidate supply', style: AppTextStyles.headlineMd),
         const SizedBox(height: 4),
-        Text('Skills más comunes entre candidatos registrados',
+        Text('Most common skills among registered candidates',
             style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
         const SizedBox(height: 16),
         AppCard(
@@ -633,7 +633,7 @@ class _SupplySection extends StatelessWidget {
                         Expanded(
                           child: Text(item.skillName, style: AppTextStyles.labelBold),
                         ),
-                        Text('${item.candidateCount} candidatos',
+                        Text('${item.candidateCount} candidates',
                             style: AppTextStyles.labelSm
                                 .copyWith(color: AppColors.onSurfaceVariant)),
                       ],
@@ -683,7 +683,7 @@ class _ErrorView extends StatelessWidget {
               child: const Icon(Symbols.error, size: 48, color: AppColors.error),
             ),
             const SizedBox(height: 20),
-            Text('No se pudieron cargar los insights', style: AppTextStyles.headlineMd),
+            Text('Could not load insights', style: AppTextStyles.headlineMd),
             const SizedBox(height: 8),
             Text(message,
                 textAlign: TextAlign.center,
@@ -692,7 +692,7 @@ class _ErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Symbols.refresh, size: 18),
-              label: const Text('Reintentar'),
+              label: const Text('Retry'),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.onTertiaryContainer,
                 foregroundColor: Colors.white,

@@ -34,7 +34,7 @@ class RemoteAuthAdapter implements AuthOutputPort {
 
     final data = result.getOrElse(() => null);
     if (data == null) {
-      return const Left(ServerFailure(message: 'Respuesta vacía del servidor'));
+      return const Left(ServerFailure(message: 'Empty response from server'));
     }
 
     final map = data as Map<String, dynamic>;
@@ -70,7 +70,7 @@ class RemoteAuthAdapter implements AuthOutputPort {
       // Try to refresh
       final refreshToken = await _storage.getRefreshToken();
       if (refreshToken == null) {
-        return const Left(AuthFailure(message: 'Sin sesión activa'));
+        return const Left(AuthFailure(message: 'No active session'));
       }
       final refreshResult = await _client.post(
         ApiConstants.refresh,
@@ -79,12 +79,12 @@ class RemoteAuthAdapter implements AuthOutputPort {
       );
       if (refreshResult.isLeft()) {
         await _storage.clear();
-        return const Left(AuthFailure(message: 'Sesión expirada'));
+        return const Left(AuthFailure(message: 'Session expired'));
       }
       final refreshData = refreshResult.getOrElse(() => null) as Map<String, dynamic>?;
       if (refreshData == null) {
         await _storage.clear();
-        return const Left(AuthFailure(message: 'Sesión expirada'));
+        return const Left(AuthFailure(message: 'Session expired'));
       }
       await _storage.saveTokens(
         access: refreshData['accessToken'] as String,
@@ -94,7 +94,7 @@ class RemoteAuthAdapter implements AuthOutputPort {
 
     final userMap = await _storage.getUser();
     if (userMap == null) {
-      return const Left(AuthFailure(message: 'Sin datos de sesión'));
+      return const Left(AuthFailure(message: 'No session data'));
     }
 
     final user = User(

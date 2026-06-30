@@ -182,21 +182,21 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirmar selección'),
+        title: const Text('Confirm selection'),
         content: Text(
-          '¿Confirmas la selección de ${match.candidateName}?\nSe le notificará por correo.',
+          'Confirm the selection of ${match.candidateName}?\nThey will be notified by email.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.onTertiaryContainer,
             ),
-            child: const Text('Seleccionar'),
+            child: const Text('Select'),
           ),
         ],
       ),
@@ -208,7 +208,7 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
     if (error != null) {
       _showErrorSnackbar(context, error);
     } else {
-      _showSuccessSnackbar(context, 'Candidato seleccionado correctamente.');
+      _showSuccessSnackbar(context, 'Candidate selected successfully.');
     }
   }
 
@@ -219,21 +219,21 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirmar rechazo'),
+        title: const Text('Confirm rejection'),
         content: Text(
-          '¿Confirmas el rechazo de ${match.candidateName}?\nEsta acción no se puede deshacer.',
+          'Confirm the rejection of ${match.candidateName}?\nThis action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Rechazar'),
+            child: const Text('Reject'),
           ),
         ],
       ),
@@ -245,7 +245,7 @@ class _OfferMatchesPageState extends State<OfferMatchesPage> {
     if (error != null) {
       _showErrorSnackbar(context, error);
     } else {
-      _showSuccessSnackbar(context, 'Candidato rechazado.');
+      _showSuccessSnackbar(context, 'Candidate rejected.');
     }
   }
 
@@ -437,7 +437,7 @@ class _MatchesHeader extends StatelessWidget {
     return Row(
       children: [
         Text(
-          '${matches.length} candidato${matches.length == 1 ? '' : 's'}',
+          '${matches.length} candidate${matches.length == 1 ? '' : 's'}',
           style: AppTextStyles.headlineMd,
         ),
         const Spacer(),
@@ -445,7 +445,7 @@ class _MatchesHeader extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: isSaving ? null : onSendBulk,
             icon: const Icon(Symbols.send, size: 14),
-            label: Text('Enviar Test (${selectedMatchIds.length})'),
+            label: Text('Send Test (${selectedMatchIds.length})'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.onTertiaryContainer,
               foregroundColor: Colors.white,
@@ -478,8 +478,8 @@ class _EmptyMatchesState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               offer?.isOpen == true
-                  ? 'No hay candidatos matcheados aún.'
-                  : 'Los candidatos aparecerán cuando la oferta esté activa.',
+                  ? 'No matched candidates yet.'
+                  : 'Candidates will appear once the offer is active.',
               style: AppTextStyles.bodyLg
                   .copyWith(color: AppColors.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -648,7 +648,7 @@ class _CandidateMatchCard extends StatelessWidget {
         else
           const Padding(
             padding: EdgeInsets.only(top: 8),
-            child: Text('Rechazado',
+            child: Text('Rejected',
                 style: TextStyle(
                     color: AppColors.error,
                     fontSize: 12,
@@ -1004,14 +1004,14 @@ class _ActionButtons extends StatelessWidget {
         else if (match.canSelect)
           _PrimaryBtn(
             icon: Symbols.how_to_reg,
-            label: 'Seleccionar',
+            label: 'Select',
             color: AppColors.onTertiaryContainer,
             onTap: onSelect,
           )
         else if (match.status == MatchStatus.shortlisted)
           _StatusTag(
               icon: Symbols.verified,
-              label: 'Seleccionado',
+              label: 'Selected',
               color: AppColors.onTertiaryContainer),
 
         // View test results
@@ -1029,7 +1029,7 @@ class _ActionButtons extends StatelessWidget {
           const SizedBox(height: 6),
           _OutlineBtn(
             icon: Symbols.person_remove,
-            label: 'Rechazar',
+            label: 'Reject',
             color: AppColors.error,
             onTap: onReject,
             muted: true,

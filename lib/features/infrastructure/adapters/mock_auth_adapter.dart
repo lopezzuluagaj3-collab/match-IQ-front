@@ -48,7 +48,7 @@ class MockAuthAdapter implements AuthOutputPort {
       _currentUser = user;
       return Right(user);
     }
-    return const Left(AuthFailure(message: 'Credenciales inválidas', statusCode: 401));
+    return const Left(AuthFailure(message: 'Invalid credentials', statusCode: 401));
   }
 
   @override
@@ -119,5 +119,5 @@ class MockAuthAdapter implements AuthOutputPort {
 
   @override
   ResultFuture<User> checkSession() async =>
-      const Left(AuthFailure(message: 'Sin sesión activa'));
+      const Left(AuthFailure(message: 'No active session'));
 }

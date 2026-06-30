@@ -15,7 +15,7 @@ class ServerFailure extends Failure {
 
 class NetworkFailure extends Failure {
   const NetworkFailure({
-    super.message = 'Sin conexión a internet. Verifica tu red e intenta de nuevo.',
+    super.message = 'No internet connection. Please check your network and try again.',
     super.statusCode = 503,
   });
 }

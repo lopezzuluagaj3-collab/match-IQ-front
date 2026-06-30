@@ -99,7 +99,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                         controller: _searchCtrl,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: 'Buscar por nombre o email...',
+                          hintText: 'Search by name or email...',
                           hintStyle: AppTextStyles.bodyMd
                               .copyWith(color: AppColors.outline),
                           prefixIcon: const Icon(Symbols.search,
@@ -134,18 +134,18 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                         runSpacing: 8,
                         children: [
                           _FilterChip(
-                            label: 'Todos',
+                            label: 'All',
                             active: _roleFilter == null &&
                                 _activeFilter == null,
                             onTap: () => _applyFilter(),
                           ),
                           _FilterChip(
-                            label: 'Candidatos',
+                            label: 'Candidates',
                             active: _roleFilter == 'Candidate',
                             onTap: () => _applyFilter(role: 'Candidate'),
                           ),
                           _FilterChip(
-                            label: 'Empresas',
+                            label: 'Companies',
                             active: _roleFilter == 'Company',
                             onTap: () => _applyFilter(role: 'Company'),
                           ),
@@ -155,7 +155,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                             onTap: () => _applyFilter(role: 'Admin'),
                           ),
                           _FilterChip(
-                            label: 'Inactivos',
+                            label: 'Inactive',
                             active: _activeFilter == false,
                             onTap: () => _applyFilter(active: false),
                             color: AppColors.error,
@@ -210,15 +210,15 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Eliminar usuario', style: AppTextStyles.headlineMd),
+        title: Text('Delete user', style: AppTextStyles.headlineMd),
         content: Text(
-          '¿Confirmas que deseas eliminar a "${user.displayName}"?\n\nEsta acción es irreversible y eliminará en cascada todos sus datos.',
+          'Confirm deletion of "${user.displayName}"?\n\nThis action is irreversible and will cascade-delete all their data.',
           style: AppTextStyles.bodyMd,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar',
+            child: Text('Cancel',
                 style: AppTextStyles.labelBold
                     .copyWith(color: AppColors.onSurfaceVariant)),
           ),
@@ -233,7 +233,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Eliminar'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -280,10 +280,10 @@ class _UsersPageHeader extends StatelessWidget {
     final titleCol = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Gestión de Usuarios', style: AppTextStyles.headlineLg),
+        Text('User Management', style: AppTextStyles.headlineLg),
         const SizedBox(height: 4),
         Text(
-          '$userCount usuario${userCount == 1 ? '' : 's'}',
+          '$userCount user${userCount == 1 ? '' : 's'}',
           style:
               AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
         ),
@@ -293,7 +293,7 @@ class _UsersPageHeader extends StatelessWidget {
     final createBtn = ElevatedButton.icon(
       onPressed: onCreateAdmin,
       icon: const Icon(Symbols.person_add, size: 18),
-      label: const Text('Nuevo Admin'),
+      label: const Text('New Admin'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.onTertiaryContainer,
         foregroundColor: Colors.white,
@@ -384,12 +384,12 @@ class _UserRow extends StatelessWidget {
                     if (!user.isActive) ...[
                       const SizedBox(width: 6),
                       _Badge(
-                          label: 'Inactivo', color: AppColors.error),
+                          label: 'Inactive', color: AppColors.error),
                     ],
                     if (!user.emailVerified) ...[
                       const SizedBox(width: 6),
                       _Badge(
-                          label: 'Sin verificar',
+                          label: 'Unverified',
                           color: const Color(0xFFF59E0B)),
                     ],
                   ],
@@ -398,7 +398,7 @@ class _UserRow extends StatelessWidget {
                 Text(user.email,
                     style: AppTextStyles.labelSm
                         .copyWith(color: AppColors.onSurfaceVariant)),
-                Text('Cédula: ${user.cedula}  ·  Desde ${_formatDate(user.createdAt)}',
+                Text('ID: ${user.cedula}  ·  Since ${_formatDate(user.createdAt)}',
                     style: AppTextStyles.labelSm.copyWith(
                         color: AppColors.outline, fontSize: 11)),
               ],
@@ -408,7 +408,7 @@ class _UserRow extends StatelessWidget {
           // Actions — no actions on Admin accounts
           if (user.role != 'Admin') ...[
             Tooltip(
-              message: user.isActive ? 'Desactivar cuenta' : 'Activar cuenta',
+              message: user.isActive ? 'Deactivate account' : 'Activate account',
               child: InkWell(
                 onTap: isSaving ? null : onToggle,
                 borderRadius: BorderRadius.circular(8),
@@ -439,7 +439,7 @@ class _UserRow extends StatelessWidget {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        user.isActive ? 'Desactivar' : 'Activar',
+                        user.isActive ? 'Deactivate' : 'Activate',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -454,7 +454,7 @@ class _UserRow extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Tooltip(
-              message: 'Eliminar usuario',
+              message: 'Delete user',
               child: InkWell(
                 onTap: isSaving ? null : onDelete,
                 borderRadius: BorderRadius.circular(8),
@@ -474,7 +474,7 @@ class _UserRow extends StatelessWidget {
             ),
           ] else
             Tooltip(
-              message: 'Las cuentas Admin no pueden modificarse desde aquí',
+              message: 'Admin accounts cannot be modified from here',
               child: Icon(Symbols.shield,
                   size: 18,
                   color: AppColors.outline.withValues(alpha: 0.5)),
@@ -485,8 +485,8 @@ class _UserRow extends StatelessWidget {
   }
 
   String _formatDate(DateTime d) {
-    const m = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-        'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const m = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return '${d.day} ${m[d.month]} ${d.year}';
   }
 }
@@ -536,7 +536,7 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                     const Icon(Symbols.admin_panel_settings,
                         color: AppColors.onTertiaryContainer, size: 22),
                     const SizedBox(width: 10),
-                    Text('Crear Administrador',
+                    Text('Create Administrator',
                         style: AppTextStyles.headlineMd),
                     const Spacer(),
                     IconButton(
@@ -548,27 +548,27 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                 ),
                 const SizedBox(height: 20),
 
-                _Field(ctrl: widget.fullNameCtrl, label: 'Nombre completo',
+                _Field(ctrl: widget.fullNameCtrl, label: 'Full name',
                     icon: Symbols.person,
                     validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? 'Requerido' : null),
+                        (v?.trim().isEmpty ?? true) ? 'Required' : null),
                 const SizedBox(height: 12),
                 _Field(ctrl: widget.emailCtrl, label: 'Email',
                     icon: Symbols.email,
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) => (v?.contains('@') ?? false)
                         ? null
-                        : 'Email inválido'),
+                        : 'Invalid email'),
                 const SizedBox(height: 12),
-                _Field(ctrl: widget.cedulaCtrl, label: 'Cédula',
+                _Field(ctrl: widget.cedulaCtrl, label: 'ID number',
                     icon: Symbols.badge,
                     keyboardType: TextInputType.number,
                     validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? 'Requerido' : null),
+                        (v?.trim().isEmpty ?? true) ? 'Required' : null),
                 const SizedBox(height: 12),
                 _Field(
                     ctrl: widget.passCtrl,
-                    label: 'Contraseña',
+                    label: 'Password',
                     icon: Symbols.lock,
                     obscure: !_showPass,
                     suffix: IconButton(
@@ -580,11 +580,11 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                     ),
                     validator: (v) => (v?.length ?? 0) >= 8
                         ? null
-                        : 'Mínimo 8 caracteres'),
+                        : 'At least 8 characters'),
                 const SizedBox(height: 12),
                 _Field(
                     ctrl: widget.confirmCtrl,
-                    label: 'Confirmar contraseña',
+                    label: 'Confirm password',
                     icon: Symbols.lock_reset,
                     obscure: !_showConfirm,
                     suffix: IconButton(
@@ -598,7 +598,7 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                     ),
                     validator: (v) => v == widget.passCtrl.text
                         ? null
-                        : 'Las contraseñas no coinciden'),
+                        : 'Passwords do not match'),
                 const SizedBox(height: 24),
 
                 BlocBuilder<AdminCubit, AdminState>(
@@ -607,7 +607,7 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Cancelar',
+                        child: Text('Cancel',
                             style: AppTextStyles.labelBold.copyWith(
                                 color: AppColors.onSurfaceVariant)),
                       ),
@@ -646,7 +646,7 @@ class _CreateAdminDialogState extends State<_CreateAdminDialog> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white))
-                            : const Text('Crear Administrador'),
+                            : const Text('Create Administrator'),
                       ),
                     ],
                   ),

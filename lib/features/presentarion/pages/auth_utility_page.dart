@@ -112,7 +112,7 @@ class _EmailVerifyViewState extends State<_EmailVerifyView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          showSuccessSnackBar(context, '¡Bienvenido! Email verificado y sesión iniciada.');
+          showSuccessSnackBar(context, 'Welcome! Email verified and session started.');
           final route = switch (state.user.role) {
             UserRole.candidate => AppRoutes.candidateAssessments,
             UserRole.company => AppRoutes.companyDashboard,
@@ -121,14 +121,14 @@ class _EmailVerifyViewState extends State<_EmailVerifyView> {
           context.go(route);
         }
         if (state is AuthEmailVerified) {
-          showSuccessSnackBar(context, 'Email verificado. Ya puedes iniciar sesión.');
+          showSuccessSnackBar(context, 'Email verified. You can now sign in.');
           context.go(AppRoutes.login);
         }
         if (state is AuthFailureState) {
           showErrorSnackBar(context, state.message);
         }
         if (state is AuthPendingVerification) {
-          showInfoSnackBar(context, 'Código reenviado. Revisa tu correo.');
+          showInfoSnackBar(context, 'Code resent. Check your email.');
         }
       },
       child: Scaffold(
