@@ -1,5 +1,5 @@
 abstract class ApiConstants {
-  static const baseUrl = 'https://bank-n8n.coderhivex.com';
+  static const baseUrl = 'https://matchiq-service.coderhivex.com';
 
   // Auth
   static const register = '/api/auth/register';

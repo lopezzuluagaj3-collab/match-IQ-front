@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 class ProctoringApiClient {
   ProctoringApiClient() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'https://bank-user.coderhivex.com',
+      baseUrl: 'https://matchiq-ia.coderhivex.com',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
