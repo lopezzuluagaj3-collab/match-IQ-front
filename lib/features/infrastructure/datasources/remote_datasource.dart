@@ -13,6 +13,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/market_analytics.dart';
 import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
@@ -1172,6 +1173,71 @@ class RemoteDatasource implements AppDatasource {
       createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
           DateTime.now(),
       profileName: m['profileName'] as String?,
+    );
+  }
+
+  // ─── Analytics ────────────────────────────────────────────────────────────
+
+  @override
+  ResultFuture<MarketAnalytics> getMarketAnalytics() async {
+    final result = await _client.get(ApiConstants.analyticsMarket, skipAuth: true);
+    return result.fold((f) => Left(f), (data) => Right(_parseMarketAnalytics(data)));
+  }
+
+  @override
+  ResultFuture<MarketAnalytics> getCandidateInsights() async {
+    final result = await _client.get(ApiConstants.analyticsMyInsights);
+    return result.fold((f) => Left(f), (data) => Right(_parseMarketAnalytics(data)));
+  }
+
+  MarketAnalytics _parseMarketAnalytics(dynamic raw) {
+    final map = raw as Map<String, dynamic>;
+
+    final demand = (map['topDemand'] as List<dynamic>? ?? []).map((e) {
+      final m = e as Map<String, dynamic>;
+      return MarketSkillDemand(
+        skillName: m['skillName'] as String,
+        categoryName: m['categoryName'] as String,
+        offerCount: m['offerCount'] as int,
+        candidateHasSkill: m['candidateHasSkill'] as bool?,
+        candidateLevel: m['candidateLevel'] as int?,
+      );
+    }).toList();
+
+    final supply = (map['topSupply'] as List<dynamic>? ?? []).map((e) {
+      final m = e as Map<String, dynamic>;
+      return MarketSkillSupply(
+        skillName: m['skillName'] as String,
+        categoryName: m['categoryName'] as String,
+        candidateCount: m['candidateCount'] as int,
+      );
+    }).toList();
+
+    final combinations = (map['topCombinations'] as List<dynamic>? ?? []).map((e) {
+      final m = e as Map<String, dynamic>;
+      return MarketSkillCombination(
+        skillA: m['skillA'] as String,
+        skillB: m['skillB'] as String,
+        offerCount: m['offerCount'] as int,
+        candidateHasA: m['candidateHasA'] as bool?,
+        candidateHasB: m['candidateHasB'] as bool?,
+        candidateHasBoth: m['candidateHasBoth'] as bool?,
+      );
+    }).toList();
+
+    final skillsInDemand = (map['skillsInDemand'] as List<dynamic>? ?? [])
+        .map((e) => e as String)
+        .toList();
+    final skillGaps = (map['skillGaps'] as List<dynamic>? ?? [])
+        .map((e) => e as String)
+        .toList();
+
+    return MarketAnalytics(
+      topDemand: demand,
+      topSupply: supply,
+      topCombinations: combinations,
+      skillsInDemand: skillsInDemand,
+      skillGaps: skillGaps,
     );
   }
 

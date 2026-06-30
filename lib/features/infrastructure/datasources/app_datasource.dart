@@ -8,6 +8,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/market_analytics.dart';
 import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 
@@ -71,6 +72,10 @@ abstract class AppDatasource {
   ResultFuture<TestSession> regenerateTest(int offerId, int timeLimitMinutes);
   ResultFuture<ChatResult> chatWithQuestion(int questionId, String message);
   ResultFuture<JobOffer> updateOffer(int offerId, Map<String, dynamic> fields);
+
+  // Analytics
+  ResultFuture<MarketAnalytics> getMarketAnalytics();
+  ResultFuture<MarketAnalytics> getCandidateInsights();
 
   // Admin
   ResultFuture<AdminStats> getAdminStats();

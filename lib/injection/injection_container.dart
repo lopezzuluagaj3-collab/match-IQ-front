@@ -10,6 +10,7 @@ import '../features/infrastructure/datasources/app_datasource.dart';
 import '../features/infrastructure/datasources/proctor_datasource.dart';
 import '../features/infrastructure/datasources/remote_datasource.dart';
 import '../features/presentarion/bloc/admin_cubit.dart';
+import '../features/presentarion/bloc/analytics_cubit.dart';
 import '../features/presentarion/bloc/auth_bloc.dart';
 import '../features/presentarion/bloc/candidate_cubit.dart';
 import '../features/presentarion/bloc/company_cubit.dart';
@@ -44,6 +45,7 @@ Future<void> initDependencies() async {
   sl.registerFactory<CompanyCubit>(() => CompanyCubit(sl<AppDatasource>()));
   sl.registerFactory<AdminCubit>(() => AdminCubit(sl<AppDatasource>()));
   sl.registerFactory<TestCubit>(() => TestCubit(sl<AppDatasource>()));
+  sl.registerFactory<AnalyticsCubit>(() => AnalyticsCubit(sl<AppDatasource>()));
 
   // Proctoring — separate AI service at bank-user.coderhivex.com
   sl.registerLazySingleton<ProctoringApiClient>(() => ProctoringApiClient());

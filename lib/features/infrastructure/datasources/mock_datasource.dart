@@ -10,6 +10,7 @@ import '../../domain/entities/catalog.dart';
 import '../../domain/entities/company.dart';
 import '../../domain/entities/company_dashboard_stats.dart';
 import '../../domain/entities/job_offer.dart';
+import '../../domain/entities/market_analytics.dart';
 import '../../domain/entities/payment.dart';
 import '../../domain/entities/technical_test.dart';
 import 'app_datasource.dart';
@@ -642,6 +643,62 @@ class MockDatasource implements AppDatasource {
   ResultFuture<List<int>> downloadAdminReport() async {
     await Future.delayed(const Duration(milliseconds: 500));
     return const Right([]);
+  }
+
+  // --- Analytics ---
+
+  @override
+  ResultFuture<MarketAnalytics> getMarketAnalytics() async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return const Right(MarketAnalytics(
+      topDemand: [
+        MarketSkillDemand(skillName: 'React', categoryName: 'FrontEnd', offerCount: 23),
+        MarketSkillDemand(skillName: 'Docker', categoryName: 'DevOps', offerCount: 18),
+        MarketSkillDemand(skillName: 'TypeScript', categoryName: 'FrontEnd', offerCount: 15),
+        MarketSkillDemand(skillName: 'Node.js', categoryName: 'BackEnd', offerCount: 14),
+        MarketSkillDemand(skillName: 'PostgreSQL', categoryName: 'Databases', offerCount: 12),
+      ],
+      topSupply: [
+        MarketSkillSupply(skillName: 'JavaScript', categoryName: 'FrontEnd', candidateCount: 41),
+        MarketSkillSupply(skillName: 'React', categoryName: 'FrontEnd', candidateCount: 37),
+        MarketSkillSupply(skillName: 'Python', categoryName: 'BackEnd', candidateCount: 29),
+        MarketSkillSupply(skillName: 'Docker', categoryName: 'DevOps', candidateCount: 22),
+        MarketSkillSupply(skillName: 'PostgreSQL', categoryName: 'Databases', candidateCount: 19),
+      ],
+      topCombinations: [
+        MarketSkillCombination(skillA: 'Docker', skillB: 'React', offerCount: 14),
+        MarketSkillCombination(skillA: 'CI/CD', skillB: 'Docker', offerCount: 11),
+        MarketSkillCombination(skillA: 'Node.js', skillB: 'TypeScript', offerCount: 9),
+        MarketSkillCombination(skillA: 'AWS', skillB: 'Docker', offerCount: 8),
+        MarketSkillCombination(skillA: 'React', skillB: 'TypeScript', offerCount: 7),
+      ],
+    ));
+  }
+
+  @override
+  ResultFuture<MarketAnalytics> getCandidateInsights() async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return const Right(MarketAnalytics(
+      topDemand: [
+        MarketSkillDemand(skillName: 'React', categoryName: 'FrontEnd', offerCount: 23, candidateHasSkill: true, candidateLevel: 4),
+        MarketSkillDemand(skillName: 'Docker', categoryName: 'DevOps', offerCount: 18, candidateHasSkill: false, candidateLevel: null),
+        MarketSkillDemand(skillName: 'TypeScript', categoryName: 'FrontEnd', offerCount: 15, candidateHasSkill: true, candidateLevel: 3),
+        MarketSkillDemand(skillName: 'Node.js', categoryName: 'BackEnd', offerCount: 14, candidateHasSkill: false, candidateLevel: null),
+        MarketSkillDemand(skillName: 'PostgreSQL', categoryName: 'Databases', offerCount: 12, candidateHasSkill: false, candidateLevel: null),
+      ],
+      topSupply: [
+        MarketSkillSupply(skillName: 'JavaScript', categoryName: 'FrontEnd', candidateCount: 41),
+        MarketSkillSupply(skillName: 'React', categoryName: 'FrontEnd', candidateCount: 37),
+        MarketSkillSupply(skillName: 'Python', categoryName: 'BackEnd', candidateCount: 29),
+      ],
+      topCombinations: [
+        MarketSkillCombination(skillA: 'Docker', skillB: 'React', offerCount: 14, candidateHasA: false, candidateHasB: true, candidateHasBoth: false),
+        MarketSkillCombination(skillA: 'React', skillB: 'TypeScript', offerCount: 7, candidateHasA: true, candidateHasB: true, candidateHasBoth: true),
+        MarketSkillCombination(skillA: 'CI/CD', skillB: 'Docker', offerCount: 11, candidateHasA: false, candidateHasB: false, candidateHasBoth: false),
+      ],
+      skillsInDemand: ['React', 'TypeScript'],
+      skillGaps: ['Docker', 'Node.js', 'PostgreSQL'],
+    ));
   }
 
   // ---- Mock Data ----

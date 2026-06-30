@@ -10,7 +10,9 @@ import '../../features/presentarion/pages/active_technical_test_page.dart';
 import '../../features/presentarion/pages/admin_dashboard_page.dart';
 import '../../features/presentarion/pages/admin_users_page.dart';
 import '../../features/presentarion/pages/auth_utility_page.dart';
+import '../../features/presentarion/bloc/analytics_cubit.dart';
 import '../../features/presentarion/pages/candidate_dashboard_page.dart';
+import '../../features/presentarion/pages/candidate_insights_page.dart';
 import '../../features/presentarion/pages/candidate_test_result_page.dart';
 import '../../features/presentarion/pages/candidate_profile_page.dart';
 import '../../features/presentarion/pages/candidate_registration_page.dart';
@@ -126,6 +128,13 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.candidateAssessments,
             builder: (_, __) => const JobOffersListPage(mode: JobOffersMode.assessments),
+          ),
+          GoRoute(
+            path: AppRoutes.candidateInsights,
+            builder: (_, __) => BlocProvider(
+              create: (_) => sl<AnalyticsCubit>(),
+              child: const CandidateInsightsPage(),
+            ),
           ),
           GoRoute(
             path: AppRoutes.technicalTest,

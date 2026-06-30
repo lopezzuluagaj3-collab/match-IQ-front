@@ -10,6 +10,7 @@ abstract class AppRoutes {
   static const candidateDashboard = '/candidate/dashboard';
   static const candidateProfile = '/candidate/profile';
   static const candidateAssessments = '/candidate/assessments';
+  static const candidateInsights = '/candidate/insights';
   static const technicalTest = '/candidate/test/:id';
   static const candidateTestResult = '/candidate/test/:id/result';
   static String candidateTestResultPath(int testId) => '/candidate/test/$testId/result';

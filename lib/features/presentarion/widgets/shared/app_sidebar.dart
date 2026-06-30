@@ -43,6 +43,7 @@ class AppSidebar extends StatelessWidget {
     final items = switch (role) {
       UserRole.candidate => [
           _NavItem(icon: Symbols.assignment, label: 'Assessments', route: AppRoutes.candidateAssessments),
+          _NavItem(icon: Symbols.insights, label: 'Market Insights', route: AppRoutes.candidateInsights),
           _NavItem(icon: Symbols.person, label: 'Profile', route: AppRoutes.candidateProfile),
         ],
       UserRole.company => [

@@ -64,6 +64,10 @@ abstract class ApiConstants {
   static String proctoringReportByMatch(int matchId) =>
       '/api/tests/submissions/$matchId/proctoring';
 
+  // Analytics
+  static const analyticsMarket = '/api/analytics/market';
+  static const analyticsMyInsights = '/api/analytics/market/my-insights';
+
   // Admin
   static const adminUsers = '/api/admin/users';
   static String adminUserById(int userId) => '/api/admin/users/$userId';
