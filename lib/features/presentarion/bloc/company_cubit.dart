@@ -461,14 +461,44 @@ class CompanyCubit extends Cubit<CompanyState> {
 
   Future<void> verifySession(String sessionId, {Duration initialDelay = Duration.zero}) async {
     emit(state.copyWith(isSaving: true, clearSessionActivated: true, clearError: true));
-    if (initialDelay > Duration.zero) {
-      await Future.delayed(initialDelay);
+
+    // With an initialDelay we probe twice (mid-wait and end-of-wait) instead of
+    // waiting the full delay before a single check, since Stripe's webhook can
+    // land at any point during that window.
+    final attempts = initialDelay > Duration.zero ? 2 : 1;
+    final delayBetweenAttempts = initialDelay ~/ attempts;
+
+    bool activated = false;
+    String? lastErrorMessage;
+
+    for (var attempt = 0; attempt < attempts; attempt++) {
+      if (delayBetweenAttempts > Duration.zero) {
+        await Future.delayed(delayBetweenAttempts);
+      }
+      final result = await _datasource.verifySession(sessionId);
+      final isActivated = result.fold(
+        (f) {
+          lastErrorMessage = f.message;
+          return false;
+        },
+        (value) {
+          lastErrorMessage = null;
+          return value;
+        },
+      );
+      if (isActivated) {
+        activated = true;
+        break;
+      }
     }
-    final result = await _datasource.verifySession(sessionId);
-    result.fold(
-      (f) => emit(state.copyWith(isSaving: false, error: f.message)),
-      (activated) => emit(state.copyWith(isSaving: false, sessionActivated: activated)),
-    );
+
+    if (activated) {
+      emit(state.copyWith(isSaving: false, sessionActivated: true));
+    } else if (lastErrorMessage != null) {
+      emit(state.copyWith(isSaving: false, error: lastErrorMessage));
+    } else {
+      emit(state.copyWith(isSaving: false, sessionActivated: false));
+    }
   }
 
   Future<void> loadProctoringReport(int matchId) async {
