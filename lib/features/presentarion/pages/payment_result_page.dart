@@ -26,7 +26,9 @@ class _PaymentResultPageState extends State<PaymentResultPage> {
   void initState() {
     super.initState();
     if (widget.sessionId != null) {
-      context.read<CompanyCubit>().verifySession(widget.sessionId!);
+      context
+          .read<CompanyCubit>()
+          .verifySession(widget.sessionId!, initialDelay: const Duration(seconds: 5));
     }
   }
 

@@ -459,8 +459,11 @@ class CompanyCubit extends Cubit<CompanyState> {
     );
   }
 
-  Future<void> verifySession(String sessionId) async {
+  Future<void> verifySession(String sessionId, {Duration initialDelay = Duration.zero}) async {
     emit(state.copyWith(isSaving: true, clearSessionActivated: true, clearError: true));
+    if (initialDelay > Duration.zero) {
+      await Future.delayed(initialDelay);
+    }
     final result = await _datasource.verifySession(sessionId);
     result.fold(
       (f) => emit(state.copyWith(isSaving: false, error: f.message)),
