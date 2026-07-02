@@ -49,9 +49,13 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     // google_sign_in_web, so the two are mutually exclusive by platform.
     _initializeFuture ??= GoogleSignIn.instance
         .initialize(
-      clientId: kIsWeb ? GoogleAuthConstants.clientId : null,
-      serverClientId: kIsWeb ? null : GoogleAuthConstants.clientId,
-    )
+          clientId: kIsWeb ? GoogleAuthConstants.clientId : null,
+          serverClientId: kIsWeb ? null : GoogleAuthConstants.clientId,
+        )
+        // Without a timeout, a stalled network request (slow connection, ad
+        // blocker, firewall blocking accounts.google.com) leaves `_ready`
+        // false forever and the button never appears or gives up.
+        .timeout(const Duration(seconds: 8))
         .catchError((Object e, StackTrace stack) {
       _initializeFailed = true;
       debugPrint('[GoogleSignIn] initialize() failed: $e');
