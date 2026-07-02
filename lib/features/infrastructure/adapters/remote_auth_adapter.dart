@@ -82,26 +82,32 @@ class RemoteAuthAdapter implements AuthOutputPort {
       return const Left(ServerFailure(message: 'Empty response from server'));
     }
 
-    final map = data as Map<String, dynamic>;
-    final user = User(
-      id: map['userId'].toString(),
-      email: email,
-      name: map['fullName'] as String,
-      role: _parseRole(map['role'] as String),
-    );
+    try {
+      final map = data as Map<String, dynamic>;
+      final user = User(
+        id: map['userId'].toString(),
+        email: email,
+        name: map['fullName'] as String,
+        role: _parseRole(map['role'] as String),
+      );
 
-    await _storage.saveTokens(
-      access: map['accessToken'] as String,
-      refresh: map['refreshToken'] as String,
-    );
-    await _storage.saveUser({
-      'id': user.id,
-      'email': user.email,
-      'name': user.name,
-      'role': user.role.name,
-    });
-    _currentUser = user;
-    return Right(user);
+      await _storage.saveTokens(
+        access: map['accessToken'] as String,
+        refresh: map['refreshToken'] as String,
+      );
+      await _storage.saveUser({
+        'id': user.id,
+        'email': user.email,
+        'name': user.name,
+        'role': user.role.name,
+      });
+      _currentUser = user;
+      return Right(user);
+    } catch (_) {
+      return const Left(
+        ServerFailure(message: 'Respuesta inesperada del servidor'),
+      );
+    }
   }
 
   /// Restores an existing session from storage without any network call.

@@ -23,6 +23,7 @@ class GoogleSignInButton extends StatefulWidget {
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   bool _ready = false;
+  bool _initFailed = false;
 
   @override
   void initState() {
@@ -33,12 +34,33 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   Future<void> _init() async {
     final signIn = GoogleSignIn.instance;
     try {
-      await signIn.initialize(clientId: GoogleAuthConstants.clientId);
+      // Web needs `clientId`; native platforms need `serverClientId` (there's
+      // no google-services.json / GoogleService-Info.plist checked in), or
+      // initialize() throws a client configuration error. Passing
+      // `serverClientId` on web instead trips an assertion in
+      // google_sign_in_web, so the two are mutually exclusive by platform.
+      await signIn.initialize(
+        clientId: kIsWeb ? GoogleAuthConstants.clientId : null,
+        serverClientId: kIsWeb ? null : GoogleAuthConstants.clientId,
+      );
       signIn.authenticationEvents.listen(_handleEvent).onError(_handleError);
     } catch (_) {
+      _initFailed = true;
       widget.onError('No se pudo inicializar el inicio de sesión con Google.');
     }
     if (mounted) setState(() => _ready = true);
+  }
+
+  Future<void> _authenticate() async {
+    try {
+      await GoogleSignIn.instance.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code != GoogleSignInExceptionCode.canceled) {
+        widget.onError('No se pudo iniciar sesión con Google.');
+      }
+    } catch (_) {
+      widget.onError('No se pudo iniciar sesión con Google.');
+    }
   }
 
   void _handleEvent(GoogleSignInAuthenticationEvent event) {
@@ -57,7 +79,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_ready) {
+    if (!_ready || _initFailed) {
       return const SizedBox(height: 40);
     }
     if (kIsWeb) {
@@ -67,7 +89,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
       return SizedBox(
         width: double.infinity,
         child: OutlinedButton.icon(
-          onPressed: () => GoogleSignIn.instance.authenticate(),
+          onPressed: _authenticate,
           icon: const Icon(Icons.g_mobiledata),
           label: const Text('Continuar con Google'),
         ),
