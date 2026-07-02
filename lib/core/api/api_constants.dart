@@ -4,6 +4,7 @@ abstract class ApiConstants {
   // Auth
   static const register = '/api/auth/register';
   static const login = '/api/auth/login';
+  static const googleLogin = '/api/auth/google';
   static const verifyEmail = '/api/auth/verify-email';
   static const resendVerification = '/api/auth/resend-verification';
   static const refresh = '/api/auth/refresh';
@@ -76,4 +77,11 @@ abstract class ApiConstants {
   static String deleteUser(int userId) => '/api/admin/users/$userId';
   static const adminStats = '/api/admin/stats';
   static const adminReport = '/api/admin/report';
+}
+
+abstract class GoogleAuthConstants {
+  // Must match the "Google:ClientId" configured on the backend, since it
+  // validates the ID token's `aud` claim against this exact value.
+  static const clientId =
+      '94963457392-rnnlop0pj63cf0330mgbit5lnuo2f5pa.apps.googleusercontent.com';
 }

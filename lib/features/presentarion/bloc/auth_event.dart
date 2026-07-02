@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/user.dart';
 
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
@@ -12,6 +13,19 @@ class LoginRequested extends AuthEvent {
   final String password;
   @override
   List<Object?> get props => [email, password];
+}
+
+class GoogleLoginRequested extends AuthEvent {
+  const GoogleLoginRequested({
+    required this.idToken,
+    required this.email,
+    required this.role,
+  });
+  final String idToken;
+  final String email;
+  final UserRole role;
+  @override
+  List<Object?> get props => [idToken, email, role];
 }
 
 class RegisterCandidateRequested extends AuthEvent {

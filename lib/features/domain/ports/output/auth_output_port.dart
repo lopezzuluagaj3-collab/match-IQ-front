@@ -3,6 +3,11 @@ import '../../entities/user.dart';
 
 abstract class AuthOutputPort {
   ResultFuture<User> login({required String email, required String password});
+  ResultFuture<User> loginWithGoogle({
+    required String idToken,
+    required String email,
+    required UserRole role,
+  });
   ResultVoid registerCandidate({
     required String name,
     required String email,

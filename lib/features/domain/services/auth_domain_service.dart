@@ -16,6 +16,14 @@ class AuthDomainService implements AuthInputPort {
       _outputPort.login(email: email, password: password);
 
   @override
+  ResultFuture<User> loginWithGoogle({
+    required String idToken,
+    required String email,
+    required UserRole role,
+  }) =>
+      _outputPort.loginWithGoogle(idToken: idToken, email: email, role: role);
+
+  @override
   ResultVoid registerCandidate({
     required String name,
     required String email,

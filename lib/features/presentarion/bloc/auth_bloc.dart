@@ -7,6 +7,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._authPort) : super(const AuthInitial()) {
     on<CheckSessionRequested>(_onCheckSession);
     on<LoginRequested>(_onLogin);
+    on<GoogleLoginRequested>(_onGoogleLogin);
     on<RegisterCandidateRequested>(_onRegisterCandidate);
     on<RegisterCompanyRequested>(_onRegisterCompany);
     on<ForgotPasswordRequested>(_onForgotPassword);
@@ -46,6 +47,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthFailureState(failure.message));
         }
       },
+      (user) => emit(AuthAuthenticated(user)),
+    );
+  }
+
+  Future<void> _onGoogleLogin(
+    GoogleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _authPort.loginWithGoogle(
+      idToken: event.idToken,
+      email: event.email,
+      role: event.role,
+    );
+    result.fold(
+      (failure) => emit(AuthFailureState(failure.message)),
       (user) => emit(AuthAuthenticated(user)),
     );
   }

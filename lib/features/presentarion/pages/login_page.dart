@@ -6,10 +6,12 @@ import '../../../config/router/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_text_styles.dart';
 import '../../../core/utils/snackbar_helper.dart';
+import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../widgets/shared/app_text_field.dart';
+import '../widgets/shared/google_sign_in_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -199,6 +201,29 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Symbols.arrow_forward,
                 ),
               ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const Expanded(child: Divider(color: AppColors.outlineVariant)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text('or',
+                      style: AppTextStyles.labelSm.copyWith(color: AppColors.outline)),
+                ),
+                const Expanded(child: Divider(color: AppColors.outlineVariant)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            GoogleSignInButton(
+              onSignedIn: (idToken, email) => context.read<AuthBloc>().add(
+                    GoogleLoginRequested(
+                      idToken: idToken,
+                      email: email,
+                      role: UserRole.candidate,
+                    ),
+                  ),
+              onError: (message) => showErrorSnackBar(context, message),
             ),
             const SizedBox(height: 24),
             Row(

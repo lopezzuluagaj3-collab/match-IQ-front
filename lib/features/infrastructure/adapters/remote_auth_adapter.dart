@@ -61,6 +61,49 @@ class RemoteAuthAdapter implements AuthOutputPort {
     return Right(user);
   }
 
+  @override
+  ResultFuture<User> loginWithGoogle({
+    required String idToken,
+    required String email,
+    required UserRole role,
+  }) async {
+    final result = await _client.post(
+      ApiConstants.googleLogin,
+      body: {'idToken': idToken, 'role': _roleToApiString(role)},
+      skipAuth: true,
+    );
+
+    if (result.isLeft()) {
+      return result.fold((f) => Left(f), (_) => throw StateError('unreachable'));
+    }
+
+    final data = result.getOrElse(() => null);
+    if (data == null) {
+      return const Left(ServerFailure(message: 'Empty response from server'));
+    }
+
+    final map = data as Map<String, dynamic>;
+    final user = User(
+      id: map['userId'].toString(),
+      email: email,
+      name: map['fullName'] as String,
+      role: _parseRole(map['role'] as String),
+    );
+
+    await _storage.saveTokens(
+      access: map['accessToken'] as String,
+      refresh: map['refreshToken'] as String,
+    );
+    await _storage.saveUser({
+      'id': user.id,
+      'email': user.email,
+      'name': user.name,
+      'role': user.role.name,
+    });
+    _currentUser = user;
+    return Right(user);
+  }
+
   /// Restores an existing session from storage without any network call.
   /// Returns Left if no valid token exists or the token is expired.
   @override
@@ -235,5 +278,11 @@ class RemoteAuthAdapter implements AuthOutputPort {
         'company' => UserRole.company,
         'admin' => UserRole.admin,
         _ => UserRole.candidate,
+      };
+
+  String _roleToApiString(UserRole role) => switch (role) {
+        UserRole.candidate => 'Candidate',
+        UserRole.company => 'Company',
+        UserRole.admin => 'Admin',
       };
 }

@@ -52,6 +52,18 @@ class MockAuthAdapter implements AuthOutputPort {
   }
 
   @override
+  ResultFuture<User> loginWithGoogle({
+    required String idToken,
+    required String email,
+    required UserRole role,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    final user = User(id: 'google-mock-001', email: email, name: email.split('@').first, role: role);
+    _currentUser = user;
+    return Right(user);
+  }
+
+  @override
   ResultVoid registerCandidate({
     required String name,
     required String email,
